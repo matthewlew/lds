@@ -12,4 +12,4 @@ export { mountCodeField } from './code-field.js';
 export { mountSegmentedControl } from './segmented-control.js';
 export { mountTextarea } from './textarea.js';
 export { mountToasts } from './toast.js';
-export { mountTooltip } from './tooltip.js';
+export { mountTooltip, attachTooltip } from './tooltip.js';

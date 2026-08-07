@@ -1,13 +1,21 @@
 import { attrs, cx } from './attrs.js';
 import { slot } from './escape.js';
 
-const option = (o) => {
-  const opt = typeof o === 'string' ? { value: o, label: o } : o;
-  return `<option${attrs({ value: opt.value })}>${slot(opt.label)}</option>`;
-};
-
-export function select({ label, id, help, error, required, options = [], className = '', ...rest } = {}) {
+export function select({
+  label, id, help, error, required, options = [], value, defaultValue, className = '', ...rest
+} = {}) {
   const cls = cx('lds-field', error && 'lds-field--error', className);
+  // A <select> has no `value` attribute — the selected OPTION carries `selected`.
+  // Passing it through would emit an attribute the browser ignores and preselect
+  // nothing, which looks like a working control right up until someone submits.
+  const current = value !== undefined ? value : defaultValue;
+  const option = (o) => {
+    const opt = typeof o === 'string' ? { value: o, label: o } : o;
+    return `<option${attrs({
+      selected: current !== undefined && opt.value === current,
+      value: opt.value,
+    })}>${slot(opt.label)}</option>`;
+  };
   const body = options.map((o) => (o && o.options)
     ? `<optgroup${attrs({ label: o.label })}>${o.options.map(option).join('')}</optgroup>`
     : option(o)).join('');

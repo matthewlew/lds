@@ -114,16 +114,26 @@ if (!existsSync(OUT)) {
 }
 
 const contract = JSON.parse(readFileSync(OUT, 'utf8'));
+
+// The in-page normaliser replaced generated ids, but React's useId wraps them in
+// colons (`:r0:`) and a counter-based one does not. Both sides are put through
+// this before comparing, so the baseline frozen under React and a capture taken
+// today describe the same thing.
+const settle = (dump) => String(dump).replace(/:?<generated>:?/g, '<generated>');
+
 const fails = [];
 
 for (const path of pages) {
   const expected = contract.cards[path];
   if (expected === undefined) { fails.push(`${path}: no fixture — a new card, or renamed`); continue; }
-  if (captured[path] !== expected) {
+  if (settle(captured[path]) !== settle(expected)) {
     // A whole-page dump is unreadable in a diff; show the first line that moved.
-    const a = expected.split('\n');
-    const b = captured[path].split('\n');
-    const i = a.findIndex((line, n) => line !== b[n]);
+    const a = settle(expected).split('\n');
+    const b = settle(captured[path]).split('\n');
+    // findIndex returns -1 when one tree is a prefix of the other, which is a
+    // real difference — the shorter one simply stopped early.
+    const differs = a.findIndex((line, n) => line !== b[n]);
+    const i = differs === -1 ? Math.min(a.length, b.length) : differs;
     fails.push(`${path}: line ${i + 1} of the DOM differs\n`
       + `      expected: ${a[i] ?? '(end of tree)'}\n`
       + `      actual:   ${b[i] ?? '(end of tree)'}`);

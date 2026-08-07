@@ -72,4 +72,4 @@ export { mountCodeField } from './controllers/code-field.js';
 export { mountSegmentedControl } from './controllers/segmented-control.js';
 export { mountTextarea } from './controllers/textarea.js';
 export { mountToasts } from './controllers/toast.js';
-export { mountTooltip } from './controllers/tooltip.js';
+export { mountTooltip, attachTooltip } from './controllers/tooltip.js';

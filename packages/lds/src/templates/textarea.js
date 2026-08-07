@@ -2,10 +2,14 @@ import { attrs, cx } from './attrs.js';
 import { slot } from './escape.js';
 
 export function textarea({
-  label, id, help, error, required, maxLength, showCount, value = '', className = '', ...rest
+  label, id, help, error, required, maxLength, showCount, value, defaultValue,
+  className = '', ...rest
 } = {}) {
   const cls = cx('lds-field', error && 'lds-field--error', className);
-  const count = String(value ?? '').length;
+  // A textarea has no `value` attribute either, so `defaultValue` is not a
+  // separate concept here — both name the same text content.
+  const text = (value !== undefined ? value : defaultValue) ?? '';
+  const count = String(text).length;
   const over = maxLength !== undefined && count >= maxLength;
   const counted = showCount || maxLength !== undefined;
   const showFooter = counted || !!help || !!error;
@@ -24,6 +28,6 @@ export function textarea({
   // renders an empty box with the text hidden in an attribute nothing reads.
   return `<div${attrs({ className: cls, 'data-status': error ? 'error' : undefined })}>`
     + (label ? `<label${attrs({ htmlFor: id, className: required ? 'lds-field__req' : '' })}>${slot(label)}</label>` : '')
-    + `<textarea${attrs({ id, maxLength, ...rest })}>${slot(value)}</textarea>`
+    + `<textarea${attrs({ id, maxLength, ...rest })}>${slot(text)}</textarea>`
     + `${footer}</div>`;
 }

@@ -6,7 +6,7 @@
 <script src="../assets/lds.js"></script>
 <script>LDS.setIconSprite("../assets/icons.svg");</script>
 <script>
-const { tooltip, button, textField, inline, h, mount, raw } = LDS;
+const { tooltip, button, textField, inline, h, mount, raw, attachTooltip } = LDS;
 
 const note = (t) => h('p', { style: { fontFamily: 'var(--th-ui)', fontSize: 'var(--text-control-sm)',
   color: 'var(--text-subdued)', lineHeight: 'var(--leading-normal)', margin: '0 0 12px', maxWidth: '62ch' } }, t);
@@ -42,6 +42,10 @@ function Demo() {
       h(textField, { label: 'API key name', help: 'Shown in the audit log. You can change it later.' })),
     h(inline, { status: 'caution' }, 'Help text, not a tooltip — it is a sentence the user needs.'));
 }
-mount(document.getElementById('root'), h(Demo));
+const root = document.getElementById('root');
+mount(root, h(Demo));
+// The template paints the bubble; the behaviour is bound separately because
+// these tooltips are composed into a larger tree rather than mounted one by one.
+root.querySelectorAll('.lds-tooltip').forEach(attachTooltip);
 </script>
 </body></html>

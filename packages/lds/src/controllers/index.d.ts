@@ -68,4 +68,12 @@ export interface MountedTooltip extends Mounted<TooltipConfig> {
 }
 export declare function mountTooltip(container: Element, config?: TooltipConfig): MountedTooltip;
 
+/**
+ * Binds tooltip markup that is already in the document — one composed into a
+ * bigger render, or one that arrived from the server. Sets the trigger's
+ * aria-describedby and wires hover, focus and Escape. Without it, composed
+ * tooltip markup is present and inert.
+ */
+export declare function attachTooltip(wrapper: Element): { readonly open: boolean; dispose(): void };
+
 export type { Status, Slot };
