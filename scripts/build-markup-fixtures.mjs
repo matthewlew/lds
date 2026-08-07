@@ -19,6 +19,7 @@ import { fileURLToPath } from 'node:url';
 import * as LDS from '@lew/lds';
 import { setIconSprite, getIconSprite } from '@lew/lds';
 import { CASES } from './component-cases.mjs';
+import { normalizeMarkup, assertQuotesEscaped } from './normalize-markup.mjs';
 
 const OUT = join(dirname(fileURLToPath(import.meta.url)), '..', 'packages', 'lds', 'markup-contract.json');
 
@@ -35,7 +36,14 @@ for (const [component, label, props] of CASES) {
   const Component = LDS[component];
   if (!Component) { problems.push(`${component}: not exported`); continue; }
   try {
-    fixtures[`${component}/${label}`] = renderToStaticMarkup(React.createElement(Component, props));
+    const html = renderToStaticMarkup(React.createElement(Component, props));
+    // The normaliser rewrites ` name="` sequences; that is only sound while every
+    // quote in text is escaped. Check per case rather than trusting it.
+    if (!assertQuotesEscaped(html)) {
+      problems.push(`${component}/${label}: unescaped quote in output — normalisation would be unsafe`);
+      continue;
+    }
+    fixtures[`${component}/${label}`] = normalizeMarkup(html);
   } catch (err) {
     problems.push(`${component}/${label}: ${err.message}`);
   }
