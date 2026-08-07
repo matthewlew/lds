@@ -1,0 +1,67 @@
+<!-- @dsCard group="Navigation & Data" viewport="1160x560" name="Row" subtitle="list row — states, chevron, and checkmark selection" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../assets/styles.css">
+<style>
+.lbl{font-family:var(--th-ui);font-size:12px;font-weight:500;color:var(--gray-700);margin-bottom:10px}
+.dim{font-family:var(--th-ui);font-size:12px;color:var(--gray-600);line-height:1.5}
+.sheet{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);overflow:hidden}
+.col{display:flex;flex-direction:column;gap:10px;width:330px}
+/* preview-only: paints the real hover/pressed declarations for the static card. */
+.demo-hover{background:var(--gray-100)}
+.demo-press{background:var(--gray-200)}
+</style>
+</head>
+<body style="margin:0;padding:28px;background:var(--gray-50,#FAF9EA);font-family:var(--th-body);">
+<div id="root"></div>
+<script src="../assets/lds.js"></script>
+<script>LDS.setIconSprite("../assets/icons.svg");</script>
+<script>
+const { row, checkbox, h, mount, raw } = LDS;
+const H = '../assets/icons.svg';
+// Two independent selections, held as plain values. A row carries no id in the
+// markup, so a click finds its value by position within its own sheet.
+const ONE = [['5min','Every 5 minutes'],['15min','Every 15 minutes'],['hour','Every hour']];
+const MANY = [['half','Half Dome'],['tuolumne','Tuolumne Meadows'],['clouds','Clouds Rest']];
+let picked = 'hour';
+let many = ['half'];
+const toggle = (id) => { many = many.includes(id) ? many.filter((x) => x !== id) : [...many, id]; };
+function Demo(){
+  return h('div',{style:{display:'flex',gap:36,flexWrap:'wrap',alignItems:'flex-start'}},
+    h('div',{className:'col'},
+      h('div',{className:'lbl'},'Navigation — chevron'),
+      h('div',{className:'sheet'},
+        h(row,{title:'Half Dome, late June',subtitle:'Checked every hour',onClick:()=>{},chevron:true,iconHref:H}),
+        h(row,{title:'Tuolumne Meadows',subtitle:'Checked every 15 min',onClick:()=>{},chevron:true,iconHref:H,className:'demo-hover'}),
+        h(row,{title:'Clouds Rest',subtitle:'Checked daily',onClick:()=>{},chevron:true,iconHref:H,className:'demo-press'})),
+      h('div',{className:'dim'},'Rows two and three show hover and pressed; live rows get them from :hover and :active.')),
+    h('div',{className:'col'},
+      h('div',{className:'lbl'},'Selection — checkmark'),
+      h('div',{className:'sheet'},
+        ONE.map(([id,label])=>h(row,{title:label,onClick:()=>{},selected:picked===id,iconHref:H}))),
+      h('div',{className:'dim'},'One pick: the row is the control and the checkmark reports it — nothing else is added. Click a row to move it.'),
+      h('div',{className:'sheet',style:{marginTop:6}},
+        MANY.map(([id,label])=>h(row,{title:label,onClick:()=>{},selected:many.includes(id),iconHref:H}))),
+      h('div',{className:'dim'},'Several picks work the same way, but a checkmark only appears once a row is chosen — so nothing tells the user multi-select exists.')),
+    h('div',{className:'col'},
+      h('div',{className:'lbl'},'Multi-select — prefer Checkbox'),
+      h('div',{className:'sheet',style:{padding:'4px 14px'}},
+        h(checkbox,{label:'Half Dome',defaultChecked:true}),
+        h(checkbox,{label:'Tuolumne Meadows'}),
+        h(checkbox,{label:'Clouds Rest, including the long approach from Tenaya Lake'})),
+      h('div',{className:'dim'},'An empty box advertises that more than one can be picked, which a missing checkmark cannot. Use checkmark rows for a single choice, checkboxes when the set is genuinely multi-select.'),
+      h('div',{className:'dim',style:{marginTop:6}},'The third label wraps: the box aligns to the first line, not to the middle of the row or the top of the container. One-line labels sit centred because the height comes from symmetric padding rather than a min-height.')));
+}
+const root = document.getElementById('root');
+function draw(){
+  mount(root, h(Demo));
+  // Sheets in order: the chevron list (inert), the single pick, the multi pick.
+  const sheets = root.querySelectorAll('.sheet');
+  sheets[1].querySelectorAll('.lds-row').forEach((el, i) => {
+    el.addEventListener('click', () => { picked = ONE[i][0]; draw(); });
+  });
+  sheets[2].querySelectorAll('.lds-row').forEach((el, i) => {
+    el.addEventListener('click', () => { toggle(MANY[i][0]); draw(); });
+  });
+}
+draw();
+</script>
+</body></html>

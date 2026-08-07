@@ -1,60 +1,40 @@
-/// <reference types="react" />
+// @lew/lds — the Lew Design System, as plain HTML.
+//
+// A component is `(props) => string`, where the string is HTML. The five that
+// hold state also ship a controller. Nothing here needs a framework or a build
+// step.
+export * from './templates/index.js';
+export * from './controllers/index.js';
 
-export * from './components/Avatar/Avatar';
-export * from './components/Banner/Banner';
-export * from './components/Button/Button';
-export * from './components/ButtonGroup/ButtonGroup';
-export * from './components/Card/Card';
-export * from './components/Checkbox/Checkbox';
-export * from './components/Chip/Chip';
-export * from './components/CodeField/CodeField';
-export * from './components/EmptyState/EmptyState';
-export * from './components/Icon/Icon';
-export * from './components/Inline/Inline';
-export * from './components/Link/Link';
-export * from './components/Menu/Menu';
-export * from './components/Modal/Modal';
-export * from './components/Nav/Nav';
-export * from './components/Radio/Radio';
-export * from './components/Row/Row';
-export * from './components/SegmentedControl/SegmentedControl';
-export * from './components/Select/Select';
-export * from './components/Skeleton/Skeleton';
-export * from './components/Table/Table';
-export * from './components/Tabs/Tabs';
-export * from './components/Tag/Tag';
-export * from './components/TextField/TextField';
-export * from './components/Textarea/Textarea';
-export * from './components/Toast/Toast';
-export * from './components/Toggle/Toggle';
-export * from './components/Tooltip/Tooltip';
+/** Points every component at a different sprite. */
+export declare function setIconSprite(url: string): void;
+export declare function getIconSprite(): string;
+/** The sprite a component should use: the argument, or the configured default. */
+export declare function resolveSprite(iconHref?: string | null): string;
 
-/** [name, dial code, ISO 3166-1 alpha-2] for every ITU dial code. */
-export declare const DIAL_CODES: ReadonlyArray<readonly [string, string, string]>;
+/** The glyph each status resolves to. Shared by Banner, Inline and Toast. */
+export declare const STATUS_ICON: Readonly<Record<string, string>>;
+
+/** The palette hue a name always resolves to. Stable across apps and reloads. */
+export declare function hueForName(name: string): string;
+/** First and last initial — first only when the name is a single word. */
+export declare function initialsForName(name: string): string;
+
+/** `[country, dialCode, isoCode]`. */
+export type DialCode = [string, string, string];
+export declare const DIAL_CODES: DialCode[];
 
 export interface DialOption {
-  /** The dial code, e.g. "+1". */
+  /** The dial code, e.g. "+44". */
   value: string;
-  /** "+1 US" — the code plus the ISO code, which is what keeps a closed
-   *  `<select>` at the width of its own content rather than its widest country
-   *  name, and disambiguates the twenty countries sharing +1. */
+  /** What the closed control shows, e.g. "+44 GB". */
   label: string;
+  /** The country, for the optgroup label. */
   name: string;
 }
-/** Splits the list into a short priority group and everything else, for a
- *  two-`<optgroup>` select. */
-export declare function dialOptions(priority?: string[]): {
-  top: DialOption[];
-  rest: DialOption[];
-};
-
 /**
- * Point every component at a different copy of the icon sprite. Call once at
- * startup, before anything renders. Defaults to the sprite inside
- * `@lew/open-icons`.
+ * DIAL_CODES split into the common countries and the rest, shaped for `select`.
+ * The country name belongs in the optgroup, not the option: a native select
+ * shows group labels only in the open list, so the box stays "+49 DE" wide.
  */
-export declare function setIconSprite(url: string): void;
-/** The sprite URL components currently resolve against. */
-export declare function getIconSprite(): string;
-/** Resolves a component's `iconHref` prop against the configured default. */
-export declare function resolveSprite(iconHref?: string | null): string;
+export declare function dialOptions(priority?: string[]): { top: DialOption[]; rest: DialOption[] };

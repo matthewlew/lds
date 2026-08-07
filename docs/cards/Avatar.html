@@ -1,0 +1,62 @@
+<!-- @dsCard group="Foundations" viewport="900x560" name="Avatar" subtitle="initials, derived colour, sizes, person-icon fallback" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../assets/styles.css">
+<style>
+body{margin:0;padding:28px;background:var(--gray-50,#FAF9EA);font-family:var(--th-body)}
+.lbl{font-family:var(--th-ui);font-size:var(--text-control-sm);font-weight:var(--weight-medium);color:var(--gray-700);margin-bottom:12px}
+.dim{font-family:var(--th-ui);font-size:var(--text-control-sm);color:var(--gray-600);line-height:1.55;margin-top:10px}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.col{display:flex;flex-direction:column;gap:26px;width:400px}
+.cell{display:flex;flex-direction:column;align-items:center;gap:6px;font-family:var(--th-ui);font-size:11px;color:var(--gray-600)}
+.sheet{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);overflow:hidden}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="../assets/lds.js"></script>
+<script>LDS.setIconSprite("../assets/icons.svg");</script>
+<script>
+const { avatar, row, h, mount, raw } = LDS;
+const H = '../assets/icons.svg';
+const NAMES = ['Jane Rivera','Sam Okonkwo','Lee Park','Ana Novák','Tomas Whitfield','Priya Raman','Chen Wei','Marcus Bell','Nour Haddad'];
+const SIZES = [['xs','24'],['sm','32'],[undefined,'40 · default'],['lg','48'],['xl','64'],['2xl','96']];
+function Demo(){
+  return h('div',{style:{display:'flex',gap:44,flexWrap:'wrap',alignItems:'flex-start'}},
+    h('div',{className:'col'},
+      h('div',null,
+        h('div',{className:'lbl'},'Colour derived from the name'),
+        h('div',{className:'row'},
+          NAMES.map(n=>h('div',{key:n,className:'cell'},
+            h(avatar,{name:n,size:'lg',iconHref:H}),
+            h('span',null,n.split(' ')[0])))),
+        h('div',{className:'dim'},'The hue is hashed from the name, so the same person is the same colour in every surface of every app and nobody stores a colour. It resolves to one of the palette\u2019s nine hues and paints emph-soft on it \u2014 c-100 field, c-800 ink, the same pair a tag uses \u2014 so contrast is guaranteed by the ramp instead of checked per colour.'),
+        h('div',{className:'dim'},'A theme that repoints its ramps repaints every avatar with it.')),
+      h('div',null,
+        h('div',{className:'lbl'},'Fallbacks'),
+        h('div',{className:'row'},
+          h('div',{className:'cell'},h(avatar,{name:'Jane Rivera',size:'lg',iconHref:H}),h('span',null,'Two words \u2192 JR')),
+          h('div',{className:'cell'},h(avatar,{name:'Prince',size:'lg',iconHref:H}),h('span',null,'One word \u2192 P')),
+          h('div',{className:'cell'},h(avatar,{size:'lg',iconHref:H}),h('span',null,'No name \u2192 icon')),
+          h('div',{className:'cell'},h(avatar,{name:'\u2014',size:'lg',iconHref:H}),h('span',null,'No letters \u2192 icon'))),
+        h('div',{className:'dim'},'With no letters to draw from it shows the person icon \u2014 never a random initial and never an empty disc.'))),
+    h('div',{className:'col',style:{width:360}},
+      h('div',null,
+        h('div',{className:'lbl'},'Sizes'),
+        h('div',{className:'row',style:{alignItems:'flex-end'}},
+          SIZES.map(([size,cap])=>h('div',{key:cap,className:'cell'},
+            h(avatar,{name:'Jane Rivera',size,iconHref:H}),
+            h('span',null,cap)))),
+        h('div',{className:'dim'},'One token, --avatar-size. The type, the icon and the ring all derive from it, so a new size is a single declaration \u2014 initials sit at 40% of the box, the icon at 58%.')),
+      h('div',null,
+        h('div',{className:'lbl'},'Overlapping stack'),
+        h('div',{className:'lds-avatar-stack'},
+          NAMES.slice(0,5).map(n=>h(avatar,{key:n,name:n,ring:true,iconHref:H}))),
+        h('div',{className:'dim'},'The ring is a shadow in the surface colour, so it costs no layout; the overlap is a fraction of the size token and holds at every size.')),
+      h('div',null,
+        h('div',{className:'lbl'},'In a list row'),
+        h('div',{className:'sheet'},
+          NAMES.slice(0,3).map(n=>h(row,{key:n,title:n,subtitle:'Editor',
+            lead:h(avatar,{name:n,size:'sm',iconHref:H}),chevron:true,iconHref:H}))))));
+}
+mount(document.getElementById('root'), h(Demo));
+</script>
+</body></html>

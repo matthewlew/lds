@@ -1,0 +1,68 @@
+<!-- @dsCard group="Buttons" viewport="960x700" name="Button" subtitle="sizes, variants, prefix/suffix icons, subtitle, overflow" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../assets/styles.css">
+<style>
+.lbl{font-family:var(--th-ui);font-size:var(--text-control-sm);font-weight:var(--weight-medium);color:var(--gray-700);margin-bottom:10px}
+.dim{font-family:var(--th-ui);font-size:var(--text-control-sm);color:var(--gray-600);line-height:1.5;margin-top:8px}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.col{display:flex;flex-direction:column;gap:26px}
+.cap{font-family:var(--th-ui);font-size:var(--text-control-sm);color:var(--gray-600);min-width:150px}
+</style>
+</head>
+<body style="margin:0;padding:28px;background:var(--gray-50,#FAF9EA);font-family:var(--th-body)">
+<div id="root"></div>
+<script src="../assets/lds.js"></script>
+<script>LDS.setIconSprite("../assets/icons.svg");</script>
+<script>
+const { button, h, mount, raw } = LDS;
+const H = '../assets/icons.svg';
+const sizes = [
+  ['Small — 13px label, 36px','sm'],
+  ['Default — 14px label, 44px',undefined],
+  ['Large — 16px label, 48px','lg'],
+];
+function Demo(){
+  return h('div',{style:{display:'flex',gap:44,flexWrap:'wrap',alignItems:'flex-start'}},
+    h('div',{className:'col',style:{width:430}},
+      h('div',null,
+        h('div',{className:'lbl'},'Variants and sizes'),
+        h('div',{className:'col',style:{gap:12}},
+          sizes.map(([cap,size])=>h('div',{key:cap,className:'row'},
+            h('span',{className:'cap'},cap),
+            h(button,{variant:'primary',size},'Primary'),
+            h(button,{variant:'secondary',size},'Secondary'),
+            h(button,{variant:'tertiary',size},'Tertiary')))),
+        h('div',{className:'dim'},'Three variants, three sizes. Labels take the control steps (--text-control-sm / --text-control / --text-control-lg); heights take --control-md / --control-xl / --control-2xl.')),
+      h('div',null,
+        h('div',{className:'lbl'},'Prefix and suffix icons'),
+        h('div',{className:'row'},
+          h(button,{variant:'primary',iconStart:'add',iconHref:H},'New watch'),
+          h(button,{variant:'secondary',iconEnd:'chevron-right',iconHref:H},'Next'),
+          h(button,{variant:'tertiary',iconStart:'download',iconEnd:'chevron-down',iconHref:H},'Export'),
+          h(button,{variant:'secondary',size:'sm',iconStart:'refresh',iconHref:H},'Retry')),
+        h('div',{className:'dim'},'iconStart / iconEnd take a sprite name or a node. Sized at 1.15em, so one rule tracks all three steps — 15px on sm, 16px on base, 18px on lg.')),
+      h('div',null,
+        h('div',{className:'lbl'},'Destructive — hue, not a variant'),
+        h('div',{className:'row'},
+          h(button,{variant:'primary',hue:'red',iconStart:'trash',iconHref:H},'Delete watch'),
+          h(button,{variant:'primary',hue:'red',armed:true},'Tap again to confirm')),
+        h('div',{className:'dim'},'Destructive keeps the primary shape and repoints the ramp to red. armed is the second step of a two-step confirm.'))),
+    h('div',{className:'col',style:{width:340}},
+      h('div',null,
+        h('div',{className:'lbl'},'Subtitle — a lighter second line'),
+        h('div',{className:'row'},
+          h(button,{variant:'primary',subtitle:'3 nights · includes fees'},'Reserve'),
+          h(button,{variant:'secondary',iconStart:'calendar',iconHref:H,subtitle:'Checked hourly'},'Change cadence')),
+        h('div',{className:'dim'},'The subtitle is 0.85em and a 72% tint of the label, so it holds on every variant, hue and mode without a rule per combination. With a subtitle the button left-aligns and grows to 48px — centred text reads as a heading once it is two lines tall.'),
+        h('div',{className:'dim'},'For a price or total, prefer ButtonGroup\u2019s conversion bar: detail outside the button keeps the label a single verb.')),
+      h('div',null,
+        h('div',{className:'lbl'},'Overflow — wraps, clamps at three lines'),
+        h('div',{style:{display:'flex',gap:12,alignItems:'flex-start'}},
+          h('div',{style:{width:150}},
+            h(button,{variant:'secondary',className:'lds-btn--stacked',style:{width:'100%'}},'Reserve the Half Dome cables permit for late June')),
+          h('div',{style:{width:150}},
+            h(button,{variant:'secondary',className:'lds-btn--stacked',style:{width:'100%'}},'Reserve the Half Dome cables permit for the last week of June and the first of July'))),
+        h('div',{className:'dim'},'A constrained button wraps rather than ellipsing at one line — a cut-off verb phrase is unreadable. Three lines is the ceiling: past that the label is a sentence and belongs outside the button.'))));
+}
+mount(document.getElementById('root'), h(Demo));
+</script>
+</body></html>

@@ -17,7 +17,7 @@ import { fileURLToPath } from 'node:url';
 // first readdirSync on a clean checkout.
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const CSS = join(ROOT, 'packages/lds/css');
-const COMPONENTS = join(ROOT, 'packages/lds/src/components');
+const SRC = join(ROOT, 'packages/lds/src');
 
 const fails = [];
 const files = [
@@ -53,16 +53,15 @@ const walk = (dir) => {
     if (!entry.name.endsWith('.js')) continue;
     const src = readFileSync(p, 'utf8');
     const add = (n) => { if (!wanted.has(n)) wanted.set(n, entry.name); };
-    // A literal name at the end of a sprite template: `${spriteHref}#close`.
-    // `#${expr}` is resolved at runtime and cannot be checked statically.
-    for (const m of src.matchAll(/#([a-z][a-z0-9-]*)`/g)) add(m[1]);
-    // The helper-function form several components use: sprite('check').
-    for (const m of src.matchAll(/\b(?:sprite|mark)\('([a-z][a-z0-9-]*)'\)/g)) add(m[1]);
-    // A default icon name stated as a prop default: iconEnd || 'chevron-right'.
+    // Every glyph goes through one helper, so one pattern finds them all:
+    // spriteSvg('close', iconHref). A name computed at runtime — spriteSvg(t.icon)
+    // — cannot be checked statically and is skipped.
+    for (const m of src.matchAll(/spriteSvg\('([a-z][a-z0-9-]*)'/g)) add(m[1]);
+    // A default icon name stated as a fallback: iconEnd || 'chevron-right'.
     for (const m of src.matchAll(/\|\|\s*'([a-z][a-z0-9-]*-[a-z0-9-]+)'/g)) add(m[1]);
   }
 };
-walk(COMPONENTS);
+walk(SRC);
 // The status map is what Banner, Inline and Toast actually draw.
 for (const m of readFileSync(join(ROOT, 'packages/lds/src/status-icons.js'), 'utf8')
   .matchAll(/:\s*'([a-z][a-z0-9-]*)'/g)) {
@@ -82,9 +81,9 @@ for (const m of statusSrc.matchAll(/'([a-z][a-z0-9-]*)'/g)) {
     }
   }
 }
-for (const dup of ['Banner', 'Inline', 'Toast']) {
-  const src = readFileSync(join(COMPONENTS, dup, `${dup}.js`), 'utf8');
-  if (!src.includes("from '../../status-icons.js'")) {
+for (const dup of ['banner', 'inline', 'toast']) {
+  const src = readFileSync(join(SRC, 'templates', `${dup}.js`), 'utf8');
+  if (!src.includes("from '../status-icons.js'")) {
     fails.push(`${dup}: does not read the shared status map`);
   }
   if (/const STATUS_ICON\s*=/.test(src)) {
@@ -101,11 +100,23 @@ const walkClasses = (dir) => {
     if (entry.isDirectory()) { walkClasses(p); continue; }
     if (!entry.name.endsWith('.js')) continue;
     const src = readFileSync(p, 'utf8');
-    for (const m of src.matchAll(/'(lds-[\w-]+)'/g)) emitted.add(m[1]);
+    // Class names now appear inside template literals as well as quoted, so this
+    // matches the token wherever it sits. A name ending in `-` is the literal
+    // half of an interpolated one — `lds-seg--${size}` — and is resolved at
+    // runtime, so it is dropped rather than reported as unstyled.
+    for (const m of src.matchAll(/\blds-[\w-]+/g)) {
+      if (!m[0].endsWith('-')) emitted.add(m[0]);
+    }
   }
 };
-walkClasses(COMPONENTS);
-const unstyled = [...emitted].filter((c) => !classes.has(c)).sort();
+walkClasses(SRC);
+// A class that is emitted deliberately without a rule of its own. It came
+// through from the design export, where the meta divider is the plain
+// `.lds-card__divider` plus a modifier that exists only as a targeting hook for
+// a theme. The markup is kept identical to the export rather than tidied, so the
+// exemption is recorded here instead of the class being dropped.
+const UNSTYLED_BY_DESIGN = new Set(['lds-card__divider--meta']);
+const unstyled = [...emitted].filter((c) => !classes.has(c) && !UNSTYLED_BY_DESIGN.has(c)).sort();
 if (unstyled.length) fails.push(`components emit classes with no rule in the CSS: ${unstyled.join(', ')}`);
 
 if (fails.length) {

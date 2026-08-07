@@ -3,55 +3,62 @@
 // The version that shipped in the design export was a snapshot: 24 components,
 // import paths rooted at `components/**`, and a token list frozen at whatever
 // the CSS held that day. All three go stale the moment the system moves — which
-// is the argument for deriving it rather than maintaining it. Component names
-// come from the source tree, prop names and their allowed values from the
-// published .d.ts, and the token registry from the CSS.
-import { readFileSync, readdirSync, writeFileSync, existsSync } from 'node:fs';
+// is the argument for deriving it rather than maintaining it. Component and prop
+// names come from the published .d.ts; the token registry comes from the CSS.
+//
+// The rules target CALL EXPRESSIONS rather than JSX. A component is a function
+// taking one options object, so a misspelled prop is a stray key in an object
+// literal — `banner({ titel: 'x' })` — not an unknown JSX attribute.
+import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 // The repo root, derived from this file's own location rather than named
 // outright. It was an absolute path into the sandbox that generated these
-// scripts (/home/claude/repo), which resolves nowhere else — CI failed at the
-// first readdirSync on a clean checkout.
+// scripts (/home/claude/repo), which resolves nowhere else — CI failed on a
+// clean checkout at the first file it tried to read.
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
-const SRC = join(ROOT, 'packages/lds/src/components');
+const DTS = join(ROOT, 'packages/lds/src/templates/index.d.ts');
 const CSS = join(ROOT, 'packages/lds/css');
 const OUT = join(ROOT, 'packages/lds/adherence.oxlintrc.json');
 
 // ---- components and their prop surface, read from the .d.ts ----------------
-const ALWAYS_OK = ['className', 'key', 'ref', 'style', 'children'];
+// `className` and `style` land on every root element via the attribute
+// passthrough, and `children` is the default slot, so they are always allowed.
+const ALWAYS_OK = ['className', 'style', 'children', 'id'];
 const components = {};
 const restrictions = [];
 
-for (const name of readdirSync(SRC).sort()) {
-  const dts = join(SRC, name, `${name}.d.ts`);
-  if (!existsSync(dts)) continue;
-  const src = readFileSync(dts, 'utf8');
+const dts = readFileSync(DTS, 'utf8');
 
-  // The props interface for the component itself, not its sibling types.
-  const iface = src.match(new RegExp(`export interface ${name}Props \\{([\\s\\S]*?)\\n\\}`));
+// Every exported component is `declare function name(props?: NameProps)`.
+for (const m of dts.matchAll(/export declare function (\w+)\(props\?: (\w+)\)/g)) {
+  const [, name, propsType] = m;
+
+  const iface = dts.match(new RegExp(`export interface ${propsType}[^{]*\\{([\\s\\S]*?)\\n\\}`));
   if (!iface) { components[name] = { replaces: [] }; continue; }
   const body = iface[1];
 
-  const props = [...body.matchAll(/^\s{2}(\w+)\??\s*:/gm)].map((m) => m[1]);
-  if (!props.length) { components[name] = { replaces: [] }; continue; }
+  const props = [...body.matchAll(/^\s{2}(\w+)\??\s*:/gm)].map((p) => p[1]);
   components[name] = { replaces: [] };
+  if (!props.length) continue;
 
   const allowed = [...new Set([...props, ...ALWAYS_OK])];
   restrictions.push({
-    selector: `JSXOpeningElement[name.name='${name}'] > JSXAttribute > JSXIdentifier[name!=/^(?:${allowed.join('|')})$/]`,
-    message: `<${name}> doesn't accept that prop. Declared props: ${props.join(', ')}.`,
+    // A key in the options object that no prop declares. data-* and aria-* are
+    // quoted keys and are not Identifiers, so the passthrough still works.
+    selector: `CallExpression[callee.name='${name}'] > ObjectExpression > Property > Identifier[name!=/^(?:${allowed.join('|')})$/]`,
+    message: `${name}() doesn't accept that prop. Declared props: ${props.join(', ')}.`,
   });
 
   // A prop typed as a union of string literals can only hold those literals.
-  for (const m of body.matchAll(/^\s{2}(\w+)\??\s*:\s*((?:'[\w-]+'\s*\|\s*)+'[\w-]+')\s*;/gm)) {
-    const [, prop, union] = m;
+  for (const u of body.matchAll(/^\s{2}(\w+)\??\s*:\s*((?:'[\w-]+'\s*\|\s*)+'[\w-]+')\s*;/gm)) {
+    const [, prop, union] = u;
     const values = [...union.matchAll(/'([\w-]+)'/g)].map((v) => v[1]);
     if (values.length < 2) continue;
     restrictions.push({
-      selector: `JSXOpeningElement[name.name='${name}'] > JSXAttribute[name.name='${prop}'] > Literal[value!=/^(?:${values.join('|')})$/]`,
-      message: `<${name}> ${prop} must be one of ${values.map((v) => `'${v}'`).join(' | ')}.`,
+      selector: `CallExpression[callee.name='${name}'] > ObjectExpression > Property[key.name='${prop}'] > Literal[value!=/^(?:${values.join('|')})$/]`,
+      message: `${name}() ${prop} must be one of ${values.map((v) => `'${v}'`).join(' | ')}.`,
     });
   }
 }
@@ -83,14 +90,12 @@ const fontFamilies = [...new Set([...css.matchAll(/@font-face\s*\{[^}]*font-fami
 
 // ---- the config ------------------------------------------------------------
 const config = {
-  plugins: ['react', 'import'],
+  plugins: ['import'],
   rules: {
-    'react/forbid-elements': ['warn', { forbid: [] }],
     'no-restricted-imports': ['warn', {
       patterns: [{
-        group: Object.keys(components).map((c) => `@lew/lds/src/components/${c}/**`)
-          .concat(Object.keys(components).map((c) => `**/components/${c}/**`)),
-        message: "Import design-system components from '@lew/lds', not component internals.",
+        group: ['@lew/lds/src/**', '**/lds/src/templates/*', '**/lds/src/controllers/*'],
+        message: "Import from '@lew/lds', '@lew/lds/templates' or '@lew/lds/controllers', not package internals.",
       }],
     }],
     'no-restricted-syntax': ['warn',

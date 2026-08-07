@@ -1,14 +1,12 @@
 <!-- @dsCard group="Forms" viewport="720x560" name="Segmented control" subtitle="a value picker, not navigation — sizes, icons, full width" -->
-<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="styles.css">
-<script src="_ds_bundle.js"></script></head>
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../assets/styles.css">
+</head>
 <body style="margin:0;padding:32px;background:var(--gray-50);font-family:var(--th-body);">
 <div id="root"></div>
-<script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
-<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
-<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
-<script type="text/babel">
-const { SegmentedControl, Tabs } = window.LDSLewDesignSystem_1b8684;
-const h = React.createElement;
+<script src="../assets/lds.js"></script>
+<script>LDS.setIconSprite("../assets/icons.svg");</script>
+<script>
+const { segmentedControl, tabs, h, mount, raw } = LDS;
 
 const note = (t) => h('p', { style: { fontFamily: 'var(--th-ui)', fontSize: 'var(--text-control-sm)',
   color: 'var(--text-subdued)', lineHeight: 'var(--leading-normal)', margin: '0 0 10px', maxWidth: '58ch' } }, t);
@@ -16,15 +14,17 @@ const head = (t) => h('div', { style: { fontFamily: 'var(--th-ui)', fontSize: 'v
   fontWeight: 'var(--weight-medium)', color: 'var(--text-subdued)',
   borderBottom: '1px solid var(--gray-200)', paddingBottom: 8, margin: '26px 0 12px' } }, t);
 
+// Each group needs its own `name` — that is what makes a set of radios behave as
+// one control. React generated these; here they are stated, which is also what
+// the card is meant to be teaching.
+const state = { range: 'week', view: 'list', size: 'md' };
 function Demo() {
-  const [range, setRange] = React.useState('week');
-  const [view, setView] = React.useState('list');
-  const [size, setSize] = React.useState('md');
+  const { range, view, size } = state;
   return h('div', { style: { display: 'flex', flexDirection: 'column', gap: 4, maxWidth: 640 } },
     note('A segmented control changes a property of what you are already looking at. Tabs change what you are looking at. They look alike, so the distinction is enforced here rather than left to the author: this renders a radiogroup, which gives arrow-key movement and one tab stop for the whole group.'),
 
     head('Default'),
-    h(SegmentedControl, { label: 'Range', value: range, onChange: setRange, options: [
+    h(segmentedControl, { label: 'Range', name: 'range', value: range, options: [
       { value: 'day', label: 'Day' }, { value: 'week', label: 'Week' }, { value: 'month', label: 'Month' },
     ] }),
     h('p', { style: { fontFamily: 'var(--th-mono)', fontSize: 'var(--text-meta)',
@@ -33,11 +33,11 @@ function Demo() {
     head('With icons, and icon-only'),
     note('Icon-only keeps the label as the accessible name and as the tooltip — the drawing is the affordance, not the label.'),
     h('div', { style: { display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center' } },
-      h(SegmentedControl, { label: 'View', value: view, onChange: setView, options: [
+      h(segmentedControl, { label: 'View', name: 'view', value: view, options: [
         { value: 'list', label: 'List', icon: 'list' },
         { value: 'grid', label: 'Grid', icon: 'grid' },
       ] }),
-      h(SegmentedControl, { label: 'Layout', iconsOnly: true, defaultValue: 'list', options: [
+      h(segmentedControl, { label: 'Layout', name: 'layout', iconsOnly: true, value: 'list', options: [
         { value: 'list', label: 'List', icon: 'list' },
         { value: 'grid', label: 'Grid', icon: 'grid' },
         { value: 'calendar', label: 'Calendar', icon: 'calendar' },
@@ -45,24 +45,35 @@ function Demo() {
 
     head('Sizes'),
     h('div', { style: { display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center' } },
-      h(SegmentedControl, { label: 'Small', size: 'sm', defaultValue: 'a',
+      h(segmentedControl, { label: 'Small', name: 'small', size: 'sm', value: 'a',
         options: [{ value: 'a', label: 'One' }, { value: 'b', label: 'Two' }] }),
-      h(SegmentedControl, { label: 'Default', value: size, onChange: setSize,
+      h(segmentedControl, { label: 'Default', name: 'size', value: size,
         options: [{ value: 'md', label: 'One' }, { value: 'lg', label: 'Two' }] })),
 
     head('Full width'),
     note('Full width divides the container evenly, for a control that owns a row on a phone.'),
-    h(SegmentedControl, { label: 'Mode', full: true, defaultValue: 'all', options: [
+    h(segmentedControl, { label: 'Mode', name: 'mode', full: true, value: 'all', options: [
       { value: 'all', label: 'All' }, { value: 'mine', label: 'Mine' }, { value: 'shared', label: 'Shared' },
     ] }),
 
     head('Disabled option'),
-    h(SegmentedControl, { label: 'Plan', defaultValue: 'free', options: [
+    h(segmentedControl, { label: 'Plan', name: 'plan', value: 'free', options: [
       { value: 'free', label: 'Free' },
       { value: 'pro', label: 'Pro' },
       { value: 'team', label: 'Team', disabled: true },
     ] }));
 }
-ReactDOM.createRoot(document.getElementById('root')).render(h(Demo));
+const root = document.getElementById('root');
+function draw() {
+  mount(root, h(Demo));
+  // One delegated listener for the whole card: the radio's own name says which
+  // group changed, so nothing has to be wired per control.
+  root.addEventListener('change', (e) => {
+    const el = e.target;
+    if (!el.matches('.lds-seg__option input')) return;
+    if (el.name in state) { state[el.name] = el.value; draw(); }
+  });
+}
+draw();
 </script>
 </body></html>

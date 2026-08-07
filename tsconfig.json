@@ -3,13 +3,15 @@
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "lib": ["ES2022", "DOM"],
-    "jsx": "react",
+    "lib": [
+      "ES2022",
+      "DOM"
+    ],
     "strict": true,
     "noEmit": true,
     "skipLibCheck": false,
     "allowJs": false,
-    "types": ["react"]
+    "types": []
   },
   "include": [
     "packages/lds/src/**/*.d.ts",
