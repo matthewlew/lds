@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM"],
+    "jsx": "react",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": false,
+    "allowJs": false,
+    "types": ["react"]
+  },
+  "include": [
+    "packages/lds/src/**/*.d.ts",
+    "packages/open-icons/src/**/*.d.ts",
+    "scripts/types-test.ts"
+  ]
+}

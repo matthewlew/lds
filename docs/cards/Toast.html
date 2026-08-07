@@ -1,0 +1,62 @@
+<!-- @dsCard group="Status" viewport="820x680" name="Toast" subtitle="transient status — statuses, actions, queue, placement" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="styles.css">
+<script src="_ds_bundle.js"></script></head>
+<body style="margin:0;padding:32px;background:var(--gray-50);font-family:var(--th-body);">
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+<script type="text/babel">
+const { Toast, ToastProvider, useToast, Button, ButtonGroup } = window.LDSLewDesignSystem_1b8684;
+const h = React.createElement;
+
+const note = (t) => h('p', { style: { fontFamily: 'var(--th-ui)', fontSize: 'var(--text-control-sm)',
+  color: 'var(--text-subdued)', lineHeight: 'var(--leading-normal)', margin: '0 0 12px', maxWidth: '62ch' } }, t);
+const head = (t) => h('div', { style: { fontFamily: 'var(--th-ui)', fontSize: 'var(--text-control)',
+  fontWeight: 'var(--weight-medium)', color: 'var(--text-subdued)',
+  borderBottom: '1px solid var(--gray-200)', paddingBottom: 8, margin: '28px 0 12px' } }, t);
+
+const STATUSES = ['info', 'success', 'warning', 'caution', 'error'];
+
+function Raise() {
+  const { toast } = useToast();
+  return h('div', { style: { display: 'flex', gap: 8, flexWrap: 'wrap' } },
+    STATUSES.map((s) => h(Button, {
+      key: s, variant: 'secondary', size: 'sm',
+      onClick: () => toast({
+        status: s,
+        title: s[0].toUpperCase() + s.slice(1),
+        children: s === 'error' ? 'This one stays until you dismiss it.' : 'Saved to your workspace.',
+      }),
+    }, s)),
+    h(Button, { variant: 'secondary', size: 'sm', onClick: () => toast('A bare string is the body.') }, 'plain'),
+    h(Button, { variant: 'secondary', size: 'sm', onClick: () => toast({
+      status: 'success', title: 'Moved to archive',
+      actions: h(Button, { variant: 'tertiary', size: 'sm' }, 'Undo'),
+    }) }, 'with action'));
+}
+
+function Demo() {
+  return h('div', { style: { display: 'flex', flexDirection: 'column', maxWidth: 660 } },
+    note('A banner is a field the page contains and it stays until the condition changes. A toast is chrome the system raises and it leaves on its own. So a toast is the wrong place for anything the user must act on or re-read — if dismissing it can lose information, it wanted to be a banner.'),
+
+    head('Raise one'),
+    note('The queue holds three; the oldest is dropped first, because the newest message is the one being waited for. An error never auto-dismisses — a message you have to catch inside five seconds is one some people will never read.'),
+    h(ToastProvider, { placement: 'bottom', max: 3 }, h(Raise)),
+
+    head('Every status, statically'),
+    note('Statuses and icons come from the same map Banner and Inline read, so a toast error and a banner error cannot disagree about what red means. The blocking statuses take the filled glyph.'),
+    h('div', { style: { display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 420 } },
+      STATUSES.map((s) => h(Toast, { key: s, status: s, title: s[0].toUpperCase() + s.slice(1),
+        dismissible: true }, 'The condition, stated once.'))),
+
+    head('Neutral, and with actions'),
+    h('div', { style: { display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 420 } },
+      h(Toast, null, 'No status. Just a note that something happened.'),
+      h(Toast, { status: 'success', title: 'Archived',
+        actions: h(Button, { variant: 'tertiary', size: 'sm' }, 'Undo') },
+        '3 items moved out of your inbox.')));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(h(Demo));
+</script>
+</body></html>

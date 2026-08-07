@@ -1,0 +1,49 @@
+<!-- @dsCard group="Overlays" viewport="760x560" name="Tooltip" subtitle="a label for a control — placements, keyboard, and when not to" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="styles.css">
+<script src="_ds_bundle.js"></script></head>
+<body style="margin:0;padding:32px;background:var(--gray-50);font-family:var(--th-body);">
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+<script type="text/babel">
+const { Tooltip, Button, TextField, Inline } = window.LDSLewDesignSystem_1b8684;
+const h = React.createElement;
+
+const note = (t) => h('p', { style: { fontFamily: 'var(--th-ui)', fontSize: 'var(--text-control-sm)',
+  color: 'var(--text-subdued)', lineHeight: 'var(--leading-normal)', margin: '0 0 12px', maxWidth: '62ch' } }, t);
+const head = (t) => h('div', { style: { fontFamily: 'var(--th-ui)', fontSize: 'var(--text-control)',
+  fontWeight: 'var(--weight-medium)', color: 'var(--text-subdued)',
+  borderBottom: '1px solid var(--gray-200)', paddingBottom: 8, margin: '28px 0 12px' } }, t);
+
+function Demo() {
+  return h('div', { style: { display: 'flex', flexDirection: 'column', maxWidth: 640 } },
+
+    note('A tooltip is what an icon-only button says when you ask it its name. It opens on hover and on focus — hover alone means a keyboard user never gets the label, and for an icon-only button the tooltip is the only label there is. Tab to the buttons below and the labels appear.'),
+
+    head('Naming icon-only controls'),
+    h('div', { style: { display: 'flex', gap: 8, alignItems: 'center' } },
+      ['search', 'bell', 'settings', 'trash'].map((n) => h(Tooltip, {
+        key: n, label: n[0].toUpperCase() + n.slice(1), placement: 'top',
+      }, h(Button, { variant: 'tertiary', iconOnly: true, iconStart: n, 'aria-label': n })))),
+
+    head('Placements'),
+    note('Four placements. The bubble is capped at a short measure and wraps rather than running off the viewport.'),
+    h('div', { style: { display: 'flex', gap: 28, flexWrap: 'wrap', padding: '32px 0' } },
+      ['top', 'bottom', 'start', 'end'].map((p) => h(Tooltip, { key: p, label: `Placed ${p}`, placement: p },
+        h(Button, { variant: 'secondary', size: 'sm' }, p)))),
+
+    head('A longer label wraps'),
+    h('div', { style: { padding: '24px 0' } },
+      h(Tooltip, { label: 'Regenerates the key. The old one stops working immediately.' },
+        h(Button, { variant: 'secondary' }, 'Rotate key'))),
+
+    head('When not to use one'),
+    note('If the text is a sentence the user needs, it belongs in help text where it is always visible — not behind a hover. And a tooltip must never hold anything interactive: a hover bubble cannot be reached by a pointer without a hover bridge, so a link inside one is unreachable for some users. That case wants a Menu or a Modal.'),
+    h('div', { style: { maxWidth: 360, marginBottom: 12 } },
+      h(TextField, { label: 'API key name', help: 'Shown in the audit log. You can change it later.' })),
+    h(Inline, { status: 'caution' }, 'Help text, not a tooltip — it is a sentence the user needs.'));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(h(Demo));
+</script>
+</body></html>

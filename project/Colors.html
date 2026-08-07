@@ -1,0 +1,68 @@
+<!-- @dsCard group="Foundations" viewport="1180x980" name="Color primitives" subtitle="nine hue ramps × 11 steps, the neutral ramp, and the roles built on them" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="styles.css">
+<style>
+body{margin:0;padding:32px;background:var(--gray-50);font-family:var(--th-body);color:var(--text)}
+.head{font-family:var(--th-ui);font-size:var(--text-control);font-weight:var(--weight-medium);color:var(--gray-700);border-bottom:1px solid var(--gray-200);padding-bottom:8px;margin:0 0 14px}
+.note{font-family:var(--th-ui);font-size:var(--text-control-sm);color:var(--gray-600);line-height:1.6;max-width:760px}
+.ramp{display:grid;grid-template-columns:76px repeat(11,1fr);align-items:center;gap:0 0;margin-bottom:6px}
+.ramp b{font-family:var(--th-ui);font-size:var(--text-control-sm);font-weight:var(--weight-medium);color:var(--gray-800)}
+.sw{height:46px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:5px;
+  font-family:var(--th-ui);font-size:10px;letter-spacing:.01em}
+.steps{display:grid;grid-template-columns:76px repeat(11,1fr);margin-bottom:4px;
+  font-family:var(--th-ui);font-size:10px;color:var(--gray-600)}
+.steps span{text-align:center}
+.roles{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin-top:6px}
+.role{display:flex;align-items:center;gap:10px;font-family:var(--th-ui);font-size:var(--text-control-sm);color:var(--gray-700)}
+.role i{width:26px;height:26px;border-radius:var(--radius-sm);flex:0 0 auto;border:1px solid var(--gray-200)}
+section{margin-bottom:32px}
+</style>
+</head>
+<body>
+<section>
+  <h2 class="head">Hue ramps — apca-palette.css</h2>
+  <div class="steps"><span></span><span>50</span><span>100</span><span>200</span><span>300</span><span>400</span><span>500</span><span>600</span><span>700</span><span>800</span><span>900</span><span>950</span></div>
+  <div id="ramps"></div>
+  <p class="note">Eight chromatic hues, eleven steps each, calibrated on APCA rather than on even lightness: the step numbers mean the same contrast job in every hue, so <code>--red-600</code> and <code>--blue-600</code> are interchangeable as a text-on-tint pair. Components never name a hue — they read <code>--c-*</code>, and <code>hue-*</code> or a status repoints that ramp at one of these.</p>
+</section>
+
+<section>
+  <h2 class="head">Neutral ramp — the brand's own gray</h2>
+  <div class="steps"><span></span><span>50</span><span>100</span><span>200</span><span>300</span><span>400</span><span>500</span><span>600</span><span>700</span><span>800</span><span>900</span><span>950</span></div>
+  <div id="grays"></div>
+  <p class="note">One neutral, <code>--gray-*</code>, declared by the theme. It is both the surface family — paper, borders, ink — and what <code>hue-gray</code> points at, so a neutral tag matches the surface it sits on. There used to be a second: a warm pink-beige ramp shipped as the palette's ninth hue, unrelated to any theme's surfaces. Two spellings, two temperatures, one meaning; it is gone.</p>
+  <p class="note">Core's is warm — the portfolio's oat paper, not a true gray — so every theme declares its own: a dashboard on oat renders cream, which is why Product ships a true neutral and Palette and Roadtrip ship cool dark ramps.</p>
+  <p class="note">The chroma carries a curve rather than a flat value. It is felt in the light-mid tints, eased through the value mids where text legibility lives, and deepest in the shadows, so a border or a sunken fill sits in a colour instead of in a gray. The hue holds the paper's own family through 300 and only then walks toward the brand's forest green — saturation without an olive cast. Lightness is fixed by the APCA curve above, so tuning either one never moves the contrast.</p>
+</section>
+
+<section>
+  <h2 class="head">Roles resolved from them</h2>
+  <div class="roles" id="roles"></div>
+  <p class="note">Object colour is never picked from a ramp directly. An emphasis class (<code>emph-plain</code> → <code>emph-stark</code>) resolves these seven roles at once from the current <code>--c-*</code> and <code>--gray-*</code>, and dark mode re-resolves them rather than inverting. The link blue is deliberately outside the accent ramp: the accent is green, and a link has to survive grayscale print and red-green colour blindness, so it carries both a distinct hue and an underline.</p>
+</section>
+
+<script>
+const HUES = ['red','orange','yellow','green','cyan','blue','violet','pink'];
+const STEPS = [50,100,200,300,400,500,600,700,800,900,950];
+const cs = getComputedStyle(document.documentElement);
+const build = (host, names, prefix) => {
+  host.innerHTML = names.map(h => {
+    const cells = STEPS.map(s => {
+      const v = cs.getPropertyValue(`--${h}-${s}`).trim();
+      const ink = s <= 400 ? `var(--${h}-900)` : '#fff';
+      return `<div class="sw" style="background:${v};color:${ink}">${v.toUpperCase()}</div>`;
+    }).join('');
+    return `<div class="ramp"><b>${prefix}${h}</b>${cells}</div>`;
+  }).join('');
+};
+build(document.getElementById('ramps'), HUES, '--');
+build(document.getElementById('grays'), ['gray'], '--');
+const ROLES = [
+  ['--background','the object surface'],['--text','ink on it'],['--text-subdued','secondary ink'],
+  ['--text-accent','emphasis ink'],['--icon','chrome glyphs'],['--border','the boundary'],
+  ['--border-subdued','a separator'],['--bg-hover','hover wash'],['--bg-pressed','pressed wash'],
+  ['--link','inline links'],['--surface-page','the page behind'],['--surface-overlay','menus, modals']
+];
+document.getElementById('roles').innerHTML = ROLES.map(([t,d]) =>
+  `<div class="role"><i style="background:var(${t})"></i><span><code>${t}</code><br>${d}</span></div>`).join('');
+</script>
+</body></html>

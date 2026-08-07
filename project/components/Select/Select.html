@@ -1,0 +1,48 @@
+<!-- @dsCard group="Forms" viewport="760x420" name="Select" subtitle="states: rest, hover, pressed, focus, error, inactive" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="../../_ds_bundle.js"></script>
+<style>
+.lbl{font-family:var(--th-ui);font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--text-subdued);margin-bottom:12px}
+.dim{font-family:var(--th-ui);font-size:11px;color:var(--text-subdued);line-height:1.5}
+.cap{font-family:var(--th-ui);font-size:10px;color:var(--text-subdued);margin-bottom:6px;display:block}
+.col{display:flex;flex-direction:column;gap:16px;width:300px}
+/* preview-only: paints the real hover/pressed/focus declarations so all states
+   are visible at once in a static card. */
+.demo-hover select,.demo-hover input{border-color:var(--border-hover)}
+.demo-press select,.demo-press input{border-color:var(--border-hover);background:var(--bg-pressed)}
+.demo-focus select,.demo-focus input{border-color:var(--text-accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--text-accent) 22%,transparent)}
+</style>
+</head>
+<body style="margin:0;padding:28px;background:var(--gray-50,#FAF9EA);font-family:var(--th-body);">
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel">
+const { Select, TextField } = window.LDSLewDesignSystem_1b8684;
+const OPTS = ['5 minutes','15 minutes','1 hour'];
+const state = (cap, cls, props) => React.createElement('div',{key:cap,className:cls},
+  React.createElement('span',{className:'cap'},cap),
+  React.createElement(Select,{label:'Check every',defaultValue:'1 hour',options:OPTS,...props}));
+function Demo(){
+  return React.createElement('div',{style:{display:'flex',gap:40,flexWrap:'wrap',alignItems:'flex-start'}},
+    React.createElement('div',{className:'col'},
+      React.createElement('div',{className:'lbl'},'Select'),
+      state('Rest',''),
+      state('Hover — --border-hover','demo-hover'),
+      state('Pressed — --bg-pressed','demo-press')),
+    React.createElement('div',{className:'col'},
+      React.createElement('div',{className:'lbl'},'\u00a0'),
+      state('Focus — --text-accent ring','demo-focus'),
+      state('Error — c-500 border + message','',{error:'Pick a cadence your plan allows.'}),
+      state('Inactive','',{disabled:true})),
+    React.createElement('div',{className:'col'},
+      React.createElement('div',{className:'lbl'},'Text field — same states'),
+      React.createElement('div',null,React.createElement('span',{className:'cap'},'Rest'),React.createElement(TextField,{label:'Work email',defaultValue:'hello@lew.design'})),
+      React.createElement('div',{className:'demo-hover'},React.createElement('span',{className:'cap'},'Hover'),React.createElement(TextField,{label:'Work email',defaultValue:'hello@lew.design'})),
+      React.createElement('div',null,React.createElement('span',{className:'cap'},'Inactive'),React.createElement(TextField,{label:'Work email',defaultValue:'hello@lew.design',disabled:true})),
+      React.createElement('div',{className:'dim'},'Controls bake their seven roles at :where(.lds-field) — without that, --border went unresolved outside an emph-* context and the whole border declaration was dropped, which is why fields rendered with no boundary at all.')));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
+</script>
+</body></html>

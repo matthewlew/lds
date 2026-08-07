@@ -1,0 +1,70 @@
+<!-- @dsCard group="Foundations" viewport="1120x900" name="Typography" subtitle="every text role, in prose, with the density knob" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="styles.css">
+<style>
+body{margin:0;padding:32px;background:var(--gray-50);font-family:var(--th-body);color:var(--text)}
+.wrap{display:grid;grid-template-columns:1fr 320px;gap:44px;align-items:start}
+.spec{display:flex;flex-direction:column;gap:26px;max-width:640px}
+.role{display:grid;grid-template-columns:132px 1fr;gap:20px;align-items:baseline}
+.key{font-family:var(--th-ui);font-size:var(--text-control-sm);color:var(--gray-600);line-height:1.5;padding-top:.35em}
+.key b{display:block;font-weight:var(--weight-medium);color:var(--gray-800)}
+.head{font-family:var(--th-ui);font-size:var(--text-control);font-weight:var(--weight-medium);color:var(--gray-700);border-bottom:1px solid var(--gray-200);padding-bottom:8px;margin-bottom:4px}
+.note{font-family:var(--th-ui);font-size:var(--text-control-sm);color:var(--gray-600);line-height:1.6}
+.panel{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);padding:18px}
+.dense{--density:0.92}
+.ctl{display:flex;flex-direction:column;gap:10px}
+.stack{display:flex;flex-direction:column;gap:6px;margin-top:14px}
+
+.t-hero{font-family:var(--th-display);font-size:var(--text-hero);line-height:var(--leading-hero);letter-spacing:var(--tracking-hero);font-weight:var(--weight-hero);margin:0}
+.t-title{font-family:var(--th-display);font-size:var(--text-title);line-height:var(--leading-title);letter-spacing:var(--tracking-title);font-weight:var(--weight-medium);margin:0}
+.t-subhead{font-family:var(--th-ui);font-size:var(--text-subhead);line-height:var(--leading-subhead);letter-spacing:var(--tracking-subhead);font-weight:var(--weight-subhead);margin:0}
+.t-label{font-family:var(--th-ui);font-size:var(--text-label);line-height:var(--leading-label);letter-spacing:var(--tracking-label);font-weight:var(--weight-label);color:var(--text-subdued);margin:0}
+.t-label-sm{font-family:var(--th-ui);font-size:var(--text-label-sm);line-height:var(--leading-label);letter-spacing:var(--tracking-label-sm);font-weight:var(--weight-label-sm);color:var(--text-subdued);margin:0}
+.t-body{font-family:var(--th-body);font-size:var(--text-body);line-height:var(--leading-body);letter-spacing:var(--tracking-body);margin:0;text-wrap:pretty}
+.t-caption{font-family:var(--th-body);font-size:var(--text-caption);line-height:var(--leading-caption);letter-spacing:var(--tracking-caption);color:var(--text-subdued);margin:0;text-wrap:pretty}
+.t-meta{font-family:var(--th-mono);font-size:var(--text-meta);line-height:var(--leading-meta);letter-spacing:var(--tracking-meta);font-weight:var(--weight-meta);color:var(--text-subdued);margin:0}
+.t-control-lg{font-family:var(--th-ui);font-size:var(--text-control-lg);margin:0}
+.t-control{font-family:var(--th-ui);font-size:var(--text-control);margin:0}
+.t-control-sm{font-family:var(--th-ui);font-size:var(--text-control-sm);margin:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="spec">
+<div class="head">Prose and display — the reading roles</div>
+<div class="role"><div class="key"><b>--text-hero</b>clamp(44–72px) · 1.0 · Coconat</div><p class="t-hero">Making the building happen</p></div>
+<div class="role"><div class="key"><b>--text-title</b>44px · --leading-none · Coconat</div><p class="t-title">Themes repaint, components don't</p></div>
+<div class="role"><div class="key"><b>--text-subhead</b>28px · --leading-tight · regular · Ronzino</div><p class="t-subhead">A card title is a thing you act on</p></div>
+<div class="role"><div class="key"><b>--text-body</b>17px · 1.35 · Ronzino</div><p class="t-body">Body is the default reading size, and it is set large on purpose: a 17px measure with settled leading holds a paragraph of real explanation without the reader leaning in. Everything that is prose takes this role — card bodies, banner messages, modal copy — so a page has one reading size rather than four near-misses.</p></div>
+<div class="role"><div class="key"><b>--text-caption</b>15px · --leading-normal</div><p class="t-caption">Caption is small prose, not metadata. A sentence explaining a field or a footnote under a figure belongs here; a counter or a date does not, because 15px is generous for a number and 12px is too small for a sentence.</p></div>
+<div class="head" style="margin-top:14px">Chrome — the roles the UI itself wears</div>
+<div class="role"><div class="key"><b>--text-label</b>19px · section eyebrow</div><p class="t-label">Foundations</p></div>
+<div class="role"><div class="key"><b>--text-label-sm</b>14px · component heading</div><p class="t-label-sm">Tokens and theming</p></div>
+<div class="role"><div class="key"><b>--text-control-lg</b>16px · large controls</div><p class="t-control-lg">Save changes</p></div>
+<div class="role"><div class="key"><b>--text-control</b>14px · default controls</div><p class="t-control">Save changes — buttons, inputs, menu items</p></div>
+<div class="role"><div class="key"><b>--text-control-sm</b>13px · dense controls</div><p class="t-control-sm">Tabs, list rows, table cells, small buttons</p></div>
+<div class="role"><div class="key"><b>--text-meta</b>12px · Martian Mono</div><p class="t-meta">v1.0.0 · 24 icons · #3EA65D</p></div>
+</div>
+
+<div>
+<div class="head">How this sets the density</div>
+<p class="note">Three families do three jobs. <b>Prose</b> is the larger of the two reading families and settled rather than airy — 17px on 1.35, which holds a paragraph together in the narrow column a card or a modal actually gives it. <b>Chrome</b> sits below it on the same scale — a 14px button beside 17px body is what makes an interface feel like an interface rather than a document. <b>Meta</b> is mono and fixed at 12px, for output a machine produced — the one place that step still belongs.</p>
+<p class="note" style="margin-top:12px">The gap between the prose and chrome families is the density dial for the whole system: widen it and the page reads editorial, close it and it reads like a dashboard. Individual components never pick a pixel — they pick a step — so this is one edit, not fifty.</p>
+<p class="note" style="margin-top:12px"><b>--density</b> scales control text and padding together, per theme. Core ships 1; Product and Roadtrip ship 0.92, which is the same components at dashboard density.</p>
+<div class="panel stack">
+  <p class="note" style="margin:0"><b>--density: 1</b> — core</p>
+  <div class="ctl">
+    <button class="lds-btn lds-btn--primary">Save changes</button>
+    <button class="lds-btn lds-btn--secondary lds-btn--sm">Save draft</button>
+  </div>
+</div>
+<div class="panel stack dense">
+  <p class="note" style="margin:0"><b>--density: 0.92</b> — product, roadtrip</p>
+  <div class="ctl">
+    <button class="lds-btn lds-btn--primary">Save changes</button>
+    <button class="lds-btn lds-btn--secondary lds-btn--sm">Save draft</button>
+  </div>
+</div>
+<p class="note" style="margin-top:12px">Prose does not scale with density. A dense dashboard still has to be readable, and shrinking body text is how a compact UI becomes an unusable one.</p>
+</div>
+</div>
+</body></html>

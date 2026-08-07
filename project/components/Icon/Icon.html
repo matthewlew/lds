@@ -1,0 +1,51 @@
+<!-- @dsCard group="Foundations" viewport="880x620" name="Icon" subtitle="Open Icons — 174 symbols, 24px grid, stroke 2" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="../../_ds_bundle.js"></script>
+<style>
+.lbl{font-family:var(--th-ui);font-size:12px;font-weight:500;color:var(--gray-700);margin-bottom:10px}
+.dim{font-family:var(--th-ui);font-size:12px;color:var(--gray-600);line-height:1.5}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:14px 8px}
+.cell{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.cell span{font-family:var(--th-ui);font-size:10px;color:var(--gray-600);line-height:1.2;word-break:break-word}
+.sizes{display:flex;align-items:flex-end;gap:22px}
+.sizes div{display:flex;flex-direction:column;align-items:center;gap:6px;font-family:var(--th-ui);font-size:10px;color:var(--gray-600)}
+</style>
+</head>
+<body style="margin:0;padding:28px;background:var(--gray-50,#FAF9EA);font-family:var(--th-body);">
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel">
+const { Icon } = window.LDSLewDesignSystem_1b8684;
+const H = '../../icons.svg';
+// A cross-section of the set, in the order a UI reaches for them.
+const SHOWN = [
+  'search','close','check','add','minus','menu','filter','sort',
+  'chevron-left','chevron-right','chevron-up','chevron-down','arrow-left','arrow-right','arrow-up','arrow-down',
+  'info','warning','check-circle','close-circle','help','bell','clock','history',
+  'person','people','mail','chat','home','settings','lock','log-out',
+  'file','folder','copy','edit','trash','download','upload','external',
+  'photo','star','heart','bookmark','flag','pin','location','link',
+  'eye','eye-off','more-horizontal','more-vertical','grid','list','refresh','swap',
+];
+function Demo(){
+  return React.createElement('div',{style:{display:'flex',flexDirection:'column',gap:26}},
+    React.createElement('div',null,
+      React.createElement('div',{className:'lbl'},'Sizes'),
+      React.createElement('div',{className:'sizes'},        [['--icon-size-sm',16],['--icon-size (default)',20],['--icon-size-lg',24],['',32],['',40]].map(([tok,px])=>
+          React.createElement('div',{key:px},
+            React.createElement(Icon,{name:'bell',href:H,size:px,style:{color:'var(--gray-800)'}}),
+            React.createElement('span',null,tok ? `${px}px · ${tok}` : `${px}px`)))),
+      React.createElement('div',{className:'dim',style:{marginTop:10}},'Drawn on a 24px grid with a 20×20 live area and a stroke of 2 — the stroke is part of the drawing, not a CSS knob, so scale the icon rather than restyling its weight.')),
+    React.createElement('div',null,
+      React.createElement('div',{className:'lbl'},'The set — 54 of 174 shown'),
+      React.createElement('div',{className:'grid'},
+        SHOWN.map(n=>React.createElement('div',{key:n,className:'cell'},
+          React.createElement(Icon,{name:n,href:H,size:24,style:{color:'var(--gray-800)'}}),
+          React.createElement('span',null,n)))),
+      React.createElement('div',{className:'dim',style:{marginTop:14}},'From matthewlew/open-icons (MIT). Names are kebab-case and match the upstream set exactly; many have a -fill counterpart (bell-fill, check-circle-fill). icons.svg is generated from icons/icons.json — regenerate it rather than hand-editing.')));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
+</script>
+</body></html>

@@ -1,0 +1,57 @@
+<!-- @dsCard group="Forms" viewport="860x460" name="Toggle" subtitle="switch states, in list rows, and the selection-control family" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="../../_ds_bundle.js"></script>
+<style>
+.lbl{font-family:var(--th-ui);font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--text-subdued);margin-bottom:12px}
+.dim{font-family:var(--th-ui);font-size:11px;color:var(--text-subdued);line-height:1.5}
+.col{display:flex;flex-direction:column;gap:14px}
+.cap{font-family:var(--th-ui);font-size:10px;color:var(--text-subdued);min-width:96px}
+.row{display:flex;align-items:center;gap:14px}
+.sheet{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);overflow:hidden}
+</style>
+</head>
+<body style="margin:0;padding:28px;background:var(--gray-50,#FAF9EA);font-family:var(--th-body);">
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel">
+const { Toggle, Checkbox, Radio, Row } = window.LDSLewDesignSystem_1b8684;function Sw(props){ return React.createElement('label',{className:'lds-toggle__switch'},
+  React.createElement('input',{type:'checkbox',...props}),
+  React.createElement('span',{className:'lds-toggle__track'})); }
+function Demo(){
+  return React.createElement('div',{style:{display:'flex',gap:44,flexWrap:'wrap',alignItems:'flex-start'}},
+    React.createElement('div',null,
+      React.createElement('div',{className:'lbl'},'Switch states'),
+      React.createElement('div',{className:'col'},
+        React.createElement('div',{className:'row'},React.createElement('span',{className:'cap'},'Off'),React.createElement(Sw,{defaultChecked:false})),
+        React.createElement('div',{className:'row'},React.createElement('span',{className:'cap'},'On'),React.createElement(Sw,{defaultChecked:true})),
+        React.createElement('div',{className:'row'},React.createElement('span',{className:'cap'},'Off · inactive'),React.createElement(Sw,{disabled:true})),
+        React.createElement('div',{className:'row'},React.createElement('span',{className:'cap'},'On · inactive'),React.createElement(Sw,{defaultChecked:true,disabled:true}))),
+      React.createElement('div',{className:'dim',style:{marginTop:12,maxWidth:250}},'Off track is --track-off (gray-300), a fill role of its own — it used to borrow --border, which resolves to nothing outside an emph-* context, so it painted invisible. Inactive keeps its position readable instead of fading the whole switch.')),
+    React.createElement('div',null,
+      React.createElement('div',{className:'lbl'},'With label + help'),
+      React.createElement('div',{className:'col',style:{width:280}},
+        React.createElement(Toggle,{label:'Email alerts',help:'One digest per day.',defaultChecked:true}),
+        React.createElement(Toggle,{label:'SMS alerts',help:'Not available on this plan.',disabled:true}))),
+    React.createElement('div',null,
+      React.createElement('div',{className:'lbl'},'Same family — checkbox and radio'),
+      React.createElement('div',{className:'col'},
+        React.createElement(Checkbox,{label:'Checked',defaultChecked:true}),
+        React.createElement(Checkbox,{label:'Unchecked'}),
+        React.createElement(Checkbox,{label:'Checked · inactive',defaultChecked:true,disabled:true}),
+        React.createElement(Radio,{label:'Selected',name:'g',defaultChecked:true}),
+        React.createElement(Radio,{label:'Unselected',name:'g'}),
+        React.createElement(Radio,{label:'Selected · inactive',name:'h',defaultChecked:true,disabled:true})),
+      React.createElement('div',{className:'dim',style:{marginTop:12,maxWidth:250}},'All three share one state vocabulary: --c-600 when set, --c-700 on hover, --border-subdued / --c-200 when inactive. Toggle is for a setting that applies immediately; checkbox and radio belong to a form you submit.')),
+    React.createElement('div',{style:{width:320}},
+      React.createElement('div',{className:'lbl'},'In list rows'),
+      React.createElement('div',{className:'sheet'},
+        React.createElement(Row,{title:'Email alerts',subtitle:'One digest per day',trail:React.createElement(Sw,{defaultChecked:true})}),
+        React.createElement(Row,{title:'Push alerts',subtitle:'Immediate',trail:React.createElement(Sw,{})}),
+        React.createElement(Row,{title:'SMS alerts',subtitle:'Not on this plan',trail:React.createElement(Sw,{disabled:true})})),
+      React.createElement('div',{className:'dim',style:{marginTop:12}},'The switch sits in the row’s trail slot and stays the only control — the row itself is not clickable, so there is no second target competing with it. Settings lists use this; Toggle’s own label + help form is for standalone use.')));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
+</script>
+</body></html>

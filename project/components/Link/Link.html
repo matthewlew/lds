@@ -1,0 +1,83 @@
+<!-- @dsCard group="Buttons" viewport="760x480" name="Link" subtitle="inline, quiet, standalone, states — and when to use a button instead" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;padding:28px;background:var(--gray-50,#FAF9EA);font-family:var(--th-body)}
+.lbl{font-family:var(--th-ui);font-size:var(--text-control-sm);font-weight:var(--weight-medium);color:var(--gray-700);margin-bottom:10px}
+.dim{font-family:var(--th-ui);font-size:var(--text-control-sm);color:var(--gray-600);line-height:1.55;margin-top:8px}
+.col{display:flex;flex-direction:column;gap:26px;width:330px}
+.prose{font-size:var(--text-body);line-height:var(--leading-body);margin:0;max-width:330px}
+.rowline{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);padding:12px 14px;
+  font-family:var(--th-ui);font-size:var(--text-control)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.states{display:grid;grid-template-columns:88px 1fr;gap:10px 14px;align-items:center;
+  font-family:var(--th-ui);font-size:var(--text-control-sm);color:var(--gray-600)}
+/* forces each resting/hover/pressed sample so all three are visible at once —
+   the live element still gets them from :hover / :active */
+.f-hover{color:var(--link-hover)}
+.f-press{color:var(--link-pressed)}
+.f-focus{outline:2px solid var(--link);outline-offset:2px;border-radius:2px}
+.chip{font-family:var(--th-mono);font-size:10px;color:var(--gray-500)}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel">
+const { Link, Button } = window.LDSLewDesignSystem_1b8684;
+const H = '../../icons.svg';
+function Demo(){
+  return React.createElement('div',{style:{display:'flex',gap:44,flexWrap:'wrap',alignItems:'flex-start'}},
+    React.createElement('div',{className:'col'},
+      React.createElement('div',null,
+        React.createElement('div',{className:'lbl'},'Inline — inside a sentence'),
+        React.createElement('p',{className:'prose'},'Permits open at 7am Pacific. Read the ',
+          React.createElement(Link,{href:'#'},'cables season notes'),
+          ' before setting a watch, or check the ',
+          React.createElement(Link,{href:'#'},'current conditions'),'.'),
+        React.createElement('div',{className:'dim'},'A link inside prose stays in the reading face and keeps its underline. The distinction has to survive grayscale print and red-green colour blindness \u2014 which is why the link blue sits outside the accent ramp, the accent being green.'),
+        React.createElement('div',{className:'dim'},'The blue was #00437C, Lc 85.6 on oat: technically blue, perceptually navy. It is now #005391 at Lc 79.9 \u2014 one step down the contrast curve for a visible step up in blueness. Safe because a link is marked twice, by hue and by a permanent underline, so it never carries the distinction on contrast alone.')),
+      React.createElement('div',null,
+        React.createElement('div',{className:'lbl'},'States'),
+        React.createElement('div',{className:'states'},
+          React.createElement('span',{className:'chip'},'resting'),
+          React.createElement('span',{className:'prose'},React.createElement(Link,{href:'#'},'Read the season notes')),
+          React.createElement('span',{className:'chip'},'hover'),
+          React.createElement('span',{className:'prose'},React.createElement(Link,{href:'#',className:'f-hover'},'Read the season notes')),
+          React.createElement('span',{className:'chip'},'pressed'),
+          React.createElement('span',{className:'prose'},React.createElement(Link,{href:'#',className:'f-press'},'Read the season notes')),
+          React.createElement('span',{className:'chip'},'focus'),
+          React.createElement('span',{className:'prose'},React.createElement(Link,{href:'#',className:'f-focus'},'Read the season notes'))),
+        React.createElement('div',{className:'dim'},'Colour carries the states; the underline never moves. Thickening it to 2px on hover was the obvious move and the wrong one \u2014 it reflows against the descenders and reads chunky at body size, in a face whose from-font underline is already tuned to it.'),
+        React.createElement('div',{className:'dim'},'Hover and pressed both move DOWN the contrast curve, to Lc 88 and Lc 95, so every state has more contrast than the resting link and feedback can never cost legibility. Focus is a ring on focus-visible only, so a mouse click never draws one \u2014 tab through this card to see it.')),
+      React.createElement('div',null,
+        React.createElement('div',{className:'lbl'},'Quiet — inside dense chrome'),
+        React.createElement('div',{className:'rowline'},
+          React.createElement('span',null,'Notification email'),
+          React.createElement(Link,{href:'#',variant:'quiet'},'hello@lew.design')),
+        React.createElement('div',{className:'dim'},'Inherits the row\u2019s ink so a blue run of text does not out-shout the row, and keeps the underline \u2014 that is the part doing the work. Picks up the link colour on hover.'))),
+    React.createElement('div',{className:'col'},
+      React.createElement('div',null,
+        React.createElement('div',{className:'lbl'},'Standalone — on its own line'),
+        React.createElement('div',{style:{display:'flex',flexDirection:'column',alignItems:'flex-start',gap:4}},
+          React.createElement(Link,{href:'#',variant:'standalone',iconHref:H},'See all watches'),
+          React.createElement(Link,{href:'#',variant:'standalone',iconEnd:'external',iconHref:H},'Open the permit site')),
+        React.createElement('div',{className:'dim'},'Not part of a sentence, so it takes the UI face at a control step and trades the underline for a trailing chevron \u2014 or an external mark when it leaves the app. 36px tall, so it is a real target.')),
+      React.createElement('div',null,
+        React.createElement('div',{className:'lbl'},'A link that looks like a button'),
+        React.createElement('div',{className:'row'},
+          React.createElement(Button,{href:'#',variant:'primary'},'Reserve'),
+          React.createElement(Button,{href:'#',variant:'secondary',size:'sm'},'View details'),
+          React.createElement(Button,{href:'#',variant:'tertiary',iconEnd:'external',iconHref:H},'Permit site')),
+        React.createElement('div',{className:'row',style:{marginTop:8}},
+          React.createElement(Button,{href:'#',variant:'ghost'},'Skip for now')),
+        React.createElement('div',{className:'dim'},'This is Button with an href \u2014 same three sizes, same heights, same paint, rendered as an anchor so middle-click and copy-link still work. Never restyle a link to imitate a button: the two would drift the first time the button changes.'),
+        React.createElement('div',{className:'dim'},'None of them are underlined. The underline is how running text marks a link with no other affordance, and a button already has a fill, a border, a height and a hit area doing that job. The plain ghost button is the exception, by the same rule read backwards: with no fill and no border, the line is the only thing left marking it.'),
+        React.createElement('div',{className:'dim'},'Which one: if it navigates, it is a link; if it acts, it is a button. A link that looks like a button is for navigation important enough to be the page\u2019s main action.'))));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
+</script>
+</body></html>
