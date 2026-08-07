@@ -8,8 +8,13 @@
 // published .d.ts, and the token registry from the CSS.
 import { readFileSync, readdirSync, writeFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const ROOT = '/home/claude/repo';
+// The repo root, derived from this file's own location rather than named
+// outright. It was an absolute path into the sandbox that generated these
+// scripts (/home/claude/repo), which resolves nowhere else — CI failed at the
+// first readdirSync on a clean checkout.
+const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const SRC = join(ROOT, 'packages/lds/src/components');
 const CSS = join(ROOT, 'packages/lds/css');
 const OUT = join(ROOT, 'packages/lds/adherence.oxlintrc.json');

@@ -9,8 +9,13 @@
 // is defined SOMEWHERE, which catches typos, and says nothing about scope.
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const ROOT = '/home/claude/repo';
+// The repo root, derived from this file's own location rather than named
+// outright. It was an absolute path into the sandbox that generated these
+// scripts (/home/claude/repo), which resolves nowhere else — CI failed at the
+// first readdirSync on a clean checkout.
+const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const CSS = join(ROOT, 'packages/lds/css');
 const COMPONENTS = join(ROOT, 'packages/lds/src/components');
 
