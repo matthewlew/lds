@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  # A theme is derived from another product's token file, and the icon sprite is
+  # generated. Neither goes stale because someone edited this repo — they go
+  # stale because something upstream moved and nobody here noticed. A weekly run
+  # is what turns that from a discovery into a notification.
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # The roadtrip theme derives its values from another repo's token file.
+      # Checking that repo out is what turns the weekly run from "our tests
+      # still pass" into "upstream has not moved under us". If it is private or
+      # unreachable the step is skipped and theme-source-test falls back to its
+      # lock file, so a missing checkout weakens the check rather than breaking
+      # the build.
+      - name: Check out roadtrip tokens (for theme drift)
+        id: roadtrip
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          repository: wwchen/roadtrip
+          path: .roadtrip-src
+          sparse-checkout: web/design-system/tokens.css
+          sparse-checkout-cone-mode: false
+
+      - name: Point the theme check at the tokens, if we got them
+        if: steps.roadtrip.outcome == 'success'
+        run: echo "ROADTRIP_TOKENS=$GITHUB_WORKSPACE/.roadtrip-src/web/design-system/tokens.css" >> "$GITHUB_ENV"
+
+      # site-test drives a real browser. Playwright resolves its own Chromium
+      # here; CHROMIUM_PATH is only for sandboxes that ship a mismatched one.
+      - run: npx playwright install --with-deps chromium
+
+      # Regenerating first means the build fails if a generated artefact was
+      # hand-edited or left behind — see the drift check below.
+      - run: npm run build
+
+      - run: npm test
+
+      # Every generated file is derived from something in the repo, so a clean
+      # tree after a build is the assertion that none of them was edited by hand
+      # or left stale. This is the check that makes "regenerate it" safe advice.
+      - name: Generated files are up to date
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "::error::Generated files are out of date. Run 'npm run build' and commit the result."
+            git status --short
+            git diff
+            exit 1
+          fi
+          echo "working tree clean — all generated files match their sources"

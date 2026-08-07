@@ -2,7 +2,7 @@
   "name": "lds-monorepo",
   "private": true,
   "version": "1.0.0",
-  "description": "Lew Design System — React components, CSS tokens, and the Open Icons sprite.",
+  "description": "Lew Design System \u2014 React components, CSS tokens, and the Open Icons sprite.",
   "type": "module",
   "workspaces": [
     "packages/*"
@@ -10,9 +10,11 @@
   "scripts": {
     "build": "npm run build -w @lew/open-icons && node scripts/build-adherence.mjs && npm run docs",
     "docs": "node docs/build.mjs",
-    "test": "npm run test -w @lew/open-icons && node scripts/render-test.mjs && node scripts/css-test.mjs && npm run typecheck && node scripts/consumer-test.mjs && npm run test:site",
+    "test": "npm run test -w @lew/open-icons && node scripts/render-test.mjs && node scripts/css-test.mjs && node scripts/theme-source-test.mjs && node scripts/template-parity-test.mjs && node scripts/markup-contract-test.mjs && npm run typecheck && node scripts/consumer-test.mjs && npm run test:site",
     "test:site": "npm run docs && node scripts/site-test.mjs",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json",
+    "theme:refresh": "node scripts/theme-source-test.mjs --refresh",
+    "contract:freeze": "node scripts/build-markup-fixtures.mjs"
   },
   "devDependencies": {
     "@types/react": "^18.3.12",

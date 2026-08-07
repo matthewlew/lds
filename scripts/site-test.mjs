@@ -30,7 +30,13 @@ const server = createServer(async (req, res) => {
 await new Promise((r) => server.listen(0, r));
 const base = `http://127.0.0.1:${server.address().port}`;
 
-const browser = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+// This sandbox ships a Chromium that does not match the revision Playwright
+// would fetch, so it has to be pointed at explicitly. Anywhere else — CI, a
+// laptop — Playwright resolves its own, and hardcoding a path would break it.
+const SANDBOX_CHROMIUM = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
+const executablePath = process.env.CHROMIUM_PATH
+  || (existsSync(SANDBOX_CHROMIUM) ? SANDBOX_CHROMIUM : undefined);
+const browser = await chromium.launch(executablePath ? { executablePath } : {});
 const fails = [];
 const pages = ['index.html', ...readdirSync(join(SITE, 'cards')).map((f) => `cards/${f}`)];
 

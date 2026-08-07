@@ -1,7 +1,7 @@
 {
   "name": "@lew/lds",
   "version": "1.0.0",
-  "description": "Lew Design System — React components over a one-token CSS architecture, with four themes and light/dark.",
+  "description": "Lew Design System \u2014 React components over a one-token CSS architecture, with four themes and light/dark.",
   "license": "MIT",
   "type": "module",
   "sideEffects": [
@@ -18,6 +18,10 @@
     ".": {
       "types": "./src/index.d.ts",
       "default": "./src/index.js"
+    },
+    "./templates": {
+      "types": "./src/templates/index.d.ts",
+      "default": "./src/templates/index.js"
     },
     "./css": "./css/styles.css",
     "./css/palette": "./css/apca-palette.css",
@@ -38,5 +42,11 @@
   "scripts": {
     "test": "node ../../scripts/render-test.mjs"
   },
-  "keywords": ["design-system", "react", "components", "css", "lds"]
+  "keywords": [
+    "design-system",
+    "react",
+    "components",
+    "css",
+    "lds"
+  ]
 }
