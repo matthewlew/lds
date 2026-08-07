@@ -9,10 +9,15 @@
 // The rules target CALL EXPRESSIONS rather than JSX. A component is a function
 // taking one options object, so a misspelled prop is a stray key in an object
 // literal — `banner({ titel: 'x' })` — not an unknown JSX attribute.
-import { readFileSync, readdirSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const ROOT = '/home/claude/repo';
+// The repo root, derived from this file's own location rather than named
+// outright. It was an absolute path into the sandbox that generated these
+// scripts (/home/claude/repo), which resolves nowhere else — CI failed on a
+// clean checkout at the first file it tried to read.
+const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const DTS = join(ROOT, 'packages/lds/src/templates/index.d.ts');
 const CSS = join(ROOT, 'packages/lds/css');
 const OUT = join(ROOT, 'packages/lds/adherence.oxlintrc.json');
