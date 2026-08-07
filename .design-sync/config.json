@@ -1,0 +1,19 @@
+{
+  "projectId": "1b86840a-1a54-4916-98d0-bf7a79b12a1e",
+  "pkg": "@lew/lds",
+  "globalName": "LDS",
+  "shape": "package",
+  "tsconfig": "../../tsconfig.json",
+  "cssEntry": "css/lds.css",
+  "tokensPkg": "@lew/lds",
+  "tokensGlob": "css/apca-palette.css",
+  "guidelinesGlob": ["../../docs/decisions/*.md", "../../docs/philosophy.md"],
+  "readmeHeader": ".design-sync/conventions.md",
+  "overrides": {
+    "Avatar": {"cardMode": "column"},
+    "Banner": {"cardMode": "column"},
+    "ButtonGroup": {"cardMode": "column"},
+    "Toast": {"cardMode": "column"},
+    "ToastProvider": {"cardMode": "single", "primaryStory": "Default"}
+  }
+}
