@@ -6,8 +6,6 @@
 <script src="../assets/lds.js"></script>
 <script>LDS.setIconSprite("../assets/icons.svg");</script>
 <script>
-// TODO(migration): this demo held state in React hooks. Rewrite it against
-// the controllers — see packages/lds/src/controllers/.
 const { nav, button, row, link, h, mount, raw } = LDS;
 
 const note = (t) => h('p', { style: { fontFamily: 'var(--th-ui)', fontSize: 'var(--text-control-sm)',
@@ -24,8 +22,8 @@ const SCREENS = [
   { title: 'Email', subtitle: 'Notifications', rows: ['Product news', 'Security alerts'] },
 ];
 
+let depth = 0;
 function Demo() {
-  const [depth, setDepth] = React.useState(0);
   const screen = SCREENS[depth];
   return h('div', { style: { display: 'flex', flexDirection: 'column', maxWidth: 660 } },
 
@@ -49,15 +47,27 @@ function Demo() {
       h(nav, { variant: 'bar', scrolled: true,
         title: screen.title,
         subtitle: screen.subtitle,
-        onBack: depth > 0 ? () => setDepth(depth - 1) : undefined,
-        actions: h(button, { variant: 'tertiary', size: 'sm', onClick: () => setDepth(0) }, 'Reset') }),
-      h('div', null, screen.rows.map((r, i) => h(row, {
-        key: r, title: r, chevron: true,
-        onClick: depth < SCREENS.length - 1 ? () => setDepth(depth + 1) : undefined,
+        onBack: depth > 0 ? () => {} : undefined,
+        actions: h(button, { variant: 'tertiary', size: 'sm' }, 'Reset') }),
+      h('div', null, screen.rows.map((r) => h(row, {
+        title: r, chevron: true,
+        onClick: depth < SCREENS.length - 1 ? () => {} : undefined,
       })))),
     h('p', { style: { fontFamily: 'var(--th-mono)', fontSize: 'var(--text-meta)',
       color: 'var(--text-subdued)', marginTop: 12 } }, `depth: ${depth} of ${SCREENS.length - 1}`));
 }
-mount(document.getElementById('root'), h(Demo));
+const root = document.getElementById('root');
+function draw() {
+  mount(root, h(Demo));
+  // The stacked flow is the second frame; the first is the truncation example.
+  const flow = root.querySelectorAll('.lds-nav--bar')[1].parentElement;
+  const go = (next) => { depth = next; draw(); };
+  flow.querySelector('.lds-nav__back')?.addEventListener('click', () => go(depth - 1));
+  flow.querySelector('.lds-nav__actions .lds-btn')
+    .addEventListener('click', () => go(0));
+  flow.querySelectorAll('.lds-row--interactive')
+    .forEach((el) => el.addEventListener('click', () => go(Math.min(depth + 1, SCREENS.length - 1))));
+}
+draw();
 </script>
 </body></html>

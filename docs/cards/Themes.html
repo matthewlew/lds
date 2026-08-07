@@ -10,8 +10,6 @@
 <script src="../assets/lds.js"></script>
 <script>LDS.setIconSprite("../assets/icons.svg");</script>
 <script>
-// TODO(migration): this demo held state in React hooks. Rewrite it against
-// the controllers — see packages/lds/src/controllers/.
 const { button, card, tag, textField, h, mount, raw } = LDS;
 const THEMES = [
   { id: 'portfolio', label: 'Portfolio (core)', cls: '' },
@@ -19,20 +17,20 @@ const THEMES = [
   { id: 'product', label: 'Product', cls: 'theme-product' },
   { id: 'roadtrip', label: 'Roadtrip', cls: 'theme-roadtrip' },
 ];
+const MODES = [{ id: 'light', label: 'Light' }, { id: 'dark', label: 'Dark' }];
+let theme = 'portfolio';
+let mode = 'light';
 function Demo() {
-  const [theme, setTheme] = React.useState('portfolio');
-  const [mode, setMode] = React.useState('light');
   const cls = [THEMES.find(t => t.id === theme).cls, mode === 'dark' ? 'mode-dark' : ''].filter(Boolean).join(' ');
-  const seg = (opts, value, onChange) => h('div', { style: { display: 'flex', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', overflow: 'hidden' } },
+  const seg = (opts, value) => h('div', { style: { display: 'flex', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', overflow: 'hidden' } },
     opts.map(o => h('button', {
-      key: o.id, onClick: () => onChange(o.id),
       style: { flex: 1, padding: '8px 10px', border: 'none', cursor: 'pointer', fontFamily: 'var(--th-mono)', fontSize: 11,
         background: value === o.id ? 'var(--text)' : 'transparent', color: value === o.id ? 'var(--background)' : 'var(--text-subdued)' }
     }, o.label)));
   return h('div', { style: { padding: 28, display: 'flex', flexDirection: 'column', gap: 18, background: 'var(--gray-50)' } },
     h('div', { style: { display: 'flex', gap: 16 } },
-      seg(THEMES.map(t => ({ id: t.id, label: t.label })), theme, setTheme),
-      seg([{ id: 'light', label: 'Light' }, { id: 'dark', label: 'Dark' }], mode, setMode)),
+      seg(THEMES.map(t => ({ id: t.id, label: t.label })), theme),
+      seg(MODES, mode)),
     h('div', { className: cls, style: { padding: 28, borderRadius: 12, background: 'var(--background)', border: '1px solid var(--border)' } },
       h('div', { style: { display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 20 } },
         h(button, { variant: 'primary' }, 'Primary'),
@@ -43,6 +41,16 @@ function Demo() {
       h('div', { style: { marginTop: 20 } },
         h(card, { kicker: 'Theme', title: 'Same components, different brand', body: 'Buttons, tags and fields repaint from theme + mode tokens only.' }))));
 }
-mount(document.getElementById('root'), h(Demo));
+const root = document.getElementById('root');
+function draw() {
+  mount(root, h(Demo));
+  // Two switch rows, in order: the theme and the light/dark mode.
+  const [themes, modes] = root.querySelectorAll('div[style] > div[style]');
+  const bind = (group, items, set) => group?.querySelectorAll('button')
+    .forEach((el, i) => el.addEventListener('click', () => { set(items[i].id); draw(); }));
+  bind(themes, THEMES, (v) => { theme = v; });
+  bind(modes, MODES, (v) => { mode = v; });
+}
+draw();
 </script>
 </body></html>

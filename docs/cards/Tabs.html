@@ -19,8 +19,6 @@
 <script src="../assets/lds.js"></script>
 <script>LDS.setIconSprite("../assets/icons.svg");</script>
 <script>
-// TODO(migration): this demo held state in React hooks. Rewrite it against
-// the controllers — see packages/lds/src/controllers/.
 const { tabs, h, mount, raw } = LDS;
 const H = '../assets/icons.svg';
 const GROUPED = [
@@ -33,13 +31,13 @@ const GROUPED = [
   {id:'forms',label:'Forms',icon:'settings',iconHref:H},
 ];
 const FLAT = [{id:'color',label:'Color & Emphasis'},{id:'type',label:'Typography'},{id:'shape',label:'Shape'}];
+let active = 'type';
 function Demo(){
-  const [active,setActive]=React.useState('type');
   return h('div',{style:{display:'flex',flexDirection:'column',gap:28}},
     h('div',{style:{display:'flex',gap:36,alignItems:'flex-start',flexWrap:'wrap'}},
       h('div',null,
         h('div',{className:'lbl'},'Desktop — sections and icon prefix'),
-        h(tabs,{active,onChange:setActive,tabs:GROUPED}),
+        h(tabs,{active,tabs:GROUPED}),
         h('div',{className:'dim',style:{marginTop:8,maxWidth:210}},'36px row (--control-md), 16px icon (--icon-size-sm). Section headers use the same label composite as the card kicker.')
       ),
       h('div',null,
@@ -54,7 +52,7 @@ function Demo(){
       h('div',{style:{width:290}},
         h('div',{className:'lbl'},'Mobile — under 560px'),
         h('div',{className:'force-mobile'},
-          h(tabs,{active,onChange:setActive,tabs:FLAT})),
+          h(tabs,{active,tabs:FLAT})),
         h('div',{className:'dim',style:{marginTop:8}},'Tabs keep their own width and the strip scrolls. Dividing the row evenly squeezed long labels against both edges of their box, so equal widths are gone. Rows grow to the 44px touch floor.')
       )
     ),
@@ -65,6 +63,22 @@ function Demo(){
     )
   );
 }
-mount(document.getElementById('root'), h(Demo));
+const root = document.getElementById('root');
+// A tab carries no id in the markup, so a click finds its value by position in
+// the list that produced it. The middle .lds-tabs on this card is the hand-built
+// state swatch and is meant to stay inert.
+function bind(list, items){
+  if (!list) return;
+  list.querySelectorAll('.lds-tabs__tab').forEach((el, i) => {
+    el.addEventListener('click', () => { active = items[i].id; draw(); });
+  });
+}
+function draw(){
+  mount(root, h(Demo));
+  const lists = root.querySelectorAll('.lds-tabs');
+  bind(lists[0], GROUPED.filter((t) => t.id));
+  bind(lists[2], FLAT);
+}
+draw();
 </script>
 </body></html>

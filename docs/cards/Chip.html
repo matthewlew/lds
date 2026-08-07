@@ -21,13 +21,12 @@
 <script src="../assets/lds.js"></script>
 <script>LDS.setIconSprite("../assets/icons.svg");</script>
 <script>
-// TODO(migration): this demo held state in React hooks. Rewrite it against
-// the controllers — see packages/lds/src/controllers/.
 const { chip, button, h, mount, raw } = LDS;
 const H = '../assets/icons.svg';
+const FILTERS = ['all','active','archived'];
+let tags = ['jane@acme.com','sam@acme.com','lee@acme.com'];
+let filter = 'active';
 function Demo(){
-  const [tags,setTags]=React.useState(['jane@acme.com','sam@acme.com','lee@acme.com']);
-  const [filter,setFilter]=React.useState('active');
   return h('div',{style:{display:'flex',gap:44,flexWrap:'wrap',alignItems:'flex-start'}},
     h('div',{className:'col'},
       h('div',null,
@@ -45,13 +44,13 @@ function Demo(){
       h('div',null,
         h('div',{className:'lbl'},'Filter \u2014 selectable'),
         h('div',{className:'row'},
-          ['all','active','archived'].map(id=>h(chip,{key:id,selected:filter===id,onClick:()=>setFilter(id)},
+          FILTERS.map(id=>h(chip,{selected:filter===id},
             id[0].toUpperCase()+id.slice(1))))) ),
     h('div',{className:'col'},
       h('div',null,
         h('div',{className:'lbl'},'Inside a field \u2014 sm, removable'),
         h('div',{className:'tokens'},
-          tags.map(t=>h(chip,{key:t,size:'sm',iconHref:H,onRemove:()=>setTags(ts=>ts.filter(x=>x!==t))},t)),
+          tags.map(t=>h(chip,{size:'sm',iconHref:H,onRemove:()=>{}},t)),
           h('input',{placeholder:tags.length?'':'name@company.com','aria-label':'Add a recipient'})),
         h('div',{className:'dim'},'At 24px a row of tokens fits a 44px field without the field growing. The chip renders as a span here, since the remove button cannot nest inside another button.')),
       h('div',null,
@@ -61,6 +60,19 @@ function Demo(){
           h(chip,{iconHref:H,onRemove:()=>{}},'Tuolumne Meadows')),
         h('div',{className:'dim'},'For tokens that stand on their own outside a field \u2014 applied filters, chosen recipients.'))));
 }
-mount(document.getElementById('root'), h(Demo));
+const root = document.getElementById('root');
+function draw(){
+  mount(root, h(Demo));
+  // The filter chips are the only selectable group on the card.
+  const filters = root.querySelectorAll('.col')[0].querySelectorAll('.row')[3];
+  filters?.querySelectorAll('.lds-chip').forEach((el, i) => {
+    el.addEventListener('click', () => { filter = FILTERS[i]; draw(); });
+  });
+  // A removable chip is a span, so the remove button is its own target.
+  root.querySelector('.tokens')?.querySelectorAll('.lds-chip__remove').forEach((el, i) => {
+    el.addEventListener('click', () => { tags = tags.filter((_, n) => n !== i); draw(); });
+  });
+}
+draw();
 </script>
 </body></html>

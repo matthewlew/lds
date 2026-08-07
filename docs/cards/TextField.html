@@ -12,36 +12,19 @@
 <script src="../assets/lds.js"></script>
 <script>LDS.setIconSprite("../assets/icons.svg");</script>
 <script>
-// TODO(migration): this demo held state in React hooks. Rewrite it against
-// the controllers — see packages/lds/src/controllers/.
   window.dialOptions = LDS.dialOptions; window.DIAL_CODES = LDS.DIAL_CODES;
   window.dispatchEvent(new Event('dial-ready'));
 </script>
 <script>
-const { textField, select, codeField, h, mount, raw } = LDS;
+const { textField, select, codeField, mountCodeField, h, mount, raw } = LDS;
 const H = '../assets/icons.svg';
+let show = false;
+// The dial data is a published export now, so there is nothing to wait for.
+// Country names ride on the optgroup, which a native select shows in the open
+// list and never in the closed box.
+const dial = LDS.dialOptions();
+const DIAL = [...dial.top, ...dial.rest].map((o) => ({ label: o.name, options: [o] }));
 function Demo(){
-  const [show,setShow]=React.useState(false);
-  const [code,setCode]=React.useState('4821');
-  const [otp,setOtp]=React.useState('');
-  const [dial,setDial]=React.useState(null);
-  React.useEffect(()=>{
-    const load=()=>setDial(window.dialOptions());
-    if(window.dialOptions) load(); else window.addEventListener('dial-ready',load,{once:true});
-  },[]);
-  // the verdict arrives from the server, so the field shows in-flight then settles
-  const [state,setState]=React.useState('idle');
-  React.useEffect(()=>{
-    if(otp.length!==6){ setState('idle'); return; }
-    setState('verifying');
-    const id=setTimeout(()=>setState(otp==='123456'?'error':'success'),900);
-    return ()=>clearTimeout(id);
-  },[otp]);
-  // country names ride on the optgroup, which a native select shows in the open
-  // list and never in the closed box
-  const DIAL = dial
-    ? [...dial.top.map(o=>({label:o.name,options:[o]})), ...dial.rest.map(o=>({label:o.name,options:[o]}))]
-    : ['+1 US'];
   return h('div',{style:{display:'flex',gap:44,flexWrap:'wrap',alignItems:'flex-start'}},
     h('div',{className:'col'},
       h('div',null,
@@ -54,7 +37,7 @@ function Demo(){
       h('div',null,
         h('div',{className:'lbl'},'Interactive trailing icon'),
         h(textField,{label:'Password',type:show?'text':'password',defaultValue:'granite-cables-92',
-          endAction:{icon:show?'eye-off':'eye',label:show?'Hide password':'Show password',onClick:()=>setShow(!show)},iconHref:H}),
+          endAction:{icon:show?'eye-off':'eye',label:show?'Hide password':'Show password'},iconHref:H}),
         h('div',{className:'dim'},'endAction turns the trailing slot into a real button \u2014 reveal, clear, or open a picker. Decorative icons keep pointer-events off so they never steal the click.'))),
     h('div',{className:'col'},
       h('div',null,
@@ -69,11 +52,7 @@ function Demo(){
       h('div',null,
         h('div',{className:'lbl'},'One-time code \u2014 2FA'),
         h('div',{className:'stack'},
-          h(codeField,{label:'Verification code',length:6,groupAfter:3,value:otp,onChange:setOtp,iconHref:H,
-            help:state==='idle'?'Six digits, from your authenticator app.':undefined,
-            verifying:state==='verifying',
-            success:state==='success'?'Verified \u2014 signing you in':undefined,
-            error:state==='error'?'That code is not right. Try the newest one.':undefined}),
+          h('div',{className:'otp'}),
           h('div',{className:'dim',style:{marginTop:0}},'Type any six digits to see it verify \u2014 123456 fails.'),
           h(codeField,{label:'Verified',length:4,size:'sm',value:'4821',success:true,iconHref:H}),
           h(codeField,{label:'Short code',length:4,size:'sm',error:'That code has expired.',iconHref:H})),
@@ -81,6 +60,47 @@ function Demo(){
         h('div',{className:'dim'},'2FA is the one field that earns a success state: the user cannot check a code themselves, and the verdict comes from a round trip they cannot see. So it runs idle \u2192 checking \u2192 verified or failed, and the verdict is a tinted border AND an icon AND a message in role="status" \u2014 a green border alone says nothing in greyscale and nothing to a screen reader.'),
         h('div',{className:'dim'},'Everywhere else a valid field needs no notice at all. Confirming each one turns a form into a wall of green ticks that stops meaning anything.'))));
 }
-mount(document.getElementById('root'), h(Demo));
+const root = document.getElementById('root');
+
+// The verdict arrives from the server, so the field shows in-flight then settles.
+// The controller owns the digits; this owns only what the digits mean.
+let verify;
+let phase = 'idle';
+// update() re-renders, which moves focus off the box being typed in. So it is
+// called only when the VERDICT changes, never on every keystroke.
+function settle(field, next, props){
+  if (phase === next) return;
+  phase = next;
+  field.update(props);
+}
+function otpState(code, field){
+  clearTimeout(verify);
+  if (code.length !== 6) {
+    settle(field, 'idle', { verifying: false, success: undefined, error: undefined,
+      help: 'Six digits, from your authenticator app.' });
+    return;
+  }
+  settle(field, 'verifying', { help: undefined, success: undefined, error: undefined, verifying: true });
+  verify = setTimeout(() => settle(field, code === '123456' ? 'error' : 'success', {
+    verifying: false,
+    success: code === '123456' ? undefined : 'Verified — signing you in',
+    error: code === '123456' ? 'That code is not right. Try the newest one.' : undefined,
+  }), 900);
+}
+
+function draw(){
+  mount(root, h(Demo));
+
+  // Reveal is a real button in the trailing slot, so it is bound like one.
+  root.querySelector('.lds-field__adorn--action')
+    .addEventListener('click', () => { show = !show; draw(); });
+
+  const field = mountCodeField(root.querySelector('.otp'), {
+    label: 'Verification code', length: 6, groupAfter: 3, iconHref: H,
+    help: 'Six digits, from your authenticator app.',
+    onChange: (code) => otpState(code, field),
+  });
+}
+draw();
 </script>
 </body></html>

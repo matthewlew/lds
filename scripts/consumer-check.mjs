@@ -3,29 +3,34 @@
 import { createRequire } from 'node:module';
 import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import React from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
-import { Button, Icon, Toast, Nav, Tooltip, SegmentedControl, setIconSprite, dialOptions } from '@lew/lds';
+import {
+  button, icon, toast, nav, tooltip, segmentedControl, h, raw,
+  setIconSprite, dialOptions,
+} from '@lew/lds';
+import { mountToasts } from '@lew/lds/controllers';
+import { banner } from '@lew/lds/templates';
 import { ICON_NAMES, spriteUrl, hasIcon } from '@lew/open-icons';
 
 const require = createRequire(import.meta.url);
 const fails = [];
-const el = React.createElement;
 
 // 1. components render from the installed package
-const html = renderToStaticMarkup(el('div', null,
-  el(Button, { variant: 'primary', iconStart: 'check' }, 'Save'),
-  el(Nav, { variant: 'bar', title: 'Settings', onBack: () => {} }),
-  el(Toast, { status: 'error', title: 'Failed' }, 'x'),
-  el(Tooltip, { label: 'Search' }, el(Button, { iconOnly: true, iconStart: 'search' })),
-  el(SegmentedControl, { options: ['A', 'B'], defaultValue: 'A' }),
-));
-for (const want of ['lds-btn--primary', 'lds-nav--bar', 'lds-toast', 'lds-tooltip__bubble', 'lds-seg']) {
+const html = String(h('div', null,
+  h(button, { variant: 'primary', iconStart: 'check' }, 'Save'),
+  h(nav, { variant: 'bar', title: 'Settings', onBack: () => {} }),
+  h(toast, { status: 'error', title: 'Failed' }, 'x'),
+  h(tooltip, { label: 'Search', children: raw(button({ iconOnly: true, iconStart: 'search' })) }),
+  h(segmentedControl, { name: 'g', options: ['A', 'B'], value: 'A' }),
+  h(banner, { status: 'info' }, 'From the /templates subpath.'),
+).__html);
+for (const want of ['lds-btn--primary', 'lds-nav--bar', 'lds-toast', 'lds-tooltip__bubble', 'lds-seg', 'lds-banner']) {
   if (!html.includes(want)) fails.push(`missing ${want} in rendered output`);
 }
+// The controllers subpath has to be reachable even where there is no DOM to use it.
+if (typeof mountToasts !== 'function') fails.push('@lew/lds/controllers did not export mountToasts');
 
 // 2. the sprite the installed components point at actually exists on disk
-const iconHtml = renderToStaticMarkup(el(Icon, { name: 'warning-fill' }));
+const iconHtml = icon({ name: 'warning-fill' });
 const href = iconHtml.match(/href="([^"#]+)#/)?.[1];
 if (!href) fails.push(`could not read sprite href from ${iconHtml}`);
 else {
@@ -41,6 +46,7 @@ else {
 
 // 3. every documented subpath export resolves
 for (const sub of ['@lew/lds/css', '@lew/lds/css/themes/product', '@lew/lds/css/lds',
+  '@lew/lds/templates', '@lew/lds/controllers',
   '@lew/lds/adherence.oxlintrc.json', '@lew/open-icons/icons.svg', '@lew/open-icons/names.json']) {
   try { require.resolve(sub); } catch (e) { fails.push(`subpath does not resolve: ${sub}`); }
 }
@@ -63,7 +69,7 @@ if (dialOptions().top[0].label !== '+1 US') fails.push('dialOptions did not surv
 
 // 6. repointing still works for an app hosting the sprite itself
 setIconSprite('/static/icons.svg');
-if (!renderToStaticMarkup(el(Icon, { name: 'search' })).includes('/static/icons.svg#search')) {
+if (!icon({ name: 'search' }).includes('/static/icons.svg#search')) {
   fails.push('setIconSprite does not work from the installed package');
 }
 

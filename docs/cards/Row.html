@@ -15,14 +15,16 @@
 <script src="../assets/lds.js"></script>
 <script>LDS.setIconSprite("../assets/icons.svg");</script>
 <script>
-// TODO(migration): this demo held state in React hooks. Rewrite it against
-// the controllers — see packages/lds/src/controllers/.
 const { row, checkbox, h, mount, raw } = LDS;
 const H = '../assets/icons.svg';
+// Two independent selections, held as plain values. A row carries no id in the
+// markup, so a click finds its value by position within its own sheet.
+const ONE = [['5min','Every 5 minutes'],['15min','Every 15 minutes'],['hour','Every hour']];
+const MANY = [['half','Half Dome'],['tuolumne','Tuolumne Meadows'],['clouds','Clouds Rest']];
+let picked = 'hour';
+let many = ['half'];
+const toggle = (id) => { many = many.includes(id) ? many.filter((x) => x !== id) : [...many, id]; };
 function Demo(){
-  const [picked,setPicked]=React.useState('hour');
-  const [many,setMany]=React.useState(['half']);
-  const toggle=(id)=>setMany(m=>m.includes(id)?m.filter(x=>x!==id):[...m,id]);
   return h('div',{style:{display:'flex',gap:36,flexWrap:'wrap',alignItems:'flex-start'}},
     h('div',{className:'col'},
       h('div',{className:'lbl'},'Navigation — chevron'),
@@ -34,12 +36,10 @@ function Demo(){
     h('div',{className:'col'},
       h('div',{className:'lbl'},'Selection — checkmark'),
       h('div',{className:'sheet'},
-        [['5min','Every 5 minutes'],['15min','Every 15 minutes'],['hour','Every hour']].map(([id,label])=>
-          h(row,{key:id,title:label,onClick:()=>setPicked(id),selected:picked===id,iconHref:H}))),
+        ONE.map(([id,label])=>h(row,{title:label,onClick:()=>{},selected:picked===id,iconHref:H}))),
       h('div',{className:'dim'},'One pick: the row is the control and the checkmark reports it — nothing else is added. Click a row to move it.'),
       h('div',{className:'sheet',style:{marginTop:6}},
-        [['half','Half Dome'],['tuolumne','Tuolumne Meadows'],['clouds','Clouds Rest']].map(([id,label])=>
-          h(row,{key:id,title:label,onClick:()=>toggle(id),selected:many.includes(id),iconHref:H}))),
+        MANY.map(([id,label])=>h(row,{title:label,onClick:()=>{},selected:many.includes(id),iconHref:H}))),
       h('div',{className:'dim'},'Several picks work the same way, but a checkmark only appears once a row is chosen — so nothing tells the user multi-select exists.')),
     h('div',{className:'col'},
       h('div',{className:'lbl'},'Multi-select — prefer Checkbox'),
@@ -50,6 +50,18 @@ function Demo(){
       h('div',{className:'dim'},'An empty box advertises that more than one can be picked, which a missing checkmark cannot. Use checkmark rows for a single choice, checkboxes when the set is genuinely multi-select.'),
       h('div',{className:'dim',style:{marginTop:6}},'The third label wraps: the box aligns to the first line, not to the middle of the row or the top of the container. One-line labels sit centred because the height comes from symmetric padding rather than a min-height.')));
 }
-mount(document.getElementById('root'), h(Demo));
+const root = document.getElementById('root');
+function draw(){
+  mount(root, h(Demo));
+  // Sheets in order: the chevron list (inert), the single pick, the multi pick.
+  const sheets = root.querySelectorAll('.sheet');
+  sheets[1].querySelectorAll('.lds-row').forEach((el, i) => {
+    el.addEventListener('click', () => { picked = ONE[i][0]; draw(); });
+  });
+  sheets[2].querySelectorAll('.lds-row').forEach((el, i) => {
+    el.addEventListener('click', () => { toggle(MANY[i][0]); draw(); });
+  });
+}
+draw();
 </script>
 </body></html>

@@ -24,8 +24,6 @@ body{margin:0;padding:28px;background:var(--gray-50,#FAF9EA);font-family:var(--t
 <script src="../assets/lds.js"></script>
 <script>LDS.setIconSprite("../assets/icons.svg");</script>
 <script>
-// TODO(migration): this demo held state in React hooks. Rewrite it against
-// the controllers — see packages/lds/src/controllers/.
 const { modal, button, h, mount, raw } = LDS;
 const H = '../assets/icons.svg';
 const cancel = () => h(button,{variant:'tertiary',size:'sm'},'Cancel');
@@ -35,8 +33,8 @@ const STEPS = [
   {title:'Set the cadence', body:'How often should we check for permit openings?'},
   {title:'Confirm', body:'We will email hello@lew.design as soon as a permit opens.'},
 ];
+let step = 1;
 function Demo(){
-  const [step,setStep]=React.useState(1);
   const s=STEPS[step];
   return h('div',{style:{display:'flex',gap:32,flexWrap:'wrap',alignItems:'flex-start'}},
     h('div',null,
@@ -65,12 +63,23 @@ function Demo(){
       h('div',{className:'lbl'},'Stacked flow — onBack'),
       h('div',{className:'frame phone as-sheet'},
         h(modal,{title:s.title,sheet:true,iconHref:H,
-          onBack: step>0 ? ()=>setStep(step-1) : undefined,
+          onBack: step>0 ? ()=>{} : undefined,
           cancel: step>0 ? null : undefined,
-          actions: h(button,{variant:'primary',size:'sm',onClick:()=>setStep(Math.min(step+1,STEPS.length-1))}, step===STEPS.length-1 ? 'Done' : 'Continue')},
+          actions: h(button,{variant:'primary',size:'sm'}, step===STEPS.length-1 ? 'Done' : 'Continue')},
           s.body)),
       h('div',{className:'dim',style:{width:300}},'Back appears at the origin edge and pops one level; close is terminal and dismisses the whole stack. Both are 36px round targets with 20px icons. Step ' + (step+1) + ' of ' + STEPS.length + ' — use Continue and Back.')));
 }
-mount(document.getElementById('root'), h(Demo));
+const root = document.getElementById('root');
+function draw(){
+  mount(root, h(Demo));
+  // Only the last frame is the stacked flow; the other three are static
+  // arrangements of the same component and are meant to stay put.
+  const flow = root.querySelectorAll('.frame')[3];
+  const back = flow.querySelector('.lds-modal__back');
+  if (back) back.addEventListener('click', () => { step -= 1; draw(); });
+  const next = flow.querySelector('.lds-modal__actions .lds-btn--primary');
+  if (next) next.addEventListener('click', () => { step = Math.min(step + 1, STEPS.length - 1); draw(); });
+}
+draw();
 </script>
 </body></html>

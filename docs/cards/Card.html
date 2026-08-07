@@ -18,8 +18,6 @@ section{margin-bottom:34px}
 <script src="../assets/lds.js"></script>
 <script>LDS.setIconSprite("../assets/icons.svg");</script>
 <script>
-// TODO(migration): this demo held state in React hooks. Rewrite it against
-// the controllers — see packages/lds/src/controllers/.
 const { card, button, tag, h, mount, raw } = LDS;
 const EMPH = [
   ['plain','the default surface'],
@@ -35,10 +33,14 @@ function Emphasis(){
       h(card,{emphasis:e,hue:'green',kicker:'Permit',title:'Cables season',
         body:note,meta:'Opens 7am PT'}))));
 }
+// Selection is a plain variable and the demo redraws — no framework, and no
+// state hidden in the DOM. ROUTES is the order the cards appear in, which is how
+// a click finds its value without the markup carrying an extra attribute.
+const ROUTES = ['half','clouds','mist'];
+let sel = 'half';
 function Selectable(){
-  const [sel,setSel] = React.useState('half');
-  const opt = (id,title,body) => h(card,{key:id,selectable:true,
-    selected:sel===id,onClick:()=>setSel(id),kicker:'Route',title,body});
+  const opt = (id,title,body) => h(card,{selectable:true,
+    selected:sel===id,kicker:'Route',title,body});
   return h('div',null,
     h('div',{className:'grid'},
       opt('half','Half Dome','14.2 mi · 4,800 ft'),
@@ -73,6 +75,15 @@ function Demo(){
       h('div',{className:'dim'},'Hover and pressed come from --bg-hover and --bg-pressed, so they work at every emphasis and in dark mode without a second rule. Selection is marked twice, by an accent border and an inset ring: on a soft or media emphasis a single ring can land at almost no contrast against the fill.'),
       h('div',{className:'dim'},'The ring is inset so the card\u2019s footprint never changes between states \u2014 an outset ring would shift every card in the grid on selection. Inactive removes the ring and the hover response as well as dimming: a faded card that still lights up on hover reads as clickable.')));
 }
-mount(document.getElementById('root'), h(Demo));
+const root = document.getElementById('root');
+// Redrawing replaces the nodes, so the listeners go with them — there is nothing
+// to unbind. The selectable cards under "every state" are a separate section and
+// are deliberately left inert.
+function draw(){
+  mount(root, h(Demo));
+  root.querySelectorAll('section')[1].querySelectorAll('.lds-card--selectable')
+    .forEach((el, i) => el.addEventListener('click', () => { sel = ROUTES[i]; draw(); }));
+}
+draw();
 </script>
 </body></html>
