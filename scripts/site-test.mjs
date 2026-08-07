@@ -11,8 +11,14 @@ import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { existsSync, readdirSync, statSync } from 'node:fs';
 import { join, extname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const SITE = '/home/claude/repo/site';
+// The repo root, derived from this file's own location rather than named
+// outright. It was an absolute path into the sandbox that generated these
+// scripts (/home/claude/repo), which resolves nowhere else — CI failed at the
+// first readdirSync on a clean checkout.
+const ROOT = fileURLToPath(new URL('..', import.meta.url));
+const SITE = join(ROOT, 'site');
 const TYPES = {
   '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css',
   '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.json': 'application/json',
