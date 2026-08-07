@@ -118,4 +118,30 @@ export const CASES = [
 
   ['Toggle', 'labelled', { label: 'On', help: 'h', id: 'g1' }],
   ['Toggle', 'checked', { label: 'On', checked: true, readOnly: true }],
+
+  // The five stateful components. Only their FIRST paint is a markup contract —
+  // what happens after a keystroke belongs to the controller and is covered by
+  // the browser tests. Ids and group names are passed explicitly: React's
+  // useId emits its own `«r0»` scheme, which no other binding can reproduce and
+  // which would freeze a React implementation detail into the contract.
+  ['CodeField', 'grouped', { label: 'Code', length: 4, groupAfter: 2, value: '12' }],
+  ['CodeField', 'error', { length: 2, error: 'Wrong code', value: '' }],
+  ['CodeField', 'success', { length: 2, success: true, value: '11' }],
+  ['CodeField', 'verifying sm', { length: 2, verifying: true, size: 'sm', value: '11' }],
+
+  ['SegmentedControl', 'value', { name: 'g', options: ['Day', 'Week'], value: 'Day' }],
+  ['SegmentedControl', 'icons only', { name: 'g', iconsOnly: true, full: true, options: [{ value: 'a', label: 'List', icon: 'list' }], value: 'a' }],
+  ['SegmentedControl', 'disabled option', { name: 'g', size: 'sm', label: 'View', options: [{ value: 'a', label: 'A' }, { value: 'b', label: 'B', disabled: true }], value: 'a' }],
+
+  ['Textarea', 'count', { label: 'Bio', id: 'b1', maxLength: 10, value: 'hi' }],
+  ['Textarea', 'over', { maxLength: 2, value: 'abc', showCount: true }],
+  ['Textarea', 'error', { label: 'L', required: true, error: 'Bad', value: '' }],
+  ['Textarea', 'plain', { label: 'L', value: 'x' }],
+
+  ['Toast', 'success', { status: 'success', children: 'Saved.' }],
+  ['Toast', 'error+title+actions', { status: 'error', title: 'Failed', actions: 'A', children: 'Retry.' }],
+  ['Toast', 'not dismissible', { dismissible: false, children: 'Working…' }],
+
+  ['Tooltip', 'label', { label: 'Search', id: 'tt1', children: 'TRIGGER' }],
+  ['Tooltip', 'placement', { label: 'L', id: 'tt2', placement: 'right', children: 'T' }],
 ];

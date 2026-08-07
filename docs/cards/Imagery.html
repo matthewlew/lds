@@ -1,0 +1,107 @@
+<!-- @dsCard group="Foundations" viewport="1060x680" name="Imagery" subtitle="thumbnails in rows, full-bleed vs inset media in overlays, ratios" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../assets/styles.css">
+<style>
+body{margin:0;padding:28px;background:var(--gray-50);font-family:var(--th-body);color:var(--text)}
+.lbl{font-family:var(--th-ui);font-size:var(--text-control-sm);font-weight:var(--weight-medium);color:var(--gray-700);margin-bottom:10px}
+.dim{font-family:var(--th-ui);font-size:var(--text-control-sm);color:var(--gray-600);line-height:1.55;margin-top:8px}
+.wrap{display:flex;gap:44px;flex-wrap:wrap;align-items:flex-start}
+.col{display:flex;flex-direction:column;gap:26px;width:460px}
+.sheet{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);overflow:hidden}
+.panel{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius-lg);width:300px;overflow:hidden}
+.ratios{display:flex;gap:14px;align-items:flex-end}
+.ratios figure{margin:0;display:flex;flex-direction:column;gap:6px;align-items:center;
+  font-family:var(--th-ui);font-size:11px;color:var(--gray-600)}
+/* placeholders stand in for real assets — the point here is the box, not the picture */
+.ph{background:var(--surface-sunken);border-radius:var(--radius-sm)}
+.ph--43{height:38px;aspect-ratio:4/3}
+.ph--11{height:38px;aspect-ratio:1/1}
+.ph--169{height:38px;aspect-ratio:16/9}
+.ph--avatar{height:34px;aspect-ratio:1/1;border-radius:var(--radius-pill)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="col">
+  <div>
+    <div class="lbl">In a list cell — the row owns the height</div>
+    <div class="sheet">
+      <div class="lds-row">
+        <div class="lds-row__lead"><div class="ph ph--43"></div></div>
+        <div class="lds-row__content">
+          <div class="lds-row__title">Half Dome, late June</div>
+          <div class="lds-row__subtitle">4:3 · a place or a scene</div>
+        </div>
+        <div class="lds-row__chevron"><svg class="lds-icon"><use href="../assets/icons.svg#chevron-right"></use></svg></div>
+      </div>
+      <div class="lds-row">
+        <div class="lds-row__lead"><div class="ph ph--11"></div></div>
+        <div class="lds-row__content">
+          <div class="lds-row__title">Trail guide, 3rd edition</div>
+          <div class="lds-row__subtitle">1:1 · a product or a cover</div>
+        </div>
+        <div class="lds-row__chevron"><svg class="lds-icon"><use href="../assets/icons.svg#chevron-right"></use></svg></div>
+      </div>
+      <div class="lds-row">
+        <div class="lds-row__lead"><div class="ph ph--169"></div></div>
+        <div class="lds-row__content">
+          <div class="lds-row__title">Approach from Tenaya Lake</div>
+          <div class="lds-row__subtitle">16:9 · a still from something wider</div>
+        </div>
+        <div class="lds-row__chevron"><svg class="lds-icon"><use href="../assets/icons.svg#chevron-right"></use></svg></div>
+      </div>
+      <div class="lds-row">
+        <div class="lds-row__lead"><div class="ph ph--avatar"></div></div>
+        <div class="lds-row__content">
+          <div class="lds-row__title">Jane Rivera</div>
+          <div class="lds-row__subtitle">Avatar · a person is a circle</div>
+        </div>
+      </div>
+    </div>
+    <p class="dim">A thumbnail is sized by RATIO, never by a width and a height. The height comes from the row — 30px compact, 38px default, 48px roomy — so a thumbnail can never set the row's height, and the width follows from the ratio. Three ratios exist and no more; a fourth is a new decision to make on purpose, not a one-off.</p>
+    <p class="dim"><code>object-fit: cover</code> on every one, with <code>--surface-sunken</code> behind it so a slow or missing image leaves a considered box rather than a hole.</p>
+  </div>
+  <div>
+    <div class="lbl">Ratios</div>
+    <div class="ratios">
+      <figure><div class="ph ph--43" style="height:64px"></div>4:3 — place, scene</figure>
+      <figure><div class="ph ph--11" style="height:64px"></div>1:1 — product, cover</figure>
+      <figure><div class="ph ph--169" style="height:64px"></div>16:9 — still, hero</figure>
+      <figure><div class="ph ph--avatar" style="height:64px"></div>circle — person</figure>
+    </div>
+    <p class="dim">16:9 is the only ratio used full-bleed: it is the one that survives being cropped to a panel width. Do not put a 1:1 asset full-bleed — at 320px wide it eats the whole panel before a word of copy.</p>
+  </div>
+</div>
+
+<div class="col" style="width:auto">
+  <div>
+    <div class="lbl">Overlay — full-bleed: the image IS the subject</div>
+    <div class="panel">
+      <div class="lds-modal" style="box-shadow:none;border:0;max-width:none">
+        <div class="lds-modal__body">
+          <div class="lds-modal__media ph" style="border-radius:var(--radius-lg) var(--radius-lg) 0 0"></div>
+          <h2 class="lds-modal__title lds-modal__title--large">Half Dome</h2>
+          <p style="margin:0">Full-bleed escapes the body's padding, so it must be a direct child of the body. As the first child it inherits the panel's top corners; under a header bar it squares off, because the bar already owns that edge.</p>
+        </div>
+      </div>
+    </div>
+    <p class="dim" style="width:300px">Use when the picture is what the overlay is about — a photo, a map, a preview.</p>
+  </div>
+  <div>
+    <div class="lbl">Overlay — inset: the image SUPPORTS the text</div>
+    <div class="panel">
+      <div class="lds-modal" style="box-shadow:none;border:0;max-width:none">
+        <div class="lds-modal__header">
+          <div class="lds-modal__title">Set a reminder</div>
+          <button class="lds-modal__close" aria-label="Close"><svg class="lds-icon"><use href="../assets/icons.svg#close"></use></svg></button>
+        </div>
+        <div class="lds-modal__body">
+          <div class="lds-modal__media lds-modal__media--inset ph"></div>
+          <p style="margin:0">Inset keeps the body's padding and takes the base radius, so it reads as an illustration inside the copy rather than as the subject of the panel.</p>
+        </div>
+      </div>
+    </div>
+    <p class="dim" style="width:300px">Both take <code>aspect-ratio</code> from <code>--media-ratio</code> (16:9 default) — never a fixed height, which crops differently at every panel width, and a side sheet's width changes with the viewport.</p>
+  </div>
+</div>
+</div>
+</body></html>

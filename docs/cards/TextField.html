@@ -1,0 +1,106 @@
+<!-- @dsCard group="Forms" viewport="900x620" name="TextField" subtitle="inset icons, joined dial code, one-time code with verification" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../assets/styles.css">
+<style>
+.lbl{font-family:var(--th-ui);font-size:var(--text-control-sm);font-weight:var(--weight-medium);color:var(--gray-700);margin-bottom:10px}
+.dim{font-family:var(--th-ui);font-size:var(--text-control-sm);color:var(--gray-600);line-height:1.5;margin-top:8px}
+.col{display:flex;flex-direction:column;gap:24px;width:360px}
+.stack{display:flex;flex-direction:column;gap:14px}
+</style>
+</head>
+<body style="margin:0;padding:28px;background:var(--gray-50,#FAF9EA);font-family:var(--th-body);">
+<div id="root"></div>
+<script src="../assets/lds.js"></script>
+<script>LDS.setIconSprite("../assets/icons.svg");</script>
+<script>
+  window.dialOptions = LDS.dialOptions; window.DIAL_CODES = LDS.DIAL_CODES;
+  window.dispatchEvent(new Event('dial-ready'));
+</script>
+<script>
+const { textField, select, codeField, mountCodeField, h, mount, raw } = LDS;
+const H = '../assets/icons.svg';
+let show = false;
+// The dial data is a published export now, so there is nothing to wait for.
+// Country names ride on the optgroup, which a native select shows in the open
+// list and never in the closed box.
+const dial = LDS.dialOptions();
+const DIAL = [...dial.top, ...dial.rest].map((o) => ({ label: o.name, options: [o] }));
+function Demo(){
+  return h('div',{style:{display:'flex',gap:44,flexWrap:'wrap',alignItems:'flex-start'}},
+    h('div',{className:'col'},
+      h('div',null,
+        h('div',{className:'lbl'},'Inset icons'),
+        h('div',{className:'stack'},
+          h(textField,{label:'Email',iconStart:'mail',iconHref:H,type:'email',autoComplete:'email',defaultValue:'hello@lew.design'}),
+          h(textField,{label:'Full name',iconStart:'person',iconHref:H,autoComplete:'name',placeholder:'Jane Rivera'}),
+          h(textField,{label:'Search trails',iconStart:'search',iconHref:H,placeholder:'Half Dome'})),
+        h('div',{className:'dim'},'iconStart / iconEnd take a sprite name or a node. The icon is inset over the input\u2019s own padding, so the field stays one box with one border and one target \u2014 not an icon sitting beside a control.')),
+      h('div',null,
+        h('div',{className:'lbl'},'Interactive trailing icon'),
+        h(textField,{label:'Password',type:show?'text':'password',defaultValue:'granite-cables-92',
+          endAction:{icon:show?'eye-off':'eye',label:show?'Hide password':'Show password'},iconHref:H}),
+        h('div',{className:'dim'},'endAction turns the trailing slot into a real button \u2014 reveal, clear, or open a picker. Decorative icons keep pointer-events off so they never steal the click.'))),
+    h('div',{className:'col'},
+      h('div',null,
+        h('div',{className:'lbl'},'International phone'),
+        h(textField,{label:'Mobile',type:'tel',inputMode:'tel',autoComplete:'tel',defaultValue:'555 0134',
+          help:'We only text when a permit opens.',
+          prefix:h(select,{options:DIAL,defaultValue:'+1','aria-label':'Country and dial code'})}),
+        h('div',{className:'dim'},'A dial code and a number are one value, so they are one box: the Select is joined into the field, sharing a border with the seam between them. The code hugs its content; the number takes the rest. Store E.164 (+15550134) and let the two inputs be presentation.'),
+        h('div',{className:'dim'},'It carries all '+(window.DIAL_CODES?window.DIAL_CODES.length:'240')+' ITU codes, not a top six. A short list is not a shortcut \u2014 a user whose country is missing cannot enter their number at all, and no error message helps them. The likely codes sit in a Common group at the top and the rest follow alphabetically; which ones are "likely" is the product\u2019s call, not the system\u2019s.'),
+        h('div',{className:'dim'},'The closed box reads "+1 US" and nothing more. A native select is exactly as wide as its widest option, so labelling them "+1  United States" made the code swallow the row and left the number a stub \u2014 the country name now rides on the optgroup, which a select shows when open and never when closed. The ISO code stays because +1 alone is ambiguous across twenty countries.'),
+        h('div',{className:'dim'},'The dial box is also capped at 11ch and 40% of the field, so no option label a consumer adds can take the number\u2019s space. Twenty entries share the value +1, which is correct: E.164 only needs the code.')),
+      h('div',null,
+        h('div',{className:'lbl'},'One-time code \u2014 2FA'),
+        h('div',{className:'stack'},
+          h('div',{className:'otp'}),
+          h('div',{className:'dim',style:{marginTop:0}},'Type any six digits to see it verify \u2014 123456 fails.'),
+          h(codeField,{label:'Verified',length:4,size:'sm',value:'4821',success:true,iconHref:H}),
+          h(codeField,{label:'Short code',length:4,size:'sm',error:'That code has expired.',iconHref:H})),
+        h('div',{className:'dim'},'One box per digit, because the boxes are what say how many to expect. Numeric keypad, tabular figures, autocomplete="one-time-code" on the first box so the OS offers the SMS code, paste fills the whole set, backspace steps back.'),
+        h('div',{className:'dim'},'2FA is the one field that earns a success state: the user cannot check a code themselves, and the verdict comes from a round trip they cannot see. So it runs idle \u2192 checking \u2192 verified or failed, and the verdict is a tinted border AND an icon AND a message in role="status" \u2014 a green border alone says nothing in greyscale and nothing to a screen reader.'),
+        h('div',{className:'dim'},'Everywhere else a valid field needs no notice at all. Confirming each one turns a form into a wall of green ticks that stops meaning anything.'))));
+}
+const root = document.getElementById('root');
+
+// The verdict arrives from the server, so the field shows in-flight then settles.
+// The controller owns the digits; this owns only what the digits mean.
+let verify;
+let phase = 'idle';
+// update() re-renders, which moves focus off the box being typed in. So it is
+// called only when the VERDICT changes, never on every keystroke.
+function settle(field, next, props){
+  if (phase === next) return;
+  phase = next;
+  field.update(props);
+}
+function otpState(code, field){
+  clearTimeout(verify);
+  if (code.length !== 6) {
+    settle(field, 'idle', { verifying: false, success: undefined, error: undefined,
+      help: 'Six digits, from your authenticator app.' });
+    return;
+  }
+  settle(field, 'verifying', { help: undefined, success: undefined, error: undefined, verifying: true });
+  verify = setTimeout(() => settle(field, code === '123456' ? 'error' : 'success', {
+    verifying: false,
+    success: code === '123456' ? undefined : 'Verified — signing you in',
+    error: code === '123456' ? 'That code is not right. Try the newest one.' : undefined,
+  }), 900);
+}
+
+function draw(){
+  mount(root, h(Demo));
+
+  // Reveal is a real button in the trailing slot, so it is bound like one.
+  root.querySelector('.lds-field__adorn--action')
+    .addEventListener('click', () => { show = !show; draw(); });
+
+  const field = mountCodeField(root.querySelector('.otp'), {
+    label: 'Verification code', length: 6, groupAfter: 3, iconHref: H,
+    help: 'Six digits, from your authenticator app.',
+    onChange: (code) => otpState(code, field),
+  });
+}
+draw();
+</script>
+</body></html>

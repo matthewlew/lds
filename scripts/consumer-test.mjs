@@ -30,8 +30,8 @@ try {
     dependencies: {
       '@lew/open-icons': `file:${join(packed, 'lew-open-icons-1.0.0.tgz')}`,
       '@lew/lds': `file:${join(packed, 'lew-lds-1.0.0.tgz')}`,
-      react: '^18.3.1',
-      'react-dom': '^18.3.1',
+      // Nothing else. That the app installs with no framework at all is part of
+      // what this is checking.
     },
   }, null, 2));
 

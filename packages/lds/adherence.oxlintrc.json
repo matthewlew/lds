@@ -1,79 +1,19 @@
 {
   "plugins": [
-    "react",
     "import"
   ],
   "rules": {
-    "react/forbid-elements": [
-      "warn",
-      {
-        "forbid": []
-      }
-    ],
     "no-restricted-imports": [
       "warn",
       {
         "patterns": [
           {
             "group": [
-              "@lew/lds/src/components/Avatar/**",
-              "@lew/lds/src/components/Banner/**",
-              "@lew/lds/src/components/Button/**",
-              "@lew/lds/src/components/ButtonGroup/**",
-              "@lew/lds/src/components/Card/**",
-              "@lew/lds/src/components/Checkbox/**",
-              "@lew/lds/src/components/Chip/**",
-              "@lew/lds/src/components/CodeField/**",
-              "@lew/lds/src/components/EmptyState/**",
-              "@lew/lds/src/components/Icon/**",
-              "@lew/lds/src/components/Inline/**",
-              "@lew/lds/src/components/Link/**",
-              "@lew/lds/src/components/Menu/**",
-              "@lew/lds/src/components/Modal/**",
-              "@lew/lds/src/components/Nav/**",
-              "@lew/lds/src/components/Radio/**",
-              "@lew/lds/src/components/Row/**",
-              "@lew/lds/src/components/SegmentedControl/**",
-              "@lew/lds/src/components/Select/**",
-              "@lew/lds/src/components/Skeleton/**",
-              "@lew/lds/src/components/Table/**",
-              "@lew/lds/src/components/Tabs/**",
-              "@lew/lds/src/components/Tag/**",
-              "@lew/lds/src/components/TextField/**",
-              "@lew/lds/src/components/Textarea/**",
-              "@lew/lds/src/components/Toast/**",
-              "@lew/lds/src/components/Toggle/**",
-              "@lew/lds/src/components/Tooltip/**",
-              "**/components/Avatar/**",
-              "**/components/Banner/**",
-              "**/components/Button/**",
-              "**/components/ButtonGroup/**",
-              "**/components/Card/**",
-              "**/components/Checkbox/**",
-              "**/components/Chip/**",
-              "**/components/CodeField/**",
-              "**/components/EmptyState/**",
-              "**/components/Icon/**",
-              "**/components/Inline/**",
-              "**/components/Link/**",
-              "**/components/Menu/**",
-              "**/components/Modal/**",
-              "**/components/Nav/**",
-              "**/components/Radio/**",
-              "**/components/Row/**",
-              "**/components/SegmentedControl/**",
-              "**/components/Select/**",
-              "**/components/Skeleton/**",
-              "**/components/Table/**",
-              "**/components/Tabs/**",
-              "**/components/Tag/**",
-              "**/components/TextField/**",
-              "**/components/Textarea/**",
-              "**/components/Toast/**",
-              "**/components/Toggle/**",
-              "**/components/Tooltip/**"
+              "@lew/lds/src/**",
+              "**/lds/src/templates/*",
+              "**/lds/src/controllers/*"
             ],
-            "message": "Import design-system components from '@lew/lds', not component internals."
+            "message": "Import from '@lew/lds', '@lew/lds/templates' or '@lew/lds/controllers', not package internals."
           }
         ]
       }
@@ -93,212 +33,160 @@
         "message": "Font not provided by the design system. Available: Coconat, Martian Mono, Ronzino."
       },
       {
-        "selector": "JSXOpeningElement[name.name='Avatar'] > JSXAttribute > JSXIdentifier[name!=/^(?:name|src|alt|size|hue|ring|iconHref|className|key|ref|style|children)$/]",
-        "message": "<Avatar> doesn't accept that prop. Declared props: name, src, alt, size, hue, ring, iconHref, className."
+        "selector": "CallExpression[callee.name='avatar'] > ObjectExpression > Property > Identifier[name!=/^(?:name|src|alt|size|hue|ring|iconHref|className|style|children|id)$/]",
+        "message": "avatar() doesn't accept that prop. Declared props: name, src, alt, size, hue, ring, iconHref."
       },
       {
-        "selector": "JSXOpeningElement[name.name='Avatar'] > JSXAttribute[name.name='size'] > Literal[value!=/^(?:xs|sm|lg|xl|2xl)$/]",
-        "message": "<Avatar> size must be one of 'xs' | 'sm' | 'lg' | 'xl' | '2xl'."
+        "selector": "CallExpression[callee.name='banner'] > ObjectExpression > Property > Identifier[name!=/^(?:status|emphasis|page|title|children|actions|icon|iconHref|dismissible|onDismiss|className|style|id)$/]",
+        "message": "banner() doesn't accept that prop. Declared props: status, emphasis, page, title, children, actions, icon, iconHref, dismissible, onDismiss."
       },
       {
-        "selector": "JSXOpeningElement[name.name='Avatar'] > JSXAttribute[name.name='hue'] > Literal[value!=/^(?:red|orange|yellow|green|cyan|blue|violet|pink|gray)$/]",
-        "message": "<Avatar> hue must be one of 'red' | 'orange' | 'yellow' | 'green' | 'cyan' | 'blue' | 'violet' | 'pink' | 'gray'."
+        "selector": "CallExpression[callee.name='button'] > ObjectExpression > Property > Identifier[name!=/^(?:variant|size|iconOnly|fab|extended|emphasis|hue|armed|iconStart|iconEnd|subtitle|iconHref|href|disabled|children|className|style|id)$/]",
+        "message": "button() doesn't accept that prop. Declared props: variant, size, iconOnly, fab, extended, emphasis, hue, armed, iconStart, iconEnd, subtitle, iconHref, href, disabled, children."
       },
       {
-        "selector": "JSXOpeningElement[name.name='Banner'] > JSXAttribute > JSXIdentifier[name!=/^(?:status|emphasis|page|title|icon|iconHref|children|actions|dismissible|onDismiss|className|key|ref|style)$/]",
-        "message": "<Banner> doesn't accept that prop. Declared props: status, emphasis, page, title, icon, iconHref, children, actions, dismissible, onDismiss, className."
+        "selector": "CallExpression[callee.name='button'] > ObjectExpression > Property[key.name='variant'] > Literal[value!=/^(?:primary|secondary|tertiary)$/]",
+        "message": "button() variant must be one of 'primary' | 'secondary' | 'tertiary'."
       },
       {
-        "selector": "JSXOpeningElement[name.name='Banner'] > JSXAttribute[name.name='status'] > Literal[value!=/^(?:info|success|warning|caution|error)$/]",
-        "message": "<Banner> status must be one of 'info' | 'success' | 'warning' | 'caution' | 'error'."
+        "selector": "CallExpression[callee.name='button'] > ObjectExpression > Property[key.name='size'] > Literal[value!=/^(?:sm|lg)$/]",
+        "message": "button() size must be one of 'sm' | 'lg'."
       },
       {
-        "selector": "JSXOpeningElement[name.name='Banner'] > JSXAttribute[name.name='emphasis'] > Literal[value!=/^(?:plain|subtle|soft|strong|stark)$/]",
-        "message": "<Banner> emphasis must be one of 'plain' | 'subtle' | 'soft' | 'strong' | 'stark'."
+        "selector": "CallExpression[callee.name='buttonGroup'] > ObjectExpression > Property > Identifier[name!=/^(?:children|detail|detailNote|orientation|width|align|stackOnMobile|className|style|id)$/]",
+        "message": "buttonGroup() doesn't accept that prop. Declared props: children, detail, detailNote, orientation, width, align, stackOnMobile."
       },
       {
-        "selector": "JSXOpeningElement[name.name='Button'] > JSXAttribute > JSXIdentifier[name!=/^(?:variant|size|iconOnly|iconStart|iconEnd|subtitle|iconHref|emphasis|hue|armed|href|fab|extended|disabled|onClick|className|children|key|ref|style)$/]",
-        "message": "<Button> doesn't accept that prop. Declared props: variant, size, iconOnly, iconStart, iconEnd, subtitle, iconHref, emphasis, hue, armed, href, fab, extended, disabled, onClick, className, children."
+        "selector": "CallExpression[callee.name='buttonGroup'] > ObjectExpression > Property[key.name='orientation'] > Literal[value!=/^(?:horizontal|vertical)$/]",
+        "message": "buttonGroup() orientation must be one of 'horizontal' | 'vertical'."
       },
       {
-        "selector": "JSXOpeningElement[name.name='Button'] > JSXAttribute[name.name='variant'] > Literal[value!=/^(?:primary|secondary|tertiary)$/]",
-        "message": "<Button> variant must be one of 'primary' | 'secondary' | 'tertiary'."
+        "selector": "CallExpression[callee.name='buttonGroup'] > ObjectExpression > Property[key.name='width'] > Literal[value!=/^(?:hug|fill)$/]",
+        "message": "buttonGroup() width must be one of 'hug' | 'fill'."
       },
       {
-        "selector": "JSXOpeningElement[name.name='Button'] > JSXAttribute[name.name='size'] > Literal[value!=/^(?:sm|lg)$/]",
-        "message": "<Button> size must be one of 'sm' | 'lg'."
+        "selector": "CallExpression[callee.name='buttonGroup'] > ObjectExpression > Property[key.name='align'] > Literal[value!=/^(?:start|center|end|split)$/]",
+        "message": "buttonGroup() align must be one of 'start' | 'center' | 'end' | 'split'."
       },
       {
-        "selector": "JSXOpeningElement[name.name='Button'] > JSXAttribute[name.name='emphasis'] > Literal[value!=/^(?:plain|subtle|soft|strong|stark|media)$/]",
-        "message": "<Button> emphasis must be one of 'plain' | 'subtle' | 'soft' | 'strong' | 'stark' | 'media'."
+        "selector": "CallExpression[callee.name='card'] > ObjectExpression > Property > Identifier[name!=/^(?:kicker|title|body|meta|actions|emphasis|hue|selectable|selected|disabled|onClick|children|className|style|id)$/]",
+        "message": "card() doesn't accept that prop. Declared props: kicker, title, body, meta, actions, emphasis, hue, selectable, selected, disabled, onClick, children."
       },
       {
-        "selector": "JSXOpeningElement[name.name='Button'] > JSXAttribute[name.name='hue'] > Literal[value!=/^(?:red|orange|yellow|green|cyan|blue|violet|pink|gray)$/]",
-        "message": "<Button> hue must be one of 'red' | 'orange' | 'yellow' | 'green' | 'cyan' | 'blue' | 'violet' | 'pink' | 'gray'."
+        "selector": "CallExpression[callee.name='checkbox'] > ObjectExpression > Property > Identifier[name!=/^(?:label|checked|disabled|readOnly|className|style|children|id)$/]",
+        "message": "checkbox() doesn't accept that prop. Declared props: label, checked, disabled, readOnly."
       },
       {
-        "selector": "JSXOpeningElement[name.name='ButtonGroup'] > JSXAttribute > JSXIdentifier[name!=/^(?:children|detail|detailNote|orientation|width|align|stackOnMobile|className|key|ref|style)$/]",
-        "message": "<ButtonGroup> doesn't accept that prop. Declared props: children, detail, detailNote, orientation, width, align, stackOnMobile, className."
+        "selector": "CallExpression[callee.name='chip'] > ObjectExpression > Property > Identifier[name!=/^(?:children|selected|size|icon|caret|onRemove|removeLabel|iconHref|onClick|className|style|id)$/]",
+        "message": "chip() doesn't accept that prop. Declared props: children, selected, size, icon, caret, onRemove, removeLabel, iconHref, onClick."
       },
       {
-        "selector": "JSXOpeningElement[name.name='ButtonGroup'] > JSXAttribute[name.name='orientation'] > Literal[value!=/^(?:horizontal|vertical)$/]",
-        "message": "<ButtonGroup> orientation must be one of 'horizontal' | 'vertical'."
+        "selector": "CallExpression[callee.name='chip'] > ObjectExpression > Property[key.name='size'] > Literal[value!=/^(?:sm|lg)$/]",
+        "message": "chip() size must be one of 'sm' | 'lg'."
       },
       {
-        "selector": "JSXOpeningElement[name.name='ButtonGroup'] > JSXAttribute[name.name='width'] > Literal[value!=/^(?:hug|fill)$/]",
-        "message": "<ButtonGroup> width must be one of 'hug' | 'fill'."
+        "selector": "CallExpression[callee.name='codeField'] > ObjectExpression > Property > Identifier[name!=/^(?:label|help|error|success|verifying|length|groupAfter|size|value|iconHref|className|style|children|id)$/]",
+        "message": "codeField() doesn't accept that prop. Declared props: label, help, error, success, verifying, length, groupAfter, size, value, iconHref."
       },
       {
-        "selector": "JSXOpeningElement[name.name='ButtonGroup'] > JSXAttribute[name.name='align'] > Literal[value!=/^(?:start|center|end|split)$/]",
-        "message": "<ButtonGroup> align must be one of 'start' | 'center' | 'end' | 'split'."
+        "selector": "CallExpression[callee.name='emptyState'] > ObjectExpression > Property > Identifier[name!=/^(?:icon|image|imageAlt|expressive|iconHref|title|body|actions|className|style|children|id)$/]",
+        "message": "emptyState() doesn't accept that prop. Declared props: icon, image, imageAlt, expressive, iconHref, title, body, actions."
       },
       {
-        "selector": "JSXOpeningElement[name.name='Card'] > JSXAttribute > JSXIdentifier[name!=/^(?:kicker|title|body|meta|actions|emphasis|hue|selectable|selected|disabled|onClick|className|children|key|ref|style)$/]",
-        "message": "<Card> doesn't accept that prop. Declared props: kicker, title, body, meta, actions, emphasis, hue, selectable, selected, disabled, onClick, className, children."
+        "selector": "CallExpression[callee.name='icon'] > ObjectExpression > Property > Identifier[name!=/^(?:name|size|href|className|style|children|id)$/]",
+        "message": "icon() doesn't accept that prop. Declared props: name, size, href."
       },
       {
-        "selector": "JSXOpeningElement[name.name='Card'] > JSXAttribute[name.name='emphasis'] > Literal[value!=/^(?:plain|subtle|soft|strong|stark)$/]",
-        "message": "<Card> emphasis must be one of 'plain' | 'subtle' | 'soft' | 'strong' | 'stark'."
+        "selector": "CallExpression[callee.name='inline'] > ObjectExpression > Property > Identifier[name!=/^(?:status|icon|iconHref|children|className|style|id)$/]",
+        "message": "inline() doesn't accept that prop. Declared props: status, icon, iconHref, children."
       },
       {
-        "selector": "JSXOpeningElement[name.name='Card'] > JSXAttribute[name.name='hue'] > Literal[value!=/^(?:red|orange|yellow|green|cyan|blue|violet|pink|gray)$/]",
-        "message": "<Card> hue must be one of 'red' | 'orange' | 'yellow' | 'green' | 'cyan' | 'blue' | 'violet' | 'pink' | 'gray'."
+        "selector": "CallExpression[callee.name='link'] > ObjectExpression > Property > Identifier[name!=/^(?:children|href|variant|iconEnd|iconHref|className|style|id)$/]",
+        "message": "link() doesn't accept that prop. Declared props: children, href, variant, iconEnd, iconHref."
       },
       {
-        "selector": "JSXOpeningElement[name.name='Checkbox'] > JSXAttribute > JSXIdentifier[name!=/^(?:label|id|checked|disabled|onChange|className|key|ref|style|children)$/]",
-        "message": "<Checkbox> doesn't accept that prop. Declared props: label, id, checked, disabled, onChange, className."
+        "selector": "CallExpression[callee.name='link'] > ObjectExpression > Property[key.name='variant'] > Literal[value!=/^(?:quiet|standalone)$/]",
+        "message": "link() variant must be one of 'quiet' | 'standalone'."
       },
       {
-        "selector": "JSXOpeningElement[name.name='Chip'] > JSXAttribute > JSXIdentifier[name!=/^(?:children|selected|size|icon|caret|onRemove|removeLabel|iconHref|onClick|className|key|ref|style)$/]",
-        "message": "<Chip> doesn't accept that prop. Declared props: children, selected, size, icon, caret, onRemove, removeLabel, iconHref, onClick, className."
+        "selector": "CallExpression[callee.name='menu'] > ObjectExpression > Property > Identifier[name!=/^(?:items|className|style|children|id)$/]",
+        "message": "menu() doesn't accept that prop. Declared props: items."
       },
       {
-        "selector": "JSXOpeningElement[name.name='Chip'] > JSXAttribute[name.name='size'] > Literal[value!=/^(?:sm|lg)$/]",
-        "message": "<Chip> size must be one of 'sm' | 'lg'."
+        "selector": "CallExpression[callee.name='modal'] > ObjectExpression > Property > Identifier[name!=/^(?:title|children|actions|cancel|onClose|onBack|size|sheet|side|largeTitle|iconHref|className|style|id)$/]",
+        "message": "modal() doesn't accept that prop. Declared props: title, children, actions, cancel, onClose, onBack, size, sheet, side, largeTitle, iconHref."
       },
       {
-        "selector": "JSXOpeningElement[name.name='CodeField'] > JSXAttribute > JSXIdentifier[name!=/^(?:label|help|error|success|verifying|length|groupAfter|size|value|iconHref|onChange|className|key|ref|style|children)$/]",
-        "message": "<CodeField> doesn't accept that prop. Declared props: label, help, error, success, verifying, length, groupAfter, size, value, iconHref, onChange, className."
+        "selector": "CallExpression[callee.name='nav'] > ObjectExpression > Property > Identifier[name!=/^(?:variant|logo|links|title|subtitle|onBack|backLabel|actions|sticky|scrolled|iconHref|children|className|style|id)$/]",
+        "message": "nav() doesn't accept that prop. Declared props: variant, logo, links, title, subtitle, onBack, backLabel, actions, sticky, scrolled, iconHref, children."
       },
       {
-        "selector": "JSXOpeningElement[name.name='EmptyState'] > JSXAttribute > JSXIdentifier[name!=/^(?:icon|image|imageAlt|expressive|iconHref|title|body|actions|className|key|ref|style|children)$/]",
-        "message": "<EmptyState> doesn't accept that prop. Declared props: icon, image, imageAlt, expressive, iconHref, title, body, actions, className."
+        "selector": "CallExpression[callee.name='nav'] > ObjectExpression > Property[key.name='variant'] > Literal[value!=/^(?:brand|bar)$/]",
+        "message": "nav() variant must be one of 'brand' | 'bar'."
       },
       {
-        "selector": "JSXOpeningElement[name.name='Icon'] > JSXAttribute > JSXIdentifier[name!=/^(?:name|size|href|style|className|key|ref|children)$/]",
-        "message": "<Icon> doesn't accept that prop. Declared props: name, size, href, style, className."
+        "selector": "CallExpression[callee.name='radio'] > ObjectExpression > Property > Identifier[name!=/^(?:label|name|checked|disabled|readOnly|className|style|children|id)$/]",
+        "message": "radio() doesn't accept that prop. Declared props: label, name, checked, disabled, readOnly."
       },
       {
-        "selector": "JSXOpeningElement[name.name='Inline'] > JSXAttribute > JSXIdentifier[name!=/^(?:status|icon|iconHref|children|className|key|ref|style)$/]",
-        "message": "<Inline> doesn't accept that prop. Declared props: status, icon, iconHref, children, className."
+        "selector": "CallExpression[callee.name='row'] > ObjectExpression > Property > Identifier[name!=/^(?:lead|title|subtitle|trail|chevron|selected|iconHref|compact|roomy|href|className|style|children|id)$/]",
+        "message": "row() doesn't accept that prop. Declared props: lead, title, subtitle, trail, chevron, selected, iconHref, compact, roomy, href."
       },
       {
-        "selector": "JSXOpeningElement[name.name='Inline'] > JSXAttribute[name.name='status'] > Literal[value!=/^(?:info|success|warning|caution|error)$/]",
-        "message": "<Inline> status must be one of 'info' | 'success' | 'warning' | 'caution' | 'error'."
+        "selector": "CallExpression[callee.name='select'] > ObjectExpression > Property > Identifier[name!=/^(?:label|help|error|required|options|className|style|children|id)$/]",
+        "message": "select() doesn't accept that prop. Declared props: label, help, error, required, options."
       },
       {
-        "selector": "JSXOpeningElement[name.name='Link'] > JSXAttribute > JSXIdentifier[name!=/^(?:children|href|variant|iconEnd|iconHref|className|key|ref|style)$/]",
-        "message": "<Link> doesn't accept that prop. Declared props: children, href, variant, iconEnd, iconHref, className."
+        "selector": "CallExpression[callee.name='segmentedControl'] > ObjectExpression > Property > Identifier[name!=/^(?:options|value|name|size|full|iconsOnly|label|iconHref|className|style|children|id)$/]",
+        "message": "segmentedControl() doesn't accept that prop. Declared props: options, value, name, size, full, iconsOnly, label, iconHref."
       },
       {
-        "selector": "JSXOpeningElement[name.name='Link'] > JSXAttribute[name.name='variant'] > Literal[value!=/^(?:quiet|standalone)$/]",
-        "message": "<Link> variant must be one of 'quiet' | 'standalone'."
+        "selector": "CallExpression[callee.name='segmentedControl'] > ObjectExpression > Property[key.name='size'] > Literal[value!=/^(?:sm|lg)$/]",
+        "message": "segmentedControl() size must be one of 'sm' | 'lg'."
       },
       {
-        "selector": "JSXOpeningElement[name.name='Menu'] > JSXAttribute > JSXIdentifier[name!=/^(?:items|className|key|ref|style|children)$/]",
-        "message": "<Menu> doesn't accept that prop. Declared props: items, className."
+        "selector": "CallExpression[callee.name='skeleton'] > ObjectExpression > Property > Identifier[name!=/^(?:variant|last|className|style|children|id)$/]",
+        "message": "skeleton() doesn't accept that prop. Declared props: variant, last."
       },
       {
-        "selector": "JSXOpeningElement[name.name='Modal'] > JSXAttribute > JSXIdentifier[name!=/^(?:title|children|actions|cancel|onClose|onBack|size|largeTitle|sheet|side|iconHref|className|key|ref|style)$/]",
-        "message": "<Modal> doesn't accept that prop. Declared props: title, children, actions, cancel, onClose, onBack, size, largeTitle, sheet, side, iconHref, className."
+        "selector": "CallExpression[callee.name='skeleton'] > ObjectExpression > Property[key.name='variant'] > Literal[value!=/^(?:text|title|circle|block)$/]",
+        "message": "skeleton() variant must be one of 'text' | 'title' | 'circle' | 'block'."
       },
       {
-        "selector": "JSXOpeningElement[name.name='Modal'] > JSXAttribute[name.name='size'] > Literal[value!=/^(?:sm|md|lg|xl|2xl|full)$/]",
-        "message": "<Modal> size must be one of 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full'."
+        "selector": "CallExpression[callee.name='table'] > ObjectExpression > Property > Identifier[name!=/^(?:columns|rows|className|style|children|id)$/]",
+        "message": "table() doesn't accept that prop. Declared props: columns, rows."
       },
       {
-        "selector": "JSXOpeningElement[name.name='Nav'] > JSXAttribute > JSXIdentifier[name!=/^(?:variant|logo|links|title|subtitle|onBack|backLabel|actions|sticky|scrolled|iconHref|className|children|key|ref|style)$/]",
-        "message": "<Nav> doesn't accept that prop. Declared props: variant, logo, links, title, subtitle, onBack, backLabel, actions, sticky, scrolled, iconHref, className, children."
+        "selector": "CallExpression[callee.name='tabs'] > ObjectExpression > Property > Identifier[name!=/^(?:tabs|active|className|style|children|id)$/]",
+        "message": "tabs() doesn't accept that prop. Declared props: tabs, active."
       },
       {
-        "selector": "JSXOpeningElement[name.name='Nav'] > JSXAttribute[name.name='variant'] > Literal[value!=/^(?:brand|bar)$/]",
-        "message": "<Nav> variant must be one of 'brand' | 'bar'."
+        "selector": "CallExpression[callee.name='tag'] > ObjectExpression > Property > Identifier[name!=/^(?:children|hue|status|emphasis|size|interactive|inactive|icon|dot|className|style|id)$/]",
+        "message": "tag() doesn't accept that prop. Declared props: children, hue, status, emphasis, size, interactive, inactive, icon, dot."
       },
       {
-        "selector": "JSXOpeningElement[name.name='Radio'] > JSXAttribute > JSXIdentifier[name!=/^(?:label|id|name|checked|disabled|onChange|className|key|ref|style|children)$/]",
-        "message": "<Radio> doesn't accept that prop. Declared props: label, id, name, checked, disabled, onChange, className."
+        "selector": "CallExpression[callee.name='textField'] > ObjectExpression > Property > Identifier[name!=/^(?:label|help|error|required|iconStart|iconEnd|endAction|prefix|iconHref|type|placeholder|value|className|style|children|id)$/]",
+        "message": "textField() doesn't accept that prop. Declared props: label, help, error, required, iconStart, iconEnd, endAction, prefix, iconHref, type, placeholder, value."
       },
       {
-        "selector": "JSXOpeningElement[name.name='Row'] > JSXAttribute > JSXIdentifier[name!=/^(?:lead|title|subtitle|trail|chevron|selected|iconHref|compact|roomy|href|onClick|className|key|ref|style|children)$/]",
-        "message": "<Row> doesn't accept that prop. Declared props: lead, title, subtitle, trail, chevron, selected, iconHref, compact, roomy, href, onClick, className."
+        "selector": "CallExpression[callee.name='textarea'] > ObjectExpression > Property > Identifier[name!=/^(?:label|help|error|required|maxLength|showCount|value|rows|placeholder|className|style|children|id)$/]",
+        "message": "textarea() doesn't accept that prop. Declared props: label, help, error, required, maxLength, showCount, value, rows, placeholder."
       },
       {
-        "selector": "JSXOpeningElement[name.name='SegmentedControl'] > JSXAttribute > JSXIdentifier[name!=/^(?:options|value|defaultValue|onChange|name|size|full|iconsOnly|label|iconHref|className|key|ref|style|children)$/]",
-        "message": "<SegmentedControl> doesn't accept that prop. Declared props: options, value, defaultValue, onChange, name, size, full, iconsOnly, label, iconHref, className."
+        "selector": "CallExpression[callee.name='toast'] > ObjectExpression > Property > Identifier[name!=/^(?:status|title|children|actions|dismissible|onDismiss|dismissLabel|icon|iconHref|className|style|id)$/]",
+        "message": "toast() doesn't accept that prop. Declared props: status, title, children, actions, dismissible, onDismiss, dismissLabel, icon, iconHref."
       },
       {
-        "selector": "JSXOpeningElement[name.name='SegmentedControl'] > JSXAttribute[name.name='size'] > Literal[value!=/^(?:sm|lg)$/]",
-        "message": "<SegmentedControl> size must be one of 'sm' | 'lg'."
+        "selector": "CallExpression[callee.name='toggle'] > ObjectExpression > Property > Identifier[name!=/^(?:label|help|checked|disabled|readOnly|className|style|children|id)$/]",
+        "message": "toggle() doesn't accept that prop. Declared props: label, help, checked, disabled, readOnly."
       },
       {
-        "selector": "JSXOpeningElement[name.name='Select'] > JSXAttribute > JSXIdentifier[name!=/^(?:label|id|value|options|help|error|required|onChange|className|key|ref|style|children)$/]",
-        "message": "<Select> doesn't accept that prop. Declared props: label, id, value, options, help, error, required, onChange, className."
+        "selector": "CallExpression[callee.name='tooltip'] > ObjectExpression > Property > Identifier[name!=/^(?:label|placement|children|className|style|id)$/]",
+        "message": "tooltip() doesn't accept that prop. Declared props: label, placement, children."
       },
       {
-        "selector": "JSXOpeningElement[name.name='Skeleton'] > JSXAttribute > JSXIdentifier[name!=/^(?:variant|last|style|className|key|ref|children)$/]",
-        "message": "<Skeleton> doesn't accept that prop. Declared props: variant, last, style, className."
-      },
-      {
-        "selector": "JSXOpeningElement[name.name='Skeleton'] > JSXAttribute[name.name='variant'] > Literal[value!=/^(?:text|title|caption|circle)$/]",
-        "message": "<Skeleton> variant must be one of 'text' | 'title' | 'caption' | 'circle'."
-      },
-      {
-        "selector": "JSXOpeningElement[name.name='Table'] > JSXAttribute > JSXIdentifier[name!=/^(?:columns|rows|className|key|ref|style|children)$/]",
-        "message": "<Table> doesn't accept that prop. Declared props: columns, rows, className."
-      },
-      {
-        "selector": "JSXOpeningElement[name.name='Tabs'] > JSXAttribute > JSXIdentifier[name!=/^(?:tabs|active|onChange|className|key|ref|style|children)$/]",
-        "message": "<Tabs> doesn't accept that prop. Declared props: tabs, active, onChange, className."
-      },
-      {
-        "selector": "JSXOpeningElement[name.name='Tag'] > JSXAttribute > JSXIdentifier[name!=/^(?:children|hue|emphasis|status|size|interactive|inactive|icon|dot|className|key|ref|style)$/]",
-        "message": "<Tag> doesn't accept that prop. Declared props: children, hue, emphasis, status, size, interactive, inactive, icon, dot, className."
-      },
-      {
-        "selector": "JSXOpeningElement[name.name='Tag'] > JSXAttribute[name.name='hue'] > Literal[value!=/^(?:red|orange|yellow|green|cyan|blue|violet|pink|gray)$/]",
-        "message": "<Tag> hue must be one of 'red' | 'orange' | 'yellow' | 'green' | 'cyan' | 'blue' | 'violet' | 'pink' | 'gray'."
-      },
-      {
-        "selector": "JSXOpeningElement[name.name='Tag'] > JSXAttribute[name.name='emphasis'] > Literal[value!=/^(?:plain|subtle|soft|strong|stark)$/]",
-        "message": "<Tag> emphasis must be one of 'plain' | 'subtle' | 'soft' | 'strong' | 'stark'."
-      },
-      {
-        "selector": "JSXOpeningElement[name.name='Tag'] > JSXAttribute[name.name='status'] > Literal[value!=/^(?:info|success|warning|caution|error)$/]",
-        "message": "<Tag> status must be one of 'info' | 'success' | 'warning' | 'caution' | 'error'."
-      },
-      {
-        "selector": "JSXOpeningElement[name.name='TextField'] > JSXAttribute > JSXIdentifier[name!=/^(?:label|id|help|error|required|iconStart|iconEnd|endAction|prefix|iconHref|type|inputMode|autoComplete|placeholder|value|defaultValue|disabled|onChange|className|key|ref|style|children)$/]",
-        "message": "<TextField> doesn't accept that prop. Declared props: label, id, help, error, required, iconStart, iconEnd, endAction, prefix, iconHref, type, inputMode, autoComplete, placeholder, value, defaultValue, disabled, onChange, className."
-      },
-      {
-        "selector": "JSXOpeningElement[name.name='Textarea'] > JSXAttribute > JSXIdentifier[name!=/^(?:label|id|help|error|required|maxLength|showCount|value|defaultValue|onChange|className|key|ref|style|children)$/]",
-        "message": "<Textarea> doesn't accept that prop. Declared props: label, id, help, error, required, maxLength, showCount, value, defaultValue, onChange, className."
-      },
-      {
-        "selector": "JSXOpeningElement[name.name='Toast'] > JSXAttribute > JSXIdentifier[name!=/^(?:status|title|children|actions|dismissible|onDismiss|dismissLabel|icon|iconHref|className|key|ref|style)$/]",
-        "message": "<Toast> doesn't accept that prop. Declared props: status, title, children, actions, dismissible, onDismiss, dismissLabel, icon, iconHref, className."
-      },
-      {
-        "selector": "JSXOpeningElement[name.name='Toggle'] > JSXAttribute > JSXIdentifier[name!=/^(?:label|help|id|checked|disabled|onChange|className|key|ref|style|children)$/]",
-        "message": "<Toggle> doesn't accept that prop. Declared props: label, help, id, checked, disabled, onChange, className."
-      },
-      {
-        "selector": "JSXOpeningElement[name.name='Tooltip'] > JSXAttribute > JSXIdentifier[name!=/^(?:label|placement|children|id|className|key|ref|style)$/]",
-        "message": "<Tooltip> doesn't accept that prop. Declared props: label, placement, children, id, className."
-      },
-      {
-        "selector": "JSXOpeningElement[name.name='Tooltip'] > JSXAttribute[name.name='placement'] > Literal[value!=/^(?:top|bottom|start|end)$/]",
-        "message": "<Tooltip> placement must be one of 'top' | 'bottom' | 'start' | 'end'."
+        "selector": "CallExpression[callee.name='tooltip'] > ObjectExpression > Property[key.name='placement'] > Literal[value!=/^(?:top|bottom|left|right)$/]",
+        "message": "tooltip() placement must be one of 'top' | 'bottom' | 'left' | 'right'."
       }
     ]
   },
@@ -314,88 +202,88 @@
   ],
   "x-omelette": {
     "components": {
-      "Avatar": {
+      "avatar": {
         "replaces": []
       },
-      "Banner": {
+      "banner": {
         "replaces": []
       },
-      "Button": {
+      "button": {
         "replaces": []
       },
-      "ButtonGroup": {
+      "buttonGroup": {
         "replaces": []
       },
-      "Card": {
+      "card": {
         "replaces": []
       },
-      "Checkbox": {
+      "checkbox": {
         "replaces": []
       },
-      "Chip": {
+      "chip": {
         "replaces": []
       },
-      "CodeField": {
+      "codeField": {
         "replaces": []
       },
-      "EmptyState": {
+      "emptyState": {
         "replaces": []
       },
-      "Icon": {
+      "icon": {
         "replaces": []
       },
-      "Inline": {
+      "inline": {
         "replaces": []
       },
-      "Link": {
+      "link": {
         "replaces": []
       },
-      "Menu": {
+      "menu": {
         "replaces": []
       },
-      "Modal": {
+      "modal": {
         "replaces": []
       },
-      "Nav": {
+      "nav": {
         "replaces": []
       },
-      "Radio": {
+      "radio": {
         "replaces": []
       },
-      "Row": {
+      "row": {
         "replaces": []
       },
-      "SegmentedControl": {
+      "select": {
         "replaces": []
       },
-      "Select": {
+      "segmentedControl": {
         "replaces": []
       },
-      "Skeleton": {
+      "skeleton": {
         "replaces": []
       },
-      "Table": {
+      "table": {
         "replaces": []
       },
-      "Tabs": {
+      "tabs": {
         "replaces": []
       },
-      "Tag": {
+      "tag": {
         "replaces": []
       },
-      "TextField": {
+      "textField": {
         "replaces": []
       },
-      "Textarea": {
+      "textarea": {
         "replaces": []
       },
-      "Toast": {
+      "toast": {
         "replaces": []
       },
-      "Toggle": {
+      "toggle": {
         "replaces": []
       },
-      "Tooltip": {
+      "tooltip": {
         "replaces": []
       }
     },

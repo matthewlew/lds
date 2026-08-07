@@ -1,0 +1,61 @@
+<!-- @dsCard group="Status" viewport="880x760" name="Banner" subtitle="system (page) vs content banners — status, title, emphasis, desktop/mobile" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../assets/styles.css">
+<style>
+.lbl{font-family:var(--th-ui);font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--text-subdued);margin-bottom:10px}
+.dim{font-family:var(--th-ui);font-size:11px;color:var(--text-subdued);line-height:1.5}
+.stack{display:flex;flex-direction:column;gap:12px}
+/* preview-only: mirrors the component's @media(max-width:560px) rules so the
+   phone density can sit beside the desktop one in a single card. */
+.force-mobile .lds-banner{padding:12px 14px;gap:10px}
+.force-mobile .lds-banner__actions{margin-top:12px;flex-direction:column;align-items:stretch}
+.force-mobile .lds-banner__actions > *{width:100%}
+</style>
+</head>
+<body style="margin:0;background:var(--gray-50,#FAF9EA);font-family:var(--th-body);">
+<div id="root"></div>
+<script src="../assets/lds.js"></script>
+<script>LDS.setIconSprite("../assets/icons.svg");</script>
+<script>
+const { banner, button, h, mount, raw } = LDS;
+const H = '../assets/icons.svg';
+function Demo(){
+  return h('div',null,
+    // page banner is full-bleed on purpose: it sits outside the content padding
+    h(banner,{page:true,status:'warning',iconHref:H,dismissible:true},
+      'Scheduled maintenance tonight, 01:00–02:00 UTC. Saving stays available.'),
+    h('div',{style:{padding:28,display:'flex',flexDirection:'column',gap:28}},
+      h('div',null,
+        h('div',{className:'lbl'},'Page (system) — full-bleed, square, bottom hairline'),
+        h('div',{className:'dim'},'Shown pinned to the top of this card. Use for anything that applies to the whole session: maintenance, connectivity, billing.')),
+      h('div',null,
+        h('div',{className:'lbl'},'Content — grouped with what it describes'),
+        h('div',{className:'stack'},
+          h(banner,{status:'success',iconHref:H},'Changes saved.'),
+          h(banner,{status:'error',iconHref:H,title:'Two tokens could not be resolved',dismissible:true,
+            actions:[h(button,{key:'a',variant:'primary',size:'sm'},'Review'),h(button,{key:'b',variant:'tertiary',size:'sm'},'Dismiss')]},
+            'Hardcoded hex values were found in two components. Refactor them to tokens before publishing.'),
+          h(banner,{status:'info',iconHref:H},'A fourth theme (Roadtrip) is available under Foundations.')),
+        h('div',{className:'dim',style:{marginTop:8}},'Body is the default --text-body composite (18px / --leading-body). Title is the label composite on --th-ui. Icon is --icon-size (20px), tinted by --icon.')),
+      h('div',null,
+        h('div',{className:'lbl'},'Emphasis — one-token override'),
+        h('div',{className:'stack'},
+          h(banner,{status:'error',iconHref:H},'Subtle (default) — c-50 field, c-800 text.'),
+          h(banner,{status:'error',emphasis:'soft',iconHref:H},'emphasis="soft" — c-100 field, for a busier page.'),
+          h(banner,{status:'warning',emphasis:'strong',iconHref:H},'emphasis="strong" — knockout, for a blocking warning.')),
+        h('div',{className:'dim',style:{marginTop:8}},'Status sets the hue; emph-* re-resolves the same seven roles on it. Nothing about the banner is restyled per case.')),
+      h('div',null,
+        h('div',{className:'lbl'},'Desktop vs mobile'),
+        h('div',{style:{display:'flex',gap:20,alignItems:'flex-start',flexWrap:'wrap'}},
+          h('div',{style:{flex:'1 1 320px'}},
+            h('div',{className:'dim',style:{marginBottom:8}},'Desktop — 14/16 padding, actions inline'),
+            h(banner,{status:'caution',iconHref:H,title:'Read-only during migration',
+              actions:[h(button,{key:'a',variant:'secondary',size:'sm'},'Learn more')]},'Editing returns when the migration finishes.')),
+          h('div',{className:'force-mobile',style:{width:300}},
+            h('div',{className:'dim',style:{marginBottom:8}},'Mobile — 12/14 padding, actions stack full width'),
+            h(banner,{status:'caution',iconHref:H,title:'Read-only during migration',
+              actions:[h(button,{key:'a',variant:'secondary',size:'sm'},'Learn more')]},'Editing returns when the migration finishes.')))))
+  );
+}
+mount(document.getElementById('root'), h(Demo));
+</script>
+</body></html>

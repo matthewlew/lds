@@ -1,7 +1,7 @@
 {
   "name": "@lew/lds",
   "version": "1.0.0",
-  "description": "Lew Design System \u2014 React components over a one-token CSS architecture, with four themes and light/dark.",
+  "description": "Lew Design System — components as plain HTML, over a one-token CSS architecture, with four themes and light/dark.",
   "license": "MIT",
   "type": "module",
   "sideEffects": [
@@ -31,22 +31,25 @@
     "./css/themes/roadtrip": "./css/themes/roadtrip.css",
     "./fonts/*": "./css/fonts/*",
     "./adherence.oxlintrc.json": "./adherence.oxlintrc.json",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./controllers": {
+      "types": "./src/controllers/index.d.ts",
+      "default": "./src/controllers/index.js"
+    }
   },
   "dependencies": {
     "@lew/open-icons": "1.0.0"
   },
-  "peerDependencies": {
-    "react": "^18.2.0 || ^19.0.0"
-  },
   "scripts": {
-    "test": "node ../../scripts/render-test.mjs"
+    "test": "node ../../scripts/markup-contract-test.mjs"
   },
   "keywords": [
     "design-system",
-    "react",
+    "html",
     "components",
     "css",
+    "vanilla",
+    "no-build",
     "lds"
   ]
 }

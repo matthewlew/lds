@@ -1,0 +1,78 @@
+<!-- @dsCard group="Buttons" viewport="900x760" name="Button group" subtitle="direction, hug vs fill, split cancel, conversion bar, mobile stacking" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../assets/styles.css">
+<style>
+.lbl{font-family:var(--th-ui);font-size:12px;font-weight:500;color:var(--gray-700);margin-bottom:8px}
+.dim{font-family:var(--th-ui);font-size:12px;color:var(--gray-600);line-height:1.5;margin-top:8px}
+.box{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);padding:16px}
+.col{display:flex;flex-direction:column;gap:22px;width:400px}
+/* preview-only: mirrors the component's @media(max-width:560px) stack rules so
+   the phone layout can sit beside the desktop one in a single card. */
+.force-mobile .lds-btn-group--stack{flex-direction:column-reverse;align-items:stretch;flex-wrap:nowrap;gap:8px}
+.force-mobile .lds-btn-group--stack > *{flex:0 0 auto;width:100%;margin-inline-end:0}
+.force-mobile .lds-btn-group--stack.lds-btn-group--split > *:first-child{margin-inline-end:0}
+.force-mobile .lds-btn-group--conversion{flex-direction:column;align-items:stretch;gap:12px}
+.force-mobile .lds-btn-group--conversion > *{width:100%;margin-inline-end:0}
+</style>
+</head>
+<body style="margin:0;padding:28px;background:var(--gray-50,#FAF9EA);font-family:var(--th-body);">
+<div id="root"></div>
+<script src="../assets/lds.js"></script>
+<script>LDS.setIconSprite("../assets/icons.svg");</script>
+<script>
+const { buttonGroup, button, h, mount, raw } = LDS;
+const Cancel = (p) => h(button,{variant:'tertiary',size:'sm',...p},'Cancel');
+const Save = (p) => h(button,{variant:'primary',size:'sm',...p},'Save changes');
+const Draft = (p) => h(button,{variant:'secondary',size:'sm',...p},'Save draft');
+function Demo(){
+  return h('div',{style:{display:'flex',gap:40,flexWrap:'wrap',alignItems:'flex-start'}},
+    h('div',{className:'col'},
+      h('div',null,
+        h('div',{className:'lbl'},'Default — hug, aligned end'),
+        h('div',{className:'box'},
+          h(buttonGroup,null,h(Draft,{key:'d'}),h(Save,{key:'s'}))),
+        h('div',{className:'dim'},'Confirming action last in source, so it lands at the end of the reading direction.')),
+      h('div',null,
+        h('div',{className:'lbl'},'Split — cancel at the opposite end'),
+        h('div',{className:'box'},
+          h(buttonGroup,{align:'split'},h(Cancel,{key:'c'}),h(Save,{key:'s'}))),
+        h('div',{className:'dim'},'Cancel is not a peer of confirm: dismissing and committing become opposite physical directions instead of adjacent targets.')),
+      h('div',null,
+        h('div',{className:'lbl'},'Conversion — detail outside the button'),
+        h('div',{className:'box'},
+          h(buttonGroup,{detail:'$248 total',detailNote:'3 nights · includes fees'},
+            h(button,{variant:'primary'},'Reserve'))),
+        h('div',{className:'dim'},'A button label is a verb. The price, the count and the qualifier sit to its left, so the target stays one word and the detail has room to be specific.')),
+      h('div',{className:'force-mobile'},
+        h('div',{className:'lbl'},'Conversion under 560px'),
+        h('div',{className:'box'},
+          h(buttonGroup,{detail:'$248 total',detailNote:'3 nights · includes fees'},
+            h(button,{variant:'primary'},'Reserve'))),
+        h('div',{className:'dim'},'The detail stays above the button here, not below it — it is the reason for the tap. Only cancel/confirm pairs reverse on stack.')),
+      h('div',null,
+        h('div',{className:'lbl'},'Fill — equal shares of the width'),
+        h('div',{className:'box'},
+          h(buttonGroup,{width:'fill'},h(Draft,{key:'d'}),h(Save,{key:'s'}))),
+        h('div',{className:'dim'},'For a narrow container or a sheet footer, where hugging leaves the row looking unfinished.'))),
+    h('div',{className:'col',style:{width:300}},
+      h('div',null,
+        h('div',{className:'lbl'},'Vertical'),
+        h('div',{className:'box'},
+          h(buttonGroup,{orientation:'vertical',width:'fill'},
+            h(Draft,{key:'d'}),h(Save,{key:'s'}))),
+        h('div',{className:'dim'},'Already a column, so it never stacks.')),
+      h('div',{className:'force-mobile'},
+        h('div',{className:'lbl'},'Under 560px — stacks and fills'),
+        h('div',{className:'box'},
+          h(buttonGroup,{align:'split'},h(Cancel,{key:'c'}),h(Save,{key:'s'}))),
+        h('div',{className:'dim'},'Reversed on purpose: the confirming action sits at the top of the stack, under the thumb. Pass stackOnMobile={false} to keep a row.')),
+      h('div',null,
+        h('div',{className:'lbl'},'Allowed styles'),
+        h('div',{className:'box'},
+          h(buttonGroup,{align:'split'},
+            h(Cancel,{key:'c'}),
+            h(button,{key:'d',variant:'primary',size:'sm',hue:'red'},'Delete'))),
+        h('div',{className:'dim'},'One primary per group. Secondary for a peer action, tertiary for cancel. Destructive keeps the primary shape and takes the red hue — colour comes from the ramp, never a hex.'))));
+}
+mount(document.getElementById('root'), h(Demo));
+</script>
+</body></html>

@@ -1,6 +1,6 @@
 # @lew/lds
 
-The Lew Design System as React components over a one-token CSS architecture:
+The Lew Design System as plain HTML over a one-token CSS architecture:
 primitives → semantic emphasis roles → components → themes.
 
 Components carry no styles of their own. They emit LDS class names and the paint
@@ -10,22 +10,69 @@ system without a single component branching on the theme's name.
 ## Install
 
 ```bash
-npm install @lew/lds react
+npm install @lew/lds
 ```
 
-```jsx
-import { Button, TextField, ToastProvider, useToast } from '@lew/lds';
+No framework, no peer dependencies, no build step.
+
+A component is a function that returns a string of HTML:
+
+```js
+import { button, textField, h, mount } from '@lew/lds';
 import '@lew/lds/css';
 
-<ToastProvider>
-  <TextField label="Work email" required />
-  <Button variant="primary" iconStart="check">Save changes</Button>
-</ToastProvider>
+mount(document.getElementById('form'),
+  h('div', { className: 'stack' },
+    h(textField, { label: 'Work email', required: true }),
+    h(button, { variant: 'primary', iconStart: 'check' }, 'Save changes')));
 ```
 
-The components are plain ESM using `React.createElement` — there is no JSX to
-compile and no build step in this package. Node, bundlers and SSR all load them
-directly.
+`h()` composes elements and components into a tree and returns `raw()` markup;
+`mount()` puts it in the document. Neither is required — every component can be
+called directly and its string used however you like, including on a server.
+
+### Slots escape by default
+
+Anything passed into a slot — `children`, `title`, `actions` — is treated as
+TEXT and escaped. To compose markup into one, mark it with `raw()`:
+
+```js
+banner({ status: 'error', title: 'Failed',
+  actions: raw(button({ variant: 'primary', children: 'Retry' })) });
+```
+
+The wrapper is the point: the unsafe path has to be chosen, not reached by
+forgetting to escape.
+
+### The five that hold state
+
+CodeField, SegmentedControl, Textarea, Toast and Tooltip need behaviour a string
+cannot carry, so each ships a controller alongside its template:
+
+```js
+import { mountCodeField, mountToasts } from '@lew/lds/controllers';
+
+const code = mountCodeField(el, { length: 6, onChange: (v) => check(v) });
+code.update({ verifying: true });
+code.dispose();
+
+const toasts = mountToasts(document.body);
+toasts.toast({ status: 'success', children: 'Saved.' });
+```
+
+Every controller is `mountX(container, config) → { update, dispose }`.
+`dispose()` removes every listener it added and clears the container.
+
+For markup already in the document — composed into a larger tree, or rendered on
+a server — `attachTooltip(wrapper)` binds behaviour without re-rendering.
+
+### The markup is the specification
+
+`markup-contract.json` pins the exact HTML all 28 components emit across 103
+prop combinations, and `npm test` diffs against it. It was generated from the
+React implementation this package used to be, and frozen before that
+implementation was removed — so the markup is a guarantee that outlived the
+binding that produced it, not an accident of the current one.
 
 ## Icons
 
@@ -43,7 +90,7 @@ setIconSprite('/static/icons.svg');
 ```
 
 Any component also takes a one-off `iconHref`. Icon props take either a sprite
-name (`iconStart="check"`) or a node.
+name (`iconStart: 'check'`) or composed markup.
 
 ## Components
 
@@ -128,7 +175,7 @@ From the repo root:
 npm test
 ```
 
-Renders every component through `react-dom/server`, checks that every icon name
+Diffs every component against the frozen markup contract, checks that every icon name
 and CSS class the components reference actually exists, typechecks the published
 `.d.ts` surface against real usage, and loads all 32 docs cards in a headless
 browser asserting no console errors, no failed requests, and no `<use>` pointing

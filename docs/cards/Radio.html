@@ -1,0 +1,16 @@
+<!-- @dsCard group="Forms" viewport="280x140" name="Radio" subtitle="grouped, checked / disabled" -->
+<!DOCTYPE html><html><head><link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body style="margin:0;padding:32px;background:var(--gray-50,#FAF9EA);font-family:var(--th-body);">
+<div id="root"></div>
+<script src="../assets/lds.js"></script>
+<script>LDS.setIconSprite("../assets/icons.svg");</script>
+<script>
+const { radio, h, mount, raw } = LDS;
+mount(document.getElementById('root'), h('div',{style:{display:'flex',flexDirection:'column',gap:12}},
+    h(radio,{label:'Whole campground', name:'scope', defaultChecked:true}),
+    h(radio,{label:'One site only', name:'scope'}),
+    h(radio,{label:'Loop (not yet supported)', name:'scope', disabled:true})
+  ));
+</script>
+</body></html>

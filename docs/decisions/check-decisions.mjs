@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-// Validate docs/lew-design-system/decisions.md.
+// Validate decisions.md.
 //
-//   node scripts/check-decisions.mjs          check, exit 1 on problems
-//   node scripts/check-decisions.mjs --fix    rewrite the generated split line
+//   node docs/decisions/check-decisions.mjs          check, exit 1 on problems
+//   node docs/decisions/check-decisions.mjs --fix    rewrite the generated split line
 //
-// The grammar lives in docs/lew-design-system/decisions-parser.mjs and is shared
+// The grammar lives in decisions-parser.mjs beside this file and is shared
 // with decisions.html, so this checks the record against the same rules the page
 // renders it with. A second copy of the regex here would drift, and then the
 // record could pass its own checks while displaying something else.
@@ -20,10 +20,13 @@ import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 import {
   parse, validate, split, splitSentence, SPLIT_RE, isDecision
-} from '../docs/lew-design-system/decisions-parser.mjs'
+} from './decisions-parser.mjs'
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
-const MD = join(ROOT, 'docs/lew-design-system/decisions.md')
+// The record and its grammar sit beside this file; the repo root is two up and
+// is only needed for the git lookups below.
+const HERE = dirname(fileURLToPath(import.meta.url))
+const ROOT = join(HERE, '..', '..')
+const MD = join(HERE, 'decisions.md')
 const fix = process.argv.includes('--fix')
 
 let md = readFileSync(MD, 'utf8')

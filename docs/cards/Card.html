@@ -1,0 +1,89 @@
+<!-- @dsCard group="Cards" viewport="1080x760" name="Card" subtitle="emphasis levels, and selectable with hover / pressed / selected / inactive" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../assets/styles.css">
+<style>
+body{margin:0;padding:28px;background:var(--gray-50,#FAF9EA);font-family:var(--th-body)}
+.lbl{font-family:var(--th-ui);font-size:var(--text-control-sm);font-weight:var(--weight-medium);color:var(--gray-700);margin-bottom:12px}
+.dim{font-family:var(--th-ui);font-size:var(--text-control-sm);color:var(--gray-600);line-height:1.55;margin-top:10px;max-width:620px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.cap{font-family:var(--th-mono);font-size:10px;color:var(--gray-500);margin-bottom:6px}
+section{margin-bottom:34px}
+/* forces one sample of each state so all four are visible at once — the live
+   cards below still get theirs from :hover / :active */
+.f-hover{background:var(--bg-hover);border-color:var(--text-accent)}
+.f-press{background:var(--bg-pressed);border-color:var(--text-accent)}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="../assets/lds.js"></script>
+<script>LDS.setIconSprite("../assets/icons.svg");</script>
+<script>
+const { card, button, tag, h, mount, raw } = LDS;
+const EMPH = [
+  ['plain','the default surface'],
+  ['subtle','a tint of the hue'],
+  ['soft','tint with hue ink'],
+  ['strong','filled, knockout ink'],
+  ['stark','the hue at full depth']
+];
+function Emphasis(){
+  return h('div',{className:'grid'},
+    EMPH.map(([e,note])=>h('div',{key:e},
+      h('div',{className:'cap'},'emph-'+e),
+      h(card,{emphasis:e,hue:'green',kicker:'Permit',title:'Cables season',
+        body:note,meta:'Opens 7am PT'}))));
+}
+// Selection is a plain variable and the demo redraws — no framework, and no
+// state hidden in the DOM. ROUTES is the order the cards appear in, which is how
+// a click finds its value without the markup carrying an extra attribute.
+const ROUTES = ['half','clouds','mist'];
+let sel = 'half';
+function Selectable(){
+  const opt = (id,title,body) => h(card,{selectable:true,
+    selected:sel===id,kicker:'Route',title,body});
+  return h('div',null,
+    h('div',{className:'grid'},
+      opt('half','Half Dome','14.2 mi · 4,800 ft'),
+      opt('clouds','Clouds Rest','12.4 mi · 3,100 ft'),
+      opt('mist','Mist Trail','5.4 mi · 2,000 ft')),
+    h('div',{className:'dim'},'Click any of them \u2014 selection is live, and Tab then Space works, because a selectable card is a real <button> rather than a div with a click handler. That is what supplies keyboard activation, the focus ring and a reported pressed state for free.'));
+}
+function States(){
+  const S = [
+    ['resting',{}],['hover',{className:'f-hover'}],['pressed',{className:'f-press'}],
+    ['selected',{selected:true}],['inactive',{disabled:true}],['inactive + selected',{disabled:true,selected:true}]
+  ];
+  return h('div',{className:'grid'},
+    S.map(([cap,props])=>h('div',{key:cap},
+      h('div',{className:'cap'},cap),
+      h(card,Object.assign({selectable:true,kicker:'Route',
+        title:'Clouds Rest',body:'12.4 mi \u00b7 3,100 ft'},props)))));
+}
+function Demo(){
+  return h('div',null,
+    h('section',null,
+      h('div',{className:'lbl'},'Emphasis levels'),
+      h(Emphasis),
+      h('div',{className:'dim'},'One class resolves all seven object-colour roles together \u2014 background, text, subdued text, accent, icon, border, separator \u2014 so the card never names a colour. Every level here is the same markup with a different emphasis, on the same hue.'),
+      h('div',{className:'dim'},'The kicker tracks --text-accent and the body tracks --text-subdued, which is why the hierarchy survives into strong and stark where a hand-picked grey would go invisible.')),
+    h('section',null,
+      h('div',{className:'lbl'},'Selectable'),
+      h(Selectable)),
+    h('section',null,
+      h('div',{className:'lbl'},'Selectable \u2014 every state'),
+      h(States),
+      h('div',{className:'dim'},'Hover and pressed come from --bg-hover and --bg-pressed, so they work at every emphasis and in dark mode without a second rule. Selection is marked twice, by an accent border and an inset ring: on a soft or media emphasis a single ring can land at almost no contrast against the fill.'),
+      h('div',{className:'dim'},'The ring is inset so the card\u2019s footprint never changes between states \u2014 an outset ring would shift every card in the grid on selection. Inactive removes the ring and the hover response as well as dimming: a faded card that still lights up on hover reads as clickable.')));
+}
+const root = document.getElementById('root');
+// Redrawing replaces the nodes, so the listeners go with them — there is nothing
+// to unbind. The selectable cards under "every state" are a separate section and
+// are deliberately left inert.
+function draw(){
+  mount(root, h(Demo));
+  root.querySelectorAll('section')[1].querySelectorAll('.lds-card--selectable')
+    .forEach((el, i) => el.addEventListener('click', () => { sel = ROUTES[i]; draw(); }));
+}
+draw();
+</script>
+</body></html>

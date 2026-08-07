@@ -26,6 +26,9 @@ export function raw(html) {
 /** Resolves a slot: raw() markup passes through, anything else is escaped text. */
 export function slot(value) {
   if (value === null || value === undefined || value === false) return '';
+  // A list of children resolves piecewise, so composing several things into one
+  // slot does not need a wrapper element that would change the layout.
+  if (Array.isArray(value)) return value.map(slot).join('');
   if (typeof value === 'object' && typeof value.__html === 'string') return value.__html;
   return escapeHtml(value);
 }

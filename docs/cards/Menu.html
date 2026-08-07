@@ -1,0 +1,14 @@
+<!-- @dsCard group="Navigation & Data" viewport="240x220" name="Menu" subtitle="dropdown, danger item, separator" -->
+<!DOCTYPE html><html><head><link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body style="margin:0;padding:32px;background:var(--gray-50,#FAF9EA);font-family:var(--th-body);">
+<div id="root"></div>
+<script src="../assets/lds.js"></script>
+<script>LDS.setIconSprite("../assets/icons.svg");</script>
+<script>
+const { menu, h, mount, raw } = LDS;
+mount(document.getElementById('root'), h(menu,{items:[
+    {label:'Rename', hint:'⌘R'},{label:'Duplicate'},{separator:true},{label:'Delete', danger:true}
+  ]}));
+</script>
+</body></html>
