@@ -1,0 +1,63 @@
+<!-- @dsCard group="Status" viewport="880x760" name="Banner" subtitle="system (page) vs content banners — status, title, emphasis, desktop/mobile" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="../../_ds_bundle.js"></script>
+<style>
+.lbl{font-family:var(--th-ui);font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--text-subdued);margin-bottom:10px}
+.dim{font-family:var(--th-ui);font-size:11px;color:var(--text-subdued);line-height:1.5}
+.stack{display:flex;flex-direction:column;gap:12px}
+/* preview-only: mirrors the component's @media(max-width:560px) rules so the
+   phone density can sit beside the desktop one in a single card. */
+.force-mobile .lds-banner{padding:12px 14px;gap:10px}
+.force-mobile .lds-banner__actions{margin-top:12px;flex-direction:column;align-items:stretch}
+.force-mobile .lds-banner__actions > *{width:100%}
+</style>
+</head>
+<body style="margin:0;background:var(--gray-50,#FAF9EA);font-family:var(--th-body);">
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel">
+const { Banner, Button } = window.LDSLewDesignSystem_1b8684;
+const H = '../../icons.svg';
+function Demo(){
+  return React.createElement('div',null,
+    // page banner is full-bleed on purpose: it sits outside the content padding
+    React.createElement(Banner,{page:true,status:'warning',iconHref:H,dismissible:true},
+      'Scheduled maintenance tonight, 01:00–02:00 UTC. Saving stays available.'),
+    React.createElement('div',{style:{padding:28,display:'flex',flexDirection:'column',gap:28}},
+      React.createElement('div',null,
+        React.createElement('div',{className:'lbl'},'Page (system) — full-bleed, square, bottom hairline'),
+        React.createElement('div',{className:'dim'},'Shown pinned to the top of this card. Use for anything that applies to the whole session: maintenance, connectivity, billing.')),
+      React.createElement('div',null,
+        React.createElement('div',{className:'lbl'},'Content — grouped with what it describes'),
+        React.createElement('div',{className:'stack'},
+          React.createElement(Banner,{status:'success',iconHref:H},'Changes saved.'),
+          React.createElement(Banner,{status:'error',iconHref:H,title:'Two tokens could not be resolved',dismissible:true,
+            actions:[React.createElement(Button,{key:'a',variant:'primary',size:'sm'},'Review'),React.createElement(Button,{key:'b',variant:'tertiary',size:'sm'},'Dismiss')]},
+            'Hardcoded hex values were found in two components. Refactor them to tokens before publishing.'),
+          React.createElement(Banner,{status:'info',iconHref:H},'A fourth theme (Roadtrip) is available under Foundations.')),
+        React.createElement('div',{className:'dim',style:{marginTop:8}},'Body is the default --text-body composite (18px / --leading-body). Title is the label composite on --th-ui. Icon is --icon-size (20px), tinted by --icon.')),
+      React.createElement('div',null,
+        React.createElement('div',{className:'lbl'},'Emphasis — one-token override'),
+        React.createElement('div',{className:'stack'},
+          React.createElement(Banner,{status:'error',iconHref:H},'Subtle (default) — c-50 field, c-800 text.'),
+          React.createElement(Banner,{status:'error',emphasis:'soft',iconHref:H},'emphasis="soft" — c-100 field, for a busier page.'),
+          React.createElement(Banner,{status:'warning',emphasis:'strong',iconHref:H},'emphasis="strong" — knockout, for a blocking warning.')),
+        React.createElement('div',{className:'dim',style:{marginTop:8}},'Status sets the hue; emph-* re-resolves the same seven roles on it. Nothing about the banner is restyled per case.')),
+      React.createElement('div',null,
+        React.createElement('div',{className:'lbl'},'Desktop vs mobile'),
+        React.createElement('div',{style:{display:'flex',gap:20,alignItems:'flex-start',flexWrap:'wrap'}},
+          React.createElement('div',{style:{flex:'1 1 320px'}},
+            React.createElement('div',{className:'dim',style:{marginBottom:8}},'Desktop — 14/16 padding, actions inline'),
+            React.createElement(Banner,{status:'caution',iconHref:H,title:'Read-only during migration',
+              actions:[React.createElement(Button,{key:'a',variant:'secondary',size:'sm'},'Learn more')]},'Editing returns when the migration finishes.')),
+          React.createElement('div',{className:'force-mobile',style:{width:300}},
+            React.createElement('div',{className:'dim',style:{marginBottom:8}},'Mobile — 12/14 padding, actions stack full width'),
+            React.createElement(Banner,{status:'caution',iconHref:H,title:'Read-only during migration',
+              actions:[React.createElement(Button,{key:'a',variant:'secondary',size:'sm'},'Learn more')]},'Editing returns when the migration finishes.')))))
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
+</script>
+</body></html>

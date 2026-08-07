@@ -1,0 +1,87 @@
+<!-- @dsCard group="Forms" viewport="900x620" name="TextField" subtitle="inset icons, joined dial code, one-time code with verification" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="../../_ds_bundle.js"></script>
+<style>
+.lbl{font-family:var(--th-ui);font-size:var(--text-control-sm);font-weight:var(--weight-medium);color:var(--gray-700);margin-bottom:10px}
+.dim{font-family:var(--th-ui);font-size:var(--text-control-sm);color:var(--gray-600);line-height:1.5;margin-top:8px}
+.col{display:flex;flex-direction:column;gap:24px;width:360px}
+.stack{display:flex;flex-direction:column;gap:14px}
+</style>
+</head>
+<body style="margin:0;padding:28px;background:var(--gray-50,#FAF9EA);font-family:var(--th-body);">
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="module">
+  const m = await import('./dial-codes.js');
+  window.dialOptions = m.dialOptions; window.DIAL_CODES = m.DIAL_CODES;
+  window.dispatchEvent(new Event('dial-ready'));
+</script>
+<script type="text/babel">
+const { TextField, Select, CodeField } = window.LDSLewDesignSystem_1b8684;
+const H = '../../icons.svg';
+function Demo(){
+  const [show,setShow]=React.useState(false);
+  const [code,setCode]=React.useState('4821');
+  const [otp,setOtp]=React.useState('');
+  const [dial,setDial]=React.useState(null);
+  React.useEffect(()=>{
+    const load=()=>setDial(window.dialOptions());
+    if(window.dialOptions) load(); else window.addEventListener('dial-ready',load,{once:true});
+  },[]);
+  // the verdict arrives from the server, so the field shows in-flight then settles
+  const [state,setState]=React.useState('idle');
+  React.useEffect(()=>{
+    if(otp.length!==6){ setState('idle'); return; }
+    setState('verifying');
+    const id=setTimeout(()=>setState(otp==='123456'?'error':'success'),900);
+    return ()=>clearTimeout(id);
+  },[otp]);
+  // country names ride on the optgroup, which a native select shows in the open
+  // list and never in the closed box
+  const DIAL = dial
+    ? [...dial.top.map(o=>({label:o.name,options:[o]})), ...dial.rest.map(o=>({label:o.name,options:[o]}))]
+    : ['+1 US'];
+  return React.createElement('div',{style:{display:'flex',gap:44,flexWrap:'wrap',alignItems:'flex-start'}},
+    React.createElement('div',{className:'col'},
+      React.createElement('div',null,
+        React.createElement('div',{className:'lbl'},'Inset icons'),
+        React.createElement('div',{className:'stack'},
+          React.createElement(TextField,{label:'Email',iconStart:'mail',iconHref:H,type:'email',autoComplete:'email',defaultValue:'hello@lew.design'}),
+          React.createElement(TextField,{label:'Full name',iconStart:'person',iconHref:H,autoComplete:'name',placeholder:'Jane Rivera'}),
+          React.createElement(TextField,{label:'Search trails',iconStart:'search',iconHref:H,placeholder:'Half Dome'})),
+        React.createElement('div',{className:'dim'},'iconStart / iconEnd take a sprite name or a node. The icon is inset over the input\u2019s own padding, so the field stays one box with one border and one target \u2014 not an icon sitting beside a control.')),
+      React.createElement('div',null,
+        React.createElement('div',{className:'lbl'},'Interactive trailing icon'),
+        React.createElement(TextField,{label:'Password',type:show?'text':'password',defaultValue:'granite-cables-92',
+          endAction:{icon:show?'eye-off':'eye',label:show?'Hide password':'Show password',onClick:()=>setShow(!show)},iconHref:H}),
+        React.createElement('div',{className:'dim'},'endAction turns the trailing slot into a real button \u2014 reveal, clear, or open a picker. Decorative icons keep pointer-events off so they never steal the click.'))),
+    React.createElement('div',{className:'col'},
+      React.createElement('div',null,
+        React.createElement('div',{className:'lbl'},'International phone'),
+        React.createElement(TextField,{label:'Mobile',type:'tel',inputMode:'tel',autoComplete:'tel',defaultValue:'555 0134',
+          help:'We only text when a permit opens.',
+          prefix:React.createElement(Select,{options:DIAL,defaultValue:'+1','aria-label':'Country and dial code'})}),
+        React.createElement('div',{className:'dim'},'A dial code and a number are one value, so they are one box: the Select is joined into the field, sharing a border with the seam between them. The code hugs its content; the number takes the rest. Store E.164 (+15550134) and let the two inputs be presentation.'),
+        React.createElement('div',{className:'dim'},'It carries all '+(window.DIAL_CODES?window.DIAL_CODES.length:'240')+' ITU codes, not a top six. A short list is not a shortcut \u2014 a user whose country is missing cannot enter their number at all, and no error message helps them. The likely codes sit in a Common group at the top and the rest follow alphabetically; which ones are "likely" is the product\u2019s call, not the system\u2019s.'),
+        React.createElement('div',{className:'dim'},'The closed box reads "+1 US" and nothing more. A native select is exactly as wide as its widest option, so labelling them "+1  United States" made the code swallow the row and left the number a stub \u2014 the country name now rides on the optgroup, which a select shows when open and never when closed. The ISO code stays because +1 alone is ambiguous across twenty countries.'),
+        React.createElement('div',{className:'dim'},'The dial box is also capped at 11ch and 40% of the field, so no option label a consumer adds can take the number\u2019s space. Twenty entries share the value +1, which is correct: E.164 only needs the code.')),
+      React.createElement('div',null,
+        React.createElement('div',{className:'lbl'},'One-time code \u2014 2FA'),
+        React.createElement('div',{className:'stack'},
+          React.createElement(CodeField,{label:'Verification code',length:6,groupAfter:3,value:otp,onChange:setOtp,iconHref:H,
+            help:state==='idle'?'Six digits, from your authenticator app.':undefined,
+            verifying:state==='verifying',
+            success:state==='success'?'Verified \u2014 signing you in':undefined,
+            error:state==='error'?'That code is not right. Try the newest one.':undefined}),
+          React.createElement('div',{className:'dim',style:{marginTop:0}},'Type any six digits to see it verify \u2014 123456 fails.'),
+          React.createElement(CodeField,{label:'Verified',length:4,size:'sm',value:'4821',success:true,iconHref:H}),
+          React.createElement(CodeField,{label:'Short code',length:4,size:'sm',error:'That code has expired.',iconHref:H})),
+        React.createElement('div',{className:'dim'},'One box per digit, because the boxes are what say how many to expect. Numeric keypad, tabular figures, autocomplete="one-time-code" on the first box so the OS offers the SMS code, paste fills the whole set, backspace steps back.'),
+        React.createElement('div',{className:'dim'},'2FA is the one field that earns a success state: the user cannot check a code themselves, and the verdict comes from a round trip they cannot see. So it runs idle \u2192 checking \u2192 verified or failed, and the verdict is a tinted border AND an icon AND a message in role="status" \u2014 a green border alone says nothing in greyscale and nothing to a screen reader.'),
+        React.createElement('div',{className:'dim'},'Everywhere else a valid field needs no notice at all. Confirming each one turns a form into a wall of green ticks that stops meaning anything.'))));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
+</script>
+</body></html>

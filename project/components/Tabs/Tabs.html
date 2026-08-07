@@ -1,0 +1,70 @@
+<!-- @dsCard group="Navigation & Data" viewport="780x540" name="Tabs" subtitle="single-select list — sections, icon prefix, states, desktop vs mobile" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="../../_ds_bundle.js"></script>
+<style>
+.lbl{font-family:var(--th-ui);font-size:12px;font-weight:600;color:var(--gray-700);margin-bottom:10px}
+.dim{font-family:var(--th-ui);font-size:12px;color:var(--gray-600);line-height:1.5}
+/* preview-only: paints the real hover/pressed declarations so both are visible
+   in a static card. Live tabs get these from :hover / :active. */
+.demo-hover{background:var(--gray-100);color:var(--gray-900)}
+.demo-press{background:var(--gray-200);color:var(--gray-900)}
+/* preview-only: mirrors the component's @media(max-width:560px) rules via a
+   class, so the mobile strip can sit beside the desktop list in one card. */
+.force-mobile .lds-tabs{flex-direction:row;border-right:none;border-bottom:1px solid var(--gray-200);min-width:0;width:100%;overflow-x:auto;scrollbar-width:none}
+.force-mobile .lds-tabs::-webkit-scrollbar{display:none}
+.force-mobile .lds-tabs__tab{flex:0 0 auto;min-height:var(--control-xl);justify-content:center;padding:10px 14px}
+</style>
+</head>
+<body style="margin:0;padding:28px;background:var(--gray-50,#FAF9EA);font-family:var(--th-body);">
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel">
+const { Tabs } = window.LDSLewDesignSystem_1b8684;
+const H = '../../icons.svg';
+const GROUPED = [
+  {section:'Foundations'},
+  {id:'color',label:'Color & Emphasis',icon:'photo',iconHref:H},
+  {id:'type',label:'Typography',icon:'file',iconHref:H},
+  {id:'shape',label:'Shape',icon:'edit',iconHref:H},
+  {section:'Components'},
+  {id:'buttons',label:'Buttons',icon:'grid',iconHref:H},
+  {id:'forms',label:'Forms',icon:'settings',iconHref:H},
+];
+const FLAT = [{id:'color',label:'Color & Emphasis'},{id:'type',label:'Typography'},{id:'shape',label:'Shape'}];
+function Demo(){
+  const [active,setActive]=React.useState('type');
+  return React.createElement('div',{style:{display:'flex',flexDirection:'column',gap:28}},
+    React.createElement('div',{style:{display:'flex',gap:36,alignItems:'flex-start',flexWrap:'wrap'}},
+      React.createElement('div',null,
+        React.createElement('div',{className:'lbl'},'Desktop — sections and icon prefix'),
+        React.createElement(Tabs,{active,onChange:setActive,tabs:GROUPED}),
+        React.createElement('div',{className:'dim',style:{marginTop:8,maxWidth:210}},'36px row (--control-md), 16px icon (--icon-size-sm). Section headers use the same label composite as the card kicker.')
+      ),
+      React.createElement('div',null,
+        React.createElement('div',{className:'lbl'},'States'),
+        React.createElement('div',{className:'lds-tabs',style:{minWidth:190}},
+          React.createElement('button',{className:'lds-tabs__tab',type:'button'},'Rest'),
+          React.createElement('button',{className:'lds-tabs__tab demo-hover',type:'button'},'Hover'),
+          React.createElement('button',{className:'lds-tabs__tab demo-press',type:'button'},'Pressed'),
+          React.createElement('button',{className:'lds-tabs__tab lds-tabs__tab--active',type:'button'},'Active')),
+        React.createElement('div',{className:'dim',style:{marginTop:8,maxWidth:230}},'Hover is --bg-hover (gray-100), pressed is --bg-pressed (gray-200) — the same two roles rows and menu items use. Active is --c-100 on the brand ramp. These now paint because the tab list bakes its roles at :where(.lds-tabs).')
+      ),
+      React.createElement('div',{style:{width:290}},
+        React.createElement('div',{className:'lbl'},'Mobile — under 560px'),
+        React.createElement('div',{className:'force-mobile'},
+          React.createElement(Tabs,{active,onChange:setActive,tabs:FLAT})),
+        React.createElement('div',{className:'dim',style:{marginTop:8}},'Tabs keep their own width and the strip scrolls. Dividing the row evenly squeezed long labels against both edges of their box, so equal widths are gone. Rows grow to the 44px touch floor.')
+      )
+    ),
+    React.createElement('div',{style:{borderTop:'1px solid var(--gray-200)',paddingTop:18,display:'flex',flexDirection:'column',gap:6}},
+      React.createElement('div',{className:'lbl'},'Notes'),
+      React.createElement('div',{className:'dim'},'Single-select only — one active id, one onChange. Items are {id, label, icon}; {section:"Label"} renders a non-interactive group header (hidden in the mobile strip).'),
+      React.createElement('div',{className:'dim'},'More items than fit: pair with Menu for the overflow rather than relying on the scroll alone.')
+    )
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
+</script>
+</body></html>

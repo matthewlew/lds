@@ -1,0 +1,64 @@
+<!-- @dsCard group="Foundations" viewport="900x560" name="Avatar" subtitle="initials, derived colour, sizes, person-icon fallback" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;padding:28px;background:var(--gray-50,#FAF9EA);font-family:var(--th-body)}
+.lbl{font-family:var(--th-ui);font-size:var(--text-control-sm);font-weight:var(--weight-medium);color:var(--gray-700);margin-bottom:12px}
+.dim{font-family:var(--th-ui);font-size:var(--text-control-sm);color:var(--gray-600);line-height:1.55;margin-top:10px}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.col{display:flex;flex-direction:column;gap:26px;width:400px}
+.cell{display:flex;flex-direction:column;align-items:center;gap:6px;font-family:var(--th-ui);font-size:11px;color:var(--gray-600)}
+.sheet{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);overflow:hidden}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel">
+const { Avatar, Row } = window.LDSLewDesignSystem_1b8684;
+const H = '../../icons.svg';
+const NAMES = ['Jane Rivera','Sam Okonkwo','Lee Park','Ana Novák','Tomas Whitfield','Priya Raman','Chen Wei','Marcus Bell','Nour Haddad'];
+const SIZES = [['xs','24'],['sm','32'],[undefined,'40 · default'],['lg','48'],['xl','64'],['2xl','96']];
+function Demo(){
+  return React.createElement('div',{style:{display:'flex',gap:44,flexWrap:'wrap',alignItems:'flex-start'}},
+    React.createElement('div',{className:'col'},
+      React.createElement('div',null,
+        React.createElement('div',{className:'lbl'},'Colour derived from the name'),
+        React.createElement('div',{className:'row'},
+          NAMES.map(n=>React.createElement('div',{key:n,className:'cell'},
+            React.createElement(Avatar,{name:n,size:'lg',iconHref:H}),
+            React.createElement('span',null,n.split(' ')[0])))),
+        React.createElement('div',{className:'dim'},'The hue is hashed from the name, so the same person is the same colour in every surface of every app and nobody stores a colour. It resolves to one of the palette\u2019s nine hues and paints emph-soft on it \u2014 c-100 field, c-800 ink, the same pair a tag uses \u2014 so contrast is guaranteed by the ramp instead of checked per colour.'),
+        React.createElement('div',{className:'dim'},'A theme that repoints its ramps repaints every avatar with it.')),
+      React.createElement('div',null,
+        React.createElement('div',{className:'lbl'},'Fallbacks'),
+        React.createElement('div',{className:'row'},
+          React.createElement('div',{className:'cell'},React.createElement(Avatar,{name:'Jane Rivera',size:'lg',iconHref:H}),React.createElement('span',null,'Two words \u2192 JR')),
+          React.createElement('div',{className:'cell'},React.createElement(Avatar,{name:'Prince',size:'lg',iconHref:H}),React.createElement('span',null,'One word \u2192 P')),
+          React.createElement('div',{className:'cell'},React.createElement(Avatar,{size:'lg',iconHref:H}),React.createElement('span',null,'No name \u2192 icon')),
+          React.createElement('div',{className:'cell'},React.createElement(Avatar,{name:'\u2014',size:'lg',iconHref:H}),React.createElement('span',null,'No letters \u2192 icon'))),
+        React.createElement('div',{className:'dim'},'With no letters to draw from it shows the person icon \u2014 never a random initial and never an empty disc.'))),
+    React.createElement('div',{className:'col',style:{width:360}},
+      React.createElement('div',null,
+        React.createElement('div',{className:'lbl'},'Sizes'),
+        React.createElement('div',{className:'row',style:{alignItems:'flex-end'}},
+          SIZES.map(([size,cap])=>React.createElement('div',{key:cap,className:'cell'},
+            React.createElement(Avatar,{name:'Jane Rivera',size,iconHref:H}),
+            React.createElement('span',null,cap)))),
+        React.createElement('div',{className:'dim'},'One token, --avatar-size. The type, the icon and the ring all derive from it, so a new size is a single declaration \u2014 initials sit at 40% of the box, the icon at 58%.')),
+      React.createElement('div',null,
+        React.createElement('div',{className:'lbl'},'Overlapping stack'),
+        React.createElement('div',{className:'lds-avatar-stack'},
+          NAMES.slice(0,5).map(n=>React.createElement(Avatar,{key:n,name:n,ring:true,iconHref:H}))),
+        React.createElement('div',{className:'dim'},'The ring is a shadow in the surface colour, so it costs no layout; the overlap is a fraction of the size token and holds at every size.')),
+      React.createElement('div',null,
+        React.createElement('div',{className:'lbl'},'In a list row'),
+        React.createElement('div',{className:'sheet'},
+          NAMES.slice(0,3).map(n=>React.createElement(Row,{key:n,title:n,subtitle:'Editor',
+            lead:React.createElement(Avatar,{name:n,size:'sm',iconHref:H}),chevron:true,iconHref:H})))));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
+</script>
+</body></html>
