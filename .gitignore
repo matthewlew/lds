@@ -1,4 +1,5 @@
 node_modules/
 site/
+.roadtrip-src/
 *.log
 .DS_Store

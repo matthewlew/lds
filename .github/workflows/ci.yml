@@ -25,6 +25,26 @@ jobs:
 
       - run: npm ci
 
+      # The roadtrip theme derives its values from another repo's token file.
+      # Checking that repo out is what turns the weekly run from "our tests
+      # still pass" into "upstream has not moved under us". If it is private or
+      # unreachable the step is skipped and theme-source-test falls back to its
+      # lock file, so a missing checkout weakens the check rather than breaking
+      # the build.
+      - name: Check out roadtrip tokens (for theme drift)
+        id: roadtrip
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          repository: wwchen/roadtrip
+          path: .roadtrip-src
+          sparse-checkout: web/design-system/tokens.css
+          sparse-checkout-cone-mode: false
+
+      - name: Point the theme check at the tokens, if we got them
+        if: steps.roadtrip.outcome == 'success'
+        run: echo "ROADTRIP_TOKENS=$GITHUB_WORKSPACE/.roadtrip-src/web/design-system/tokens.css" >> "$GITHUB_ENV"
+
       # site-test drives a real browser. Playwright resolves its own Chromium
       # here; CHROMIUM_PATH is only for sandboxes that ship a mismatched one.
       - run: npx playwright install --with-deps chromium
