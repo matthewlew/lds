@@ -13,10 +13,8 @@ The previous LDS: **plain CSS, no build step, no framework binding** — the
 implementation the portfolio site itself was built against.
 
 ```
-dist/               the shipped CSS (lds.css, apca-palette.css, themes/, fonts/, icons.svg)
 tokens.json         the token source
 patch.py            the build/patch script
-showcase.html       the v6 component showcase — the actively maintained one
 showcase-a11y.html  a stale fork of the showcase, frozen before the v6 wave;
                     kept only for its "Accessibility & Inclusion" section, which
                     was never folded into the main showcase
@@ -24,6 +22,12 @@ tools.html          "System Ops" — drift analyzer, dogfooding loop, telemetry,
                     and audits of how Google/Salesforce/Shopify run their systems
 README.md           the original package docs
 ```
+
+**The showcase and its CSS are no longer here.** Filing them under `legacy/`
+was a mis-call: the plain-CSS *lineage* is superseded by `packages/lds`, but
+the showcase *page* is the actively maintained source of truth for the system
+and was still receiving v6 work. It is the repo root `index.html` now, and its
+CSS is the root `dist/`.
 
 **This is a different lineage from `packages/lds`.** The two `lds.css` files
 differ by roughly 1,800 lines; the React package's CSS is the larger and newer

@@ -4,12 +4,30 @@ A monorepo holding the design system, the icon set it draws from, and the
 gallery that documents both.
 
 ```
+index.html            the showcase — the source of truth for what the system looks like
+dist/                 the plain CSS the showcase paints from
 packages/open-icons   @lew/open-icons — 174-symbol SVG sprite, no LDS dependency
 packages/lds          @lew/lds — React components + the one-token CSS architecture
-docs/                 the gallery build, plus cards for components added since the export
+docs/                 the gallery build, the decision record, and the philosophy notes
 project/              the original Claude Design export — the pixel reference
+legacy/               superseded material kept for reference
 chats/                the design conversations that produced it
 ```
+
+## Two CSS trees, and why
+
+`dist/` and `packages/lds/css/` are **different lineages, not different
+versions.** The two `lds.css` files differ by ~1,800 lines.
+
+`dist/` is the plain-CSS system the showcase and the portfolio were built
+against. `packages/lds/css/` is the React package's CSS, which is larger and
+newer and very nearly a superset — the measured gaps are three tokens
+(`--grey-50`, `--grey-400`, `--grey-800`) and one class (`lds-tag--info`).
+
+Closing those four gaps is what would let the two collapse into one, and would
+also let `matthewlew.github.io` drop its vendored snapshot and consume the
+package directly. Until then, treat a swap between them as a breaking change
+that fails silently rather than loudly.
 
 ## Quick start
 
