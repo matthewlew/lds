@@ -1,4 +1,15 @@
-# Lew Design System (LDS)
+# Lew Design System (LDS) — design export
+
+> **This directory is the original Claude Design export, kept as the pixel
+> reference.** The implementation lives in `../packages/lds` and
+> `../packages/open-icons`; the gallery in `../docs` renders these cards against
+> that real package. Nothing here is built or published.
+>
+> Two files have been changed since the export: `components/Avatar/Avatar.html`
+> and `components/Button/Button.html` were each missing one closing paren and
+> threw a syntax error on load, so neither card had ever rendered.
+
+
 
 Plain CSS, no build step. One-Token architecture: primitives → semantic emphasis roles → components → themes. Imported from https://matthewlew.github.io/design-system/ (core/portfolio theme, light mode).
 

@@ -57,7 +57,7 @@ function Demo(){
         React.createElement('div',{className:'lbl'},'In a list row'),
         React.createElement('div',{className:'sheet'},
           NAMES.slice(0,3).map(n=>React.createElement(Row,{key:n,title:n,subtitle:'Editor',
-            lead:React.createElement(Avatar,{name:n,size:'sm',iconHref:H}),chevron:true,iconHref:H})))));
+            lead:React.createElement(Avatar,{name:n,size:'sm',iconHref:H}),chevron:true,iconHref:H}))))));
 }
 ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
 </script>

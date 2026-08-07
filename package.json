@@ -1,0 +1,25 @@
+{
+  "name": "lds-monorepo",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Lew Design System — React components, CSS tokens, and the Open Icons sprite.",
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build -w @lew/open-icons && node scripts/build-adherence.mjs && npm run docs",
+    "docs": "node docs/build.mjs",
+    "test": "npm run test -w @lew/open-icons && node scripts/render-test.mjs && node scripts/css-test.mjs && npm run typecheck && npm run test:site",
+    "test:site": "npm run docs && node scripts/site-test.mjs",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "esbuild": "^0.24.0",
+    "playwright": "^1.49.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "typescript": "^5.6.3"
+  }
+}
