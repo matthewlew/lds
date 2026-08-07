@@ -3,6 +3,7 @@ site/
 .roadtrip-src/
 *.log
 .DS_Store
+packages/lds-react/scripts/.tmp-*
 
 # design-sync (Claude Design)
 .ds-sync/

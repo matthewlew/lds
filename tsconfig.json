@@ -16,6 +16,7 @@
   "include": [
     "packages/lds/src/**/*.d.ts",
     "packages/open-icons/src/**/*.d.ts",
+    "packages/lds-react/src/**/*.d.ts",
     "scripts/types-test.ts"
   ]
 }
