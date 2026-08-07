@@ -31,8 +31,10 @@ mkdirSync(ASSETS, { recursive: true });
 mkdirSync(CARDS_OUT, { recursive: true });
 
 // ---- assets -----------------------------------------------------------------
+// The fonts live inside css/ so that lds.css's `url('fonts/…')` resolves the
+// same way here as it does inside the published tarball. Copying the directory
+// whole is what keeps those two in step.
 cpSync(join(ROOT, 'packages/lds/css'), ASSETS, { recursive: true });
-cpSync(join(ROOT, 'packages/lds/fonts'), join(ASSETS, 'fonts'), { recursive: true });
 cpSync(join(ROOT, 'packages/open-icons/icons.svg'), join(ASSETS, 'icons.svg'));
 cpSync(join(ROOT, 'node_modules/react/umd/react.development.js'), join(ASSETS, 'react.js'));
 cpSync(join(ROOT, 'node_modules/react-dom/umd/react-dom.development.js'), join(ASSETS, 'react-dom.js'));

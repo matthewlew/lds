@@ -1,0 +1,71 @@
+// Consumes the packages exactly as an installed app would: bare specifiers only,
+// nothing reaching into the repo.
+import { createRequire } from 'node:module';
+import { readFileSync, existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import React from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { Button, Icon, Toast, Nav, Tooltip, SegmentedControl, setIconSprite, dialOptions } from '@lew/lds';
+import { ICON_NAMES, spriteUrl, hasIcon } from '@lew/open-icons';
+
+const require = createRequire(import.meta.url);
+const fails = [];
+const el = React.createElement;
+
+// 1. components render from the installed package
+const html = renderToStaticMarkup(el('div', null,
+  el(Button, { variant: 'primary', iconStart: 'check' }, 'Save'),
+  el(Nav, { variant: 'bar', title: 'Settings', onBack: () => {} }),
+  el(Toast, { status: 'error', title: 'Failed' }, 'x'),
+  el(Tooltip, { label: 'Search' }, el(Button, { iconOnly: true, iconStart: 'search' })),
+  el(SegmentedControl, { options: ['A', 'B'], defaultValue: 'A' }),
+));
+for (const want of ['lds-btn--primary', 'lds-nav--bar', 'lds-toast', 'lds-tooltip__bubble', 'lds-seg']) {
+  if (!html.includes(want)) fails.push(`missing ${want} in rendered output`);
+}
+
+// 2. the sprite the installed components point at actually exists on disk
+const iconHtml = renderToStaticMarkup(el(Icon, { name: 'warning-fill' }));
+const href = iconHtml.match(/href="([^"#]+)#/)?.[1];
+if (!href) fails.push(`could not read sprite href from ${iconHtml}`);
+else {
+  const path = href.startsWith('file:') ? fileURLToPath(href) : href;
+  if (!existsSync(path)) fails.push(`sprite href points at a file that does not exist: ${path}`);
+  else {
+    const svg = readFileSync(path, 'utf8');
+    if (!svg.includes('id="warning-fill"')) fails.push('installed sprite has no warning-fill symbol');
+    if (svg.includes('${u}')) fails.push('installed sprite still contains the ${u} placeholder');
+    if (!svg.includes('id="k-warning-fill"')) fails.push('installed sprite has the un-uniqued mask id');
+  }
+}
+
+// 3. every documented subpath export resolves
+for (const sub of ['@lew/lds/css', '@lew/lds/css/themes/product', '@lew/lds/css/lds',
+  '@lew/lds/adherence.oxlintrc.json', '@lew/open-icons/icons.svg', '@lew/open-icons/names.json']) {
+  try { require.resolve(sub); } catch (e) { fails.push(`subpath does not resolve: ${sub}`); }
+}
+
+// 4. the CSS the package ships can find its fonts
+const cssPath = require.resolve('@lew/lds/css');
+const css = readFileSync(cssPath, 'utf8');
+const ldsCss = readFileSync(require.resolve('@lew/lds/css/lds'), 'utf8');
+for (const m of ldsCss.matchAll(/url\('(fonts\/[^']+)'\)/g)) {
+  const font = new URL(m[1], `file://${require.resolve('@lew/lds/css/lds')}`);
+  if (!existsSync(fileURLToPath(font))) fails.push(`CSS references a font not in the package: ${m[1]}`);
+}
+if (!css.includes('@import')) fails.push('css entry does not import the layers');
+
+// 5. helpers and data survive packaging
+if (ICON_NAMES.length !== 174) fails.push(`ICON_NAMES is ${ICON_NAMES.length}, expected 174`);
+if (!hasIcon('close-circle-fill')) fails.push('hasIcon lost the sprite name list');
+if (!spriteUrl.includes('open-icons')) fails.push(`spriteUrl looks wrong: ${spriteUrl}`);
+if (dialOptions().top[0].label !== '+1 US') fails.push('dialOptions did not survive packaging');
+
+// 6. repointing still works for an app hosting the sprite itself
+setIconSprite('/static/icons.svg');
+if (!renderToStaticMarkup(el(Icon, { name: 'search' })).includes('/static/icons.svg#search')) {
+  fails.push('setIconSprite does not work from the installed package');
+}
+
+if (fails.length) { for (const f of fails) console.error(`FAIL ${f}`); process.exit(1); }
+console.log('consumer-test: installed packages render, sprite resolves on disk, all subpaths and fonts resolve');

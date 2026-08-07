@@ -99,8 +99,13 @@ shadows, density, icon size. Components never branch on a theme name.
 ## Fonts
 
 Coconat (display), Ronzino (UI and body) and Martian Mono (meta) self-host from
-`@lew/lds/fonts/`. `@lew/lds/css` references them relatively, so serving the
-package's `css/` and `fonts/` directories side by side is enough.
+`@lew/lds/fonts/`, which resolves to `css/fonts/` inside the package.
+
+They live *inside* `css/` on purpose: `lds.css` reaches them with a relative
+`url('fonts/…')`, so the stylesheet and its fonts have to travel together. Serve
+or copy the `css/` directory whole and the faces resolve with no configuration —
+split them apart and every face 404s while the CSS still loads, which shows up as
+silently wrong typography rather than an error.
 
 ## Adherence lint
 
