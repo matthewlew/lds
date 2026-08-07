@@ -44,8 +44,10 @@ function Demo() {
 const root = document.getElementById('root');
 function draw() {
   mount(root, h(Demo));
-  // Two switch rows, in order: the theme and the light/dark mode.
-  const [themes, modes] = root.querySelectorAll('div[style] > div[style]');
+  // The two switch groups are the only elements made entirely of bare buttons —
+  // the preview row below mixes buttons with tags, so it is not one of them.
+  const [themes, modes] = [...root.querySelectorAll('div')].filter((d) =>
+    d.children.length && [...d.children].every((c) => c.tagName === 'BUTTON'));
   const bind = (group, items, set) => group?.querySelectorAll('button')
     .forEach((el, i) => el.addEventListener('click', () => { set(items[i].id); draw(); }));
   bind(themes, THEMES, (v) => { theme = v; });

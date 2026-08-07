@@ -103,7 +103,7 @@ baseline is captured from a git worktree at the previous commit instead.
 
 ## Tests
 
-`npm test` runs ten passes:
+`npm test` runs eleven passes:
 
 | pass | what it proves |
 | --- | --- |
@@ -116,6 +116,7 @@ baseline is captured from a git worktree at the previous commit instead.
 | `consumer-test` | both packages pack, install into a throwaway app with **no other dependencies**, and work through bare specifiers |
 | `site-test` | all 33 built pages load in headless Chromium with no console errors, no failed requests, and no `<use>` pointing at a missing symbol |
 | `card-contract` | every gallery card renders the DOM it is frozen at |
+| `card-interaction` | every rewritten demo still responds to a real click — the contract only sees the first paint |
 | `dom-test` | the five controllers actually behave — focus walking, selection, queue eviction, dismissal, disposal |
 
 `css-test` deliberately does **not** check whether a custom property is defined
