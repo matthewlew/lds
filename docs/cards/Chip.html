@@ -1,0 +1,66 @@
+<!-- @dsCard group="Status" viewport="820x460" name="Chip" subtitle="filter pill and removable tag — sizes keyed to the buttons" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../assets/styles.css">
+<style>
+.lbl{font-family:var(--th-ui);font-size:var(--text-control-sm);font-weight:var(--weight-medium);color:var(--gray-700);margin-bottom:10px}
+.dim{font-family:var(--th-ui);font-size:var(--text-control-sm);color:var(--gray-600);line-height:1.5;margin-top:8px}
+.col{display:flex;flex-direction:column;gap:24px;width:360px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+/* a field that holds chips: the control's own box, chips inside it */
+.tokens{
+  display:flex;flex-wrap:wrap;gap:6px;align-items:center;
+  min-height:var(--control-xl);padding:6px 10px;
+  background:var(--background);border:1px solid var(--border);border-radius:var(--radius);
+}
+.tokens input{flex:1 1 80px;min-width:80px;border:0;outline:0;background:transparent;
+  font-family:var(--th-ui);font-size:var(--text-control);color:var(--text);}
+.cap{font-family:var(--th-ui);font-size:var(--text-control-sm);color:var(--gray-600);min-width:104px}
+</style>
+</head>
+<body style="margin:0;padding:28px;background:var(--gray-50,#FAF9EA);font-family:var(--th-body);">
+<div id="root"></div>
+<script src="../assets/lds.js"></script>
+<script>LDS.setIconSprite("../assets/icons.svg");</script>
+<script>
+// TODO(migration): this demo held state in React hooks. Rewrite it against
+// the controllers — see packages/lds/src/controllers/.
+const { chip, button, h, mount, raw } = LDS;
+const H = '../assets/icons.svg';
+function Demo(){
+  const [tags,setTags]=React.useState(['jane@acme.com','sam@acme.com','lee@acme.com']);
+  const [filter,setFilter]=React.useState('active');
+  return h('div',{style:{display:'flex',gap:44,flexWrap:'wrap',alignItems:'flex-start'}},
+    h('div',{className:'col'},
+      h('div',null,
+        h('div',{className:'lbl'},'Sizes, beside the button they match'),
+        h('div',{style:{display:'flex',flexDirection:'column',gap:12}},
+          h('div',{className:'row'},h('span',{className:'cap'},'sm \u00b7 24px'),
+            h(chip,{size:'sm'},'Archived')),
+          h('div',{className:'row'},h('span',{className:'cap'},'base \u00b7 36px'),
+            h(chip,null,'Archived'),
+            h(button,{variant:'secondary',size:'sm'},'Small button')),
+          h('div',{className:'row'},h('span',{className:'cap'},'lg \u00b7 44px'),
+            h(chip,{size:'lg'},'Archived'),
+            h(button,{variant:'secondary'},'Default button'))),
+        h('div',{className:'dim'},'Heights come from --control-md and --control-xl, the same steps the buttons use, so a chip never sits half a step off the control beside it. 24px is below the touch floor on purpose \u2014 on a coarse pointer its hit area grows without the pill growing.')),
+      h('div',null,
+        h('div',{className:'lbl'},'Filter \u2014 selectable'),
+        h('div',{className:'row'},
+          ['all','active','archived'].map(id=>h(chip,{key:id,selected:filter===id,onClick:()=>setFilter(id)},
+            id[0].toUpperCase()+id.slice(1))))) ),
+    h('div',{className:'col'},
+      h('div',null,
+        h('div',{className:'lbl'},'Inside a field \u2014 sm, removable'),
+        h('div',{className:'tokens'},
+          tags.map(t=>h(chip,{key:t,size:'sm',iconHref:H,onRemove:()=>setTags(ts=>ts.filter(x=>x!==t))},t)),
+          h('input',{placeholder:tags.length?'':'name@company.com','aria-label':'Add a recipient'})),
+        h('div',{className:'dim'},'At 24px a row of tokens fits a 44px field without the field growing. The chip renders as a span here, since the remove button cannot nest inside another button.')),
+      h('div',null,
+        h('div',{className:'lbl'},'Removable at base size'),
+        h('div',{className:'row'},
+          h(chip,{iconHref:H,onRemove:()=>{}},'Half Dome'),
+          h(chip,{iconHref:H,onRemove:()=>{}},'Tuolumne Meadows')),
+        h('div',{className:'dim'},'For tokens that stand on their own outside a field \u2014 applied filters, chosen recipients.'))));
+}
+mount(document.getElementById('root'), h(Demo));
+</script>
+</body></html>

@@ -1,5 +1,5 @@
 {
-  "note": "The markup every LDS binding must emit. Generated from the React implementation by scripts/build-markup-fixtures.mjs and frozen so the contract survives that binding being removed. Sprite URLs are pinned to the relative default; both bindings resolve the real one at runtime.",
+  "note": "The markup every LDS binding must emit. First generated from the React implementation and frozen so the contract would survive that binding being removed; now regenerated from the templates by scripts/build-markup-fixtures.mjs. Regenerating always passes the test — do it only when markup has deliberately changed, and review the diff. Sprite URLs are pinned to a relative default; bindings resolve the real one at runtime.",
   "sprite": "icons.svg",
   "cases": {
     "Avatar/initials": "<span class=\"lds-avatar hue-blue\" role=\"img\" aria-label=\"Ada Lovelace\" title=\"Ada Lovelace\">AL</span>",

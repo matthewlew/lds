@@ -1,0 +1,76 @@
+<!-- @dsCard group="Overlays" viewport="1140x640" name="Modal" subtitle="dialog, bottom sheet, side sheet, and stacked flows with back" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../assets/styles.css">
+<style>
+body{margin:0;padding:28px;background:var(--gray-50,#FAF9EA);font-family:var(--th-body)}
+.lbl{font-family:var(--th-ui);font-size:12px;font-weight:500;color:var(--gray-700);margin-bottom:8px}
+.dim{font-family:var(--th-ui);font-size:12px;color:var(--gray-600);line-height:1.5;margin-top:8px}
+.frame{position:relative;border:1px solid var(--gray-300);border-radius:var(--radius);overflow:hidden;background:var(--gray-100)}
+.frame .lds-modal-scrim{position:absolute;inset:0}
+.phone{width:300px;height:420px}
+.desk{width:460px;height:420px}
+/* preview-only: the sheet and side-sheet layouts are viewport-driven. These
+   mirror the component's own breakpoint rules so all three can sit in one card. */
+.as-sheet .lds-modal-scrim{align-items:flex-end;padding:0}
+.as-sheet .lds-modal{max-width:none;width:100%;max-height:88%;border-radius:var(--radius-lg) var(--radius-lg) 0 0}
+.as-sheet .lds-modal__handle{display:block}
+.as-side .lds-modal-scrim{align-items:stretch;justify-content:flex-end;padding:0}
+.as-side .lds-modal{width:64%;max-width:none;height:100%;max-height:none;border-radius:0}
+.as-side .lds-modal__handle{display:none}
+.as-side .lds-modal__title{text-align:left}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="../assets/lds.js"></script>
+<script>LDS.setIconSprite("../assets/icons.svg");</script>
+<script>
+// TODO(migration): this demo held state in React hooks. Rewrite it against
+// the controllers — see packages/lds/src/controllers/.
+const { modal, button, h, mount, raw } = LDS;
+const H = '../assets/icons.svg';
+const cancel = () => h(button,{variant:'tertiary',size:'sm'},'Cancel');
+const confirm = (label,hue) => h(button,{variant:'primary',size:'sm',hue},label);
+const STEPS = [
+  {title:'Choose a trail', body:'Pick the trail you want alerts for. You can change this later.'},
+  {title:'Set the cadence', body:'How often should we check for permit openings?'},
+  {title:'Confirm', body:'We will email hello@lew.design as soon as a permit opens.'},
+];
+function Demo(){
+  const [step,setStep]=React.useState(1);
+  const s=STEPS[step];
+  return h('div',{style:{display:'flex',gap:32,flexWrap:'wrap',alignItems:'flex-start'}},
+    h('div',null,
+      h('div',{className:'lbl'},'Dialog — centred, 560px and up'),
+      h('div',{className:'frame desk'},
+        h(modal,{title:'Delete watch?',iconHref:H,
+          cancel:cancel(),actions:confirm('Delete','red')},
+          'This removes the alert and its history. This cannot be undone.')),
+      h('div',{className:'dim',style:{width:460}},'Title is left-aligned and sits directly above the body, so the two read as one block. The header bar carries only the controls — no divider until content scrolls under it.')),
+    h('div',null,
+      h('div',{className:'lbl'},'Bottom sheet — sheet, under 560px'),
+      h('div',{className:'frame phone as-sheet'},
+        h(modal,{title:'Delete watch?',sheet:true,iconHref:H,
+          cancel:cancel(),actions:confirm('Delete','red')},
+          'This removes the alert and its history.')),
+      h('div',{className:'dim',style:{width:300}},'Same markup, one class. Drops to the bottom edge, rounds only the top corners, shows a drag handle, and insets the footer past the home indicator. The drag gesture is the consumer\u2019s — LDS ships no JS; set .is-dragging and drive transform.')),
+    h('div',null,
+      h('div',{className:'lbl'},'Side sheet — side, 768px and up'),
+      h('div',{className:'frame desk as-side'},
+        h(modal,{title:'Watch settings',side:true,iconHref:H,
+          actions:confirm('Save changes')},
+          h('p',{style:{margin:'0 0 12px'}},'Scroll this panel: the large title leaves with the content, the compact title fades into the bar, and the divider appears only once something has passed behind it.'),
+          h('p',{style:{margin:0}},'A side sheet sits beside live content, so its title stays subordinate to the page\u2019s own hierarchy. Below 768px it becomes a bottom sheet.'))),
+      h('div',{className:'dim',style:{width:460}},'No handle with a mouse: a handle promises a drag that a pointer cannot make.')),
+    h('div',null,
+      h('div',{className:'lbl'},'Stacked flow — onBack'),
+      h('div',{className:'frame phone as-sheet'},
+        h(modal,{title:s.title,sheet:true,iconHref:H,
+          onBack: step>0 ? ()=>setStep(step-1) : undefined,
+          cancel: step>0 ? null : undefined,
+          actions: h(button,{variant:'primary',size:'sm',onClick:()=>setStep(Math.min(step+1,STEPS.length-1))}, step===STEPS.length-1 ? 'Done' : 'Continue')},
+          s.body)),
+      h('div',{className:'dim',style:{width:300}},'Back appears at the origin edge and pops one level; close is terminal and dismisses the whole stack. Both are 36px round targets with 20px icons. Step ' + (step+1) + ' of ' + STEPS.length + ' — use Continue and Back.')));
+}
+mount(document.getElementById('root'), h(Demo));
+</script>
+</body></html>

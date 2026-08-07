@@ -1,0 +1,15 @@
+<!-- @dsCard group="States" viewport="380x260" name="EmptyState" subtitle="icon + title + body + actions" -->
+<!DOCTYPE html><html><head><link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body style="margin:0;padding:32px;background:var(--gray-50,#FAF9EA);font-family:var(--th-body);">
+<div id="root"></div>
+<script src="../assets/lds.js"></script>
+<script>LDS.setIconSprite("../assets/icons.svg");</script>
+<script>
+const { emptyState, button, h, mount, raw } = LDS;
+mount(document.getElementById('root'), h(emptyState,{
+    title:'No watches yet', body:'Add a place and a cadence to get your first alert.',
+    actions: h(button,{variant:'primary',size:'sm'},'Add a watch')
+  }));
+</script>
+</body></html>

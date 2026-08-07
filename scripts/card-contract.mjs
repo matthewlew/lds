@@ -63,11 +63,21 @@ for (const path of pages) {
         return text ? `${'  '.repeat(depth)}"${text}"` : '';
       }
       if (node.nodeType !== 1) return '';
+      // Scripts are not rendered content, and which ones a card loads is exactly
+      // what this migration changes. What they PRODUCE is compared; what they are
+      // is not.
+      if (node.tagName === 'SCRIPT') return '';
       const attrs = [...node.attributes]
         .filter((a) => !VOLATILE.test(a.name))
         // A generated id is referenced by aria-describedby/for; both sides are
         // normalised together so the LINK is checked without the value being.
         .map((a) => {
+          // `style` is read back through the CSSOM rather than as written. React
+          // assigned it property by property, which the browser reserialises with
+          // spaces; a template writes the attribute text directly. Same computed
+          // style either way — this compares what the element HAS, not the text
+          // that produced it.
+          if (a.name === 'style') return `style=${JSON.stringify(node.style.cssText)}`;
           const value = /^(id|for|aria-describedby|aria-labelledby|name)$/.test(a.name)
             ? a.value.replace(/(?:lds-)?(?:tooltip|seg|toast|r)[-_]?\d+|«r\w+»/g, '<generated>')
             : a.value;

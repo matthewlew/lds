@@ -1,0 +1,15 @@
+<!-- @dsCard group="Navigation & Data" viewport="420x200" name="Table" subtitle="data table" -->
+<!DOCTYPE html><html><head><link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body style="margin:0;padding:32px;background:var(--gray-50,#FAF9EA);font-family:var(--th-body);">
+<div id="root"></div>
+<script src="../assets/lds.js"></script>
+<script>LDS.setIconSprite("../assets/icons.svg");</script>
+<script>
+const { table, h, mount, raw } = LDS;
+mount(document.getElementById('root'), h(table,{
+    columns:[{key:'token',label:'Token'},{key:'value',label:'Value'}],
+    rows:[{token:'--bp-sm',value:'480px'},{token:'--bp-md',value:'768px'},{token:'--bp-lg',value:'1024px'}]
+  }));
+</script>
+</body></html>

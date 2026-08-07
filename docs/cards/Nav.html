@@ -1,14 +1,14 @@
 <!-- @dsCard group="Navigation & Data" viewport="860x720" name="Nav" subtitle="brand bar vs app bar — back, title, actions, stacked flow" -->
-<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="styles.css">
-<script src="_ds_bundle.js"></script></head>
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../assets/styles.css">
+</head>
 <body style="margin:0;padding:32px;background:var(--gray-50);font-family:var(--th-body);">
 <div id="root"></div>
-<script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
-<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
-<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
-<script type="text/babel">
-const { Nav, Button, Row, Link } = window.LDSLewDesignSystem_1b8684;
-const h = React.createElement;
+<script src="../assets/lds.js"></script>
+<script>LDS.setIconSprite("../assets/icons.svg");</script>
+<script>
+// TODO(migration): this demo held state in React hooks. Rewrite it against
+// the controllers — see packages/lds/src/controllers/.
+const { nav, button, row, link, h, mount, raw } = LDS;
 
 const note = (t) => h('p', { style: { fontFamily: 'var(--th-ui)', fontSize: 'var(--text-control-sm)',
   color: 'var(--text-subdued)', lineHeight: 'var(--leading-normal)', margin: '0 0 12px', maxWidth: '62ch' } }, t);
@@ -32,32 +32,32 @@ function Demo() {
     note('Two bars share a name because they sit in the same slot, not because they do the same job. The brand bar is a marketing header, one level deep, with nothing to go back to. The app bar is the chrome of a screen inside a stack, so it carries the one affordance the brand bar has no use for.'),
 
     head('Brand bar'),
-    h(Nav, { logo: h('span', null, 'Lew', h('b', null, '.')),
+    h(nav, { logo: h('span', null, 'Lew', h('b', null, '.')),
       links: [h('a', { key: 'w', href: '#' }, 'Work'), h('a', { key: 'a', href: '#' }, 'About'),
         h('a', { key: 'c', href: '#' }, 'Contact')] }),
 
     head('App bar'),
     note('Title truncates to one line at a control step. A wrapping title changes the height of the chrome, and every screen below it shifts.'),
     frame(
-      h(Nav, { variant: 'bar', title: 'A title long enough that it has to truncate rather than wrap',
-        actions: h(Button, { variant: 'tertiary', iconOnly: true, iconStart: 'more-horizontal', 'aria-label': 'More' }) }),
+      h(nav, { variant: 'bar', title: 'A title long enough that it has to truncate rather than wrap',
+        actions: h(button, { variant: 'tertiary', iconOnly: true, iconStart: 'more-horizontal', 'aria-label': 'More' }) }),
       h('div', { style: { padding: 16, fontSize: 'var(--text-body)', color: 'var(--text-subdued)' } }, 'Screen content.')),
 
     head('Stacked flow — back pops one level'),
     note('The back affordance is deliberately Modal’s: same 36px round target, same chevron-left, same origin edge. A pushed screen and a bottom sheet are one navigation seen from two angles, so a back arrow that changed shape between them would read as a different control. Close dismisses the stack; back pops a single level.'),
     frame(
-      h(Nav, { variant: 'bar', scrolled: true,
+      h(nav, { variant: 'bar', scrolled: true,
         title: screen.title,
         subtitle: screen.subtitle,
         onBack: depth > 0 ? () => setDepth(depth - 1) : undefined,
-        actions: h(Button, { variant: 'tertiary', size: 'sm', onClick: () => setDepth(0) }, 'Reset') }),
-      h('div', null, screen.rows.map((r, i) => h(Row, {
+        actions: h(button, { variant: 'tertiary', size: 'sm', onClick: () => setDepth(0) }, 'Reset') }),
+      h('div', null, screen.rows.map((r, i) => h(row, {
         key: r, title: r, chevron: true,
         onClick: depth < SCREENS.length - 1 ? () => setDepth(depth + 1) : undefined,
       })))),
     h('p', { style: { fontFamily: 'var(--th-mono)', fontSize: 'var(--text-meta)',
       color: 'var(--text-subdued)', marginTop: 12 } }, `depth: ${depth} of ${SCREENS.length - 1}`));
 }
-ReactDOM.createRoot(document.getElementById('root')).render(h(Demo));
+mount(document.getElementById('root'), h(Demo));
 </script>
 </body></html>

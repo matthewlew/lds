@@ -9,6 +9,7 @@
 // textField. The contract test resolves them that way, so a template that is
 // misnamed reports as missing rather than quietly going unchecked.
 export { escapeHtml, raw, slot } from './escape.js';
+export { h, mount } from './h.js';
 export { attrs, cx, styleAttr } from './attrs.js';
 export { spriteSvg } from './sprite.js';
 

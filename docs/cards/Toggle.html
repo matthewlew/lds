@@ -1,0 +1,56 @@
+<!-- @dsCard group="Forms" viewport="860x460" name="Toggle" subtitle="switch states, in list rows, and the selection-control family" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../assets/styles.css">
+<style>
+.lbl{font-family:var(--th-ui);font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--text-subdued);margin-bottom:12px}
+.dim{font-family:var(--th-ui);font-size:11px;color:var(--text-subdued);line-height:1.5}
+.col{display:flex;flex-direction:column;gap:14px}
+.cap{font-family:var(--th-ui);font-size:10px;color:var(--text-subdued);min-width:96px}
+.row{display:flex;align-items:center;gap:14px}
+.sheet{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);overflow:hidden}
+</style>
+</head>
+<body style="margin:0;padding:28px;background:var(--gray-50,#FAF9EA);font-family:var(--th-body);">
+<div id="root"></div>
+<script src="../assets/lds.js"></script>
+<script>LDS.setIconSprite("../assets/icons.svg");</script>
+<script>
+const { toggle, checkbox, radio, row, h, mount, raw } = LDS;
+function Sw(props){ return h('label',{className:'lds-toggle__switch'},
+  h('input',{type:'checkbox',...props}),
+  h('span',{className:'lds-toggle__track'})); }
+function Demo(){
+  return h('div',{style:{display:'flex',gap:44,flexWrap:'wrap',alignItems:'flex-start'}},
+    h('div',null,
+      h('div',{className:'lbl'},'Switch states'),
+      h('div',{className:'col'},
+        h('div',{className:'row'},h('span',{className:'cap'},'Off'),h(Sw,{defaultChecked:false})),
+        h('div',{className:'row'},h('span',{className:'cap'},'On'),h(Sw,{defaultChecked:true})),
+        h('div',{className:'row'},h('span',{className:'cap'},'Off · inactive'),h(Sw,{disabled:true})),
+        h('div',{className:'row'},h('span',{className:'cap'},'On · inactive'),h(Sw,{defaultChecked:true,disabled:true}))),
+      h('div',{className:'dim',style:{marginTop:12,maxWidth:250}},'Off track is --track-off (gray-300), a fill role of its own — it used to borrow --border, which resolves to nothing outside an emph-* context, so it painted invisible. Inactive keeps its position readable instead of fading the whole switch.')),
+    h('div',null,
+      h('div',{className:'lbl'},'With label + help'),
+      h('div',{className:'col',style:{width:280}},
+        h(toggle,{label:'Email alerts',help:'One digest per day.',defaultChecked:true}),
+        h(toggle,{label:'SMS alerts',help:'Not available on this plan.',disabled:true}))),
+    h('div',null,
+      h('div',{className:'lbl'},'Same family — checkbox and radio'),
+      h('div',{className:'col'},
+        h(checkbox,{label:'Checked',defaultChecked:true}),
+        h(checkbox,{label:'Unchecked'}),
+        h(checkbox,{label:'Checked · inactive',defaultChecked:true,disabled:true}),
+        h(radio,{label:'Selected',name:'g',defaultChecked:true}),
+        h(radio,{label:'Unselected',name:'g'}),
+        h(radio,{label:'Selected · inactive',name:'h',defaultChecked:true,disabled:true})),
+      h('div',{className:'dim',style:{marginTop:12,maxWidth:250}},'All three share one state vocabulary: --c-600 when set, --c-700 on hover, --border-subdued / --c-200 when inactive. Toggle is for a setting that applies immediately; checkbox and radio belong to a form you submit.')),
+    h('div',{style:{width:320}},
+      h('div',{className:'lbl'},'In list rows'),
+      h('div',{className:'sheet'},
+        h(row,{title:'Email alerts',subtitle:'One digest per day',trail:h(Sw,{defaultChecked:true})}),
+        h(row,{title:'Push alerts',subtitle:'Immediate',trail:h(Sw,{})}),
+        h(row,{title:'SMS alerts',subtitle:'Not on this plan',trail:h(Sw,{disabled:true})})),
+      h('div',{className:'dim',style:{marginTop:12}},'The switch sits in the row’s trail slot and stays the only control — the row itself is not clickable, so there is no second target competing with it. Settings lists use this; Toggle’s own label + help form is for standalone use.')));
+}
+mount(document.getElementById('root'), h(Demo));
+</script>
+</body></html>

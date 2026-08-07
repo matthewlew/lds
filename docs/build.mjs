@@ -1,16 +1,12 @@
 // Builds the static docs gallery.
 //
-// The exported cards were written against the design tool's runtime: React,
-// ReactDOM and Babel from unpkg, and a generated `_ds_bundle.js` exposing a
-// hashed global. None of that survives contact with a real repo — the CDN is a
-// network dependency, the integrity hashes pin a version the package no longer
-// controls, and Babel was compiling markup that turns out to contain no JSX at
-// all. So the card BODIES are kept verbatim and only their plumbing is
-// rewritten: local React, the real built package, and a stable `LDS` global.
+// Every card lives in docs/cards/ and is plain HTML over the real package — no
+// framework, no CDN, no compile step. They were converted out of the design
+// export once (scripts/migrate-cards.mjs) and are hand-maintained from here.
 //
-// Cards are read from two places and never copied between them:
-//   project/            the frozen design export — the pixel reference
-//   docs/cards/         cards for components added since that export
+// project/ still holds the original export. It is the historical reference and
+// is deliberately NOT built: a gallery rendered by a binding the package no
+// longer ships would be documenting the wrong system.
 import esbuild from 'esbuild';
 import { readFileSync, writeFileSync, mkdirSync, cpSync, existsSync, rmSync, readdirSync } from 'node:fs';
 import { dirname, join, basename } from 'node:path';
@@ -18,11 +14,10 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..');
-const PROJECT = join(ROOT, 'project');
 const SITE = join(ROOT, 'site');
 const ASSETS = join(SITE, 'assets');
 const CARDS_OUT = join(SITE, 'cards');
-const EXTRA_CARDS = join(HERE, 'cards');
+const CARDS_IN = join(HERE, 'cards');
 
 const NAMESPACE = 'LDSLewDesignSystem_1b8684';
 
@@ -36,8 +31,6 @@ mkdirSync(CARDS_OUT, { recursive: true });
 // whole is what keeps those two in step.
 cpSync(join(ROOT, 'packages/lds/css'), ASSETS, { recursive: true });
 cpSync(join(ROOT, 'packages/open-icons/icons.svg'), join(ASSETS, 'icons.svg'));
-cpSync(join(ROOT, 'node_modules/react/umd/react.development.js'), join(ASSETS, 'react.js'));
-cpSync(join(ROOT, 'node_modules/react-dom/umd/react-dom.development.js'), join(ASSETS, 'react-dom.js'));
 
 await esbuild.build({
   entryPoints: [join(ROOT, 'packages/lds/src/index.js')],
@@ -45,88 +38,29 @@ await esbuild.build({
   format: 'iife',
   globalName: 'LDS',
   outfile: join(ASSETS, 'lds.js'),
-  alias: { react: join(HERE, 'react-global.js') },
   logLevel: 'warning',
 });
 
 // ---- cards ------------------------------------------------------------------
-const manifest = JSON.parse(readFileSync(join(PROJECT, '_ds_manifest.json'), 'utf8'));
-
-// Components that postdate the design export bring their own cards.
-const extra = existsSync(EXTRA_CARDS)
-  ? readdirSync(EXTRA_CARDS).filter((f) => f.endsWith('.html')).map((f) => {
-    const src = readFileSync(join(EXTRA_CARDS, f), 'utf8');
-    const meta = src.match(/@dsCard\s+group="([^"]*)"\s+viewport="([^"]*)"\s+name="([^"]*)"\s+subtitle="([^"]*)"/);
-    return {
-      path: join(EXTRA_CARDS, f),
-      absolute: true,
-      group: meta?.[1] ?? 'Components',
-      viewport: meta?.[2] ?? '900x600',
-      name: meta?.[3] ?? basename(f, '.html'),
-      subtitle: meta?.[4] ?? '',
-    };
-  })
-  : [];
-
-const cards = [...manifest.cards, ...extra];
-
-/** Rewrites a card's plumbing without touching the demo it contains. */
-function rewrite(html) {
-  let out = html;
-
-  // Stylesheets and the sprite, wherever the card sat in the source tree.
-  out = out.replace(/(?:\.\.\/)*styles\.css/g, '../assets/styles.css');
-  out = out.replace(/(?:\.\.\/)*themes\//g, '../assets/themes/');
-  out = out.replace(/(?:\.\.\/)*icons\.svg/g, '../assets/icons.svg');
-
-  // The generated bundle becomes the real package.
-  out = out.replace(/<script src="(?:\.\.\/)*_ds_bundle\.js"><\/script>/g, '');
-
-  // Babel compiled markup that contains no JSX; the CDN tags go entirely.
-  out = out.replace(/<script src="https:\/\/unpkg\.com\/@babel\/standalone[^>]*><\/script>\s*/g, '');
-  out = out.replace(
-    /<script src="https:\/\/unpkg\.com\/react@[^>]*><\/script>\s*/g,
-    '<script src="../assets/react.js"></script>\n',
-  );
-  out = out.replace(
-    /<script src="https:\/\/unpkg\.com\/react-dom@[^>]*><\/script>\s*/g,
-    '<script src="../assets/react-dom.js"></script>\n<script src="../assets/lds.js"></script>\n',
-  );
-  out = out.replace(/<script type="text\/babel">/g, '<script>');
-
-  // A hashed global is an artefact of the design tool, not an API.
-  out = out.replace(new RegExp(`window\\.${NAMESPACE}`, 'g'), 'window.LDS');
-
-  // The TextField card reached for the dial-code data by dynamically importing
-  // a source file next to it, which only resolved inside the design tool's
-  // tree. The data is a published export now, so it comes off the bundle. The
-  // card already guards on `window.dialOptions` before falling back to the
-  // event, so running synchronously ahead of the demo is safe.
-  out = out.replace(
-    /<script type="module">\s*const m = await import\('\.\/dial-codes\.js'\);\s*window\.dialOptions = m\.dialOptions; window\.DIAL_CODES = m\.DIAL_CODES;\s*window\.dispatchEvent\(new Event\('dial-ready'\)\);\s*<\/script>/,
-    '<script>\n  window.dialOptions = LDS.dialOptions; window.DIAL_CODES = LDS.DIAL_CODES;\n'
-    + "  window.dispatchEvent(new Event('dial-ready'));\n</script>",
-  );
-
-  // Point components at the sprite this site actually serves. Cards that never
-  // load the bundle (pure-CSS foundation pages) have no LDS to configure.
-  if (out.includes('../assets/lds.js')) {
-    out = out.replace(
-      '<script src="../assets/lds.js"></script>',
-      '<script src="../assets/lds.js"></script>\n<script>LDS.setIconSprite("../assets/icons.svg");</script>',
-    );
-  }
-  return out;
-}
+// Metadata rides in a comment at the top of each card, so a card is one
+// self-contained file rather than a file plus a row in a manifest.
+const cards = readdirSync(CARDS_IN).filter((f) => f.endsWith('.html')).map((f) => {
+  const src = readFileSync(join(CARDS_IN, f), 'utf8');
+  const meta = src.match(/@dsCard\s+group="([^"]*)"\s+viewport="([^"]*)"\s+name="([^"]*)"\s+subtitle="([^"]*)"/);
+  return {
+    src,
+    group: meta?.[1] ?? 'Components',
+    viewport: meta?.[2] ?? '900x600',
+    name: meta?.[3] ?? basename(f, '.html'),
+    subtitle: meta?.[4] ?? '',
+  };
+});
 
 const built = [];
 for (const card of cards) {
-  const from = card.absolute ? card.path : join(PROJECT, card.path);
-  if (!existsSync(from)) { console.warn(`skip: ${card.path} not found`); continue; }
-  const name = card.name || basename(card.path, '.html');
-  const file = `${name.replace(/[^\w-]+/g, '-')}.html`;
-  writeFileSync(join(CARDS_OUT, file), rewrite(readFileSync(from, 'utf8')));
-  built.push({ ...card, name, file });
+  const file = `${card.name.replace(/[^\w-]+/g, '-')}.html`;
+  writeFileSync(join(CARDS_OUT, file), card.src);
+  built.push({ ...card, file });
 }
 
 // ---- index ------------------------------------------------------------------

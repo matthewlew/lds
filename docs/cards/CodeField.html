@@ -1,0 +1,22 @@
+<!-- @dsCard group="Forms" viewport="420x260" name="CodeField" subtitle="one-time code — 2FA, one box per digit" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../assets/styles.css">
+<style>.dim{font-family:var(--th-ui);font-size:var(--text-control-sm);color:var(--gray-600);line-height:1.5;margin-top:14px}</style>
+</head>
+<body style="margin:0;padding:28px;background:var(--gray-50,#FAF9EA);font-family:var(--th-body);">
+<div id="root"></div>
+<script src="../assets/lds.js"></script>
+<script>LDS.setIconSprite("../assets/icons.svg");</script>
+<script>
+// TODO(migration): this demo held state in React hooks. Rewrite it against
+// the controllers — see packages/lds/src/controllers/.
+const { codeField, h, mount, raw } = LDS;
+function Demo(){
+  const [code,setCode]=React.useState('482');
+  return h('div',{style:{display:'flex',flexDirection:'column',gap:8}},
+    h(codeField,{label:'Verification code',length:6,groupAfter:3,value:code,onChange:setCode,
+      help:'Six digits, from your authenticator app.'}),
+    h('p',{className:'dim'},'Numeric keypad, tabular figures, autocomplete="one-time-code" on the first box. Paste fills the set; backspace steps back. Pass length for 4- or 8-digit codes and size="sm" for 36px boxes.'));
+}
+mount(document.getElementById('root'), h(Demo));
+</script>
+</body></html>

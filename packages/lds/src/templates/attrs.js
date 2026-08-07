@@ -21,6 +21,12 @@ import { escapeHtml } from './escape.js';
 const ATTR_NAMES = {
   className: 'class',
   htmlFor: 'for',
+  // In HTML the `checked` and `value` ATTRIBUTES are the defaults — the live
+  // state lives on the property. So React's uncontrolled-input props are not an
+  // approximation here, they are the exact same thing spelled differently, and
+  // mapping them means markup ported off React keeps working.
+  defaultChecked: 'checked',
+  defaultValue: 'value',
   readOnly: 'readonly',
   tabIndex: 'tabindex',
   maxLength: 'maxlength',
@@ -95,7 +101,7 @@ function one(key, value) {
 
 // React appends these after every other attribute on a form control, `checked`
 // first — verified against the serialiser, not assumed.
-const DEFERRED = ['checked', 'value'];
+const DEFERRED = ['checked', 'defaultChecked', 'value', 'defaultValue'];
 
 /**
  * Serialises a prop bag to an attribute string, in prop order.

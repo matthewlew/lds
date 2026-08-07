@@ -1,0 +1,17 @@
+<!-- @dsCard group="Status" viewport="420x100" name="Tag" subtitle="status pill — hue × emphasis" -->
+<!DOCTYPE html><html><head><link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body style="margin:0;padding:32px;background:var(--gray-50,#FAF9EA);font-family:var(--th-body);">
+<div id="root"></div>
+<script src="../assets/lds.js"></script>
+<script>LDS.setIconSprite("../assets/icons.svg");</script>
+<script>
+const { tag, h, mount, raw } = LDS;
+mount(document.getElementById('root'), h('div',{style:{display:'flex',gap:8,flexWrap:'wrap'}},
+    h(tag,{hue:'green'},'Live'),
+    h(tag,{hue:'red'},'Error'),
+    h(tag,{hue:'blue',emphasis:'plain'},'Info'),
+    h(tag,{hue:'green',dot:true},'New')
+  ));
+</script>
+</body></html>

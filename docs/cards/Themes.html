@@ -1,0 +1,48 @@
+<!-- @dsCard group="Foundations" viewport="720x520" name="Themes" subtitle="Portfolio / Palette / Product / Roadtrip · light / dark" -->
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../assets/styles.css">
+<link rel="stylesheet" href="../assets/themes/palette.css">
+<link rel="stylesheet" href="../assets/themes/product.css">
+<link rel="stylesheet" href="../assets/themes/roadtrip.css">
+</head>
+<body style="margin:0;font-family:var(--th-body)">
+<div id="root"></div>
+<script src="../assets/lds.js"></script>
+<script>LDS.setIconSprite("../assets/icons.svg");</script>
+<script>
+// TODO(migration): this demo held state in React hooks. Rewrite it against
+// the controllers — see packages/lds/src/controllers/.
+const { button, card, tag, textField, h, mount, raw } = LDS;
+const THEMES = [
+  { id: 'portfolio', label: 'Portfolio (core)', cls: '' },
+  { id: 'palette', label: 'Palette', cls: 'theme-palette' },
+  { id: 'product', label: 'Product', cls: 'theme-product' },
+  { id: 'roadtrip', label: 'Roadtrip', cls: 'theme-roadtrip' },
+];
+function Demo() {
+  const [theme, setTheme] = React.useState('portfolio');
+  const [mode, setMode] = React.useState('light');
+  const cls = [THEMES.find(t => t.id === theme).cls, mode === 'dark' ? 'mode-dark' : ''].filter(Boolean).join(' ');
+  const seg = (opts, value, onChange) => h('div', { style: { display: 'flex', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', overflow: 'hidden' } },
+    opts.map(o => h('button', {
+      key: o.id, onClick: () => onChange(o.id),
+      style: { flex: 1, padding: '8px 10px', border: 'none', cursor: 'pointer', fontFamily: 'var(--th-mono)', fontSize: 11,
+        background: value === o.id ? 'var(--text)' : 'transparent', color: value === o.id ? 'var(--background)' : 'var(--text-subdued)' }
+    }, o.label)));
+  return h('div', { style: { padding: 28, display: 'flex', flexDirection: 'column', gap: 18, background: 'var(--gray-50)' } },
+    h('div', { style: { display: 'flex', gap: 16 } },
+      seg(THEMES.map(t => ({ id: t.id, label: t.label })), theme, setTheme),
+      seg([{ id: 'light', label: 'Light' }, { id: 'dark', label: 'Dark' }], mode, setMode)),
+    h('div', { className: cls, style: { padding: 28, borderRadius: 12, background: 'var(--background)', border: '1px solid var(--border)' } },
+      h('div', { style: { display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 20 } },
+        h(button, { variant: 'primary' }, 'Primary'),
+        h(button, { variant: 'secondary' }, 'Secondary'),
+        h(tag, { hue: 'green' }, 'Live'),
+        h(tag, { hue: 'gray', size: 'sm' }, 'v1.0.0')),
+      h(textField, { label: 'Work email', defaultValue: 'hello@lew.design' }),
+      h('div', { style: { marginTop: 20 } },
+        h(card, { kicker: 'Theme', title: 'Same components, different brand', body: 'Buttons, tags and fields repaint from theme + mode tokens only.' }))));
+}
+mount(document.getElementById('root'), h(Demo));
+</script>
+</body></html>
