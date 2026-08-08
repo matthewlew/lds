@@ -20,7 +20,7 @@ const run = (cmd, args, cwd) => execFileSync(cmd, args, { cwd, encoding: 'utf8',
 try {
   const packed = join(work, 'pack');
   mkdirSync(packed, { recursive: true });
-  run('npm', ['pack', '-w', '@lew/open-icons', '-w', '@lew/lds', '--pack-destination', packed], ROOT);
+  run('npm', ['pack', '-w', '@lew-ds/open-icons', '-w', '@lew-ds/lds', '--pack-destination', packed], ROOT);
 
   const app = join(work, 'app');
   mkdirSync(app, { recursive: true });
@@ -28,8 +28,8 @@ try {
   writeFileSync(join(app, 'package.json'), JSON.stringify({
     name: 'lds-consumer-check', version: '1.0.0', type: 'module', private: true,
     dependencies: {
-      '@lew/open-icons': `file:${join(packed, 'lew-open-icons-1.0.0.tgz')}`,
-      '@lew/lds': `file:${join(packed, 'lew-lds-1.0.0.tgz')}`,
+      '@lew-ds/open-icons': `file:${join(packed, 'lew-ds-open-icons-1.0.0.tgz')}`,
+      '@lew-ds/lds': `file:${join(packed, 'lew-ds-lds-1.0.0.tgz')}`,
       // Nothing else. That the app installs with no framework at all is part of
       // what this is checking.
     },

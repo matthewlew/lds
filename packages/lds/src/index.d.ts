@@ -1,4 +1,4 @@
-// @lew/lds — the Lew Design System, as plain HTML.
+// @lew-ds/lds — the Lew Design System, as plain HTML.
 //
 // A component is `(props) => string`, where the string is HTML. The five that
 // hold state also ship a controller. Nothing here needs a framework or a build

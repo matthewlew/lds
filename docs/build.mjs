@@ -104,7 +104,7 @@ const index = `<!DOCTYPE html>
 <body><div class="page">
 <h1>Lew Design System</h1>
 <p class="lede">Every component and foundation, rendered by the real package — the
-same <code>@lew/lds</code> build an app installs, over the Open Icons sprite.</p>
+same <code>@lew-ds/lds</code> build an app installs, over the Open Icons sprite.</p>
 <p class="meta">${built.length} cards · ${groups.length} groups</p>
 ${groups.map((g) => `<h2>${esc(g)}</h2>
 <div class="grid">

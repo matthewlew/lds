@@ -8,7 +8,7 @@ import assert from 'node:assert/strict';
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import * as LR from '../src/index.jsx';
-import * as V from '@lew/lds';
+import * as V from '@lew-ds/lds';
 
 // Every wrapper uses useLayoutEffect (to mount controllers, locate portal
 // targets) — expected and harmless under renderToStaticMarkup, which never

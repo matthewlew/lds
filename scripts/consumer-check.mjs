@@ -6,10 +6,10 @@ import { fileURLToPath } from 'node:url';
 import {
   button, icon, toast, nav, tooltip, segmentedControl, h, raw,
   setIconSprite, dialOptions,
-} from '@lew/lds';
-import { mountToasts } from '@lew/lds/controllers';
-import { banner } from '@lew/lds/templates';
-import { ICON_NAMES, spriteUrl, hasIcon } from '@lew/open-icons';
+} from '@lew-ds/lds';
+import { mountToasts } from '@lew-ds/lds/controllers';
+import { banner } from '@lew-ds/lds/templates';
+import { ICON_NAMES, spriteUrl, hasIcon } from '@lew-ds/open-icons';
 
 const require = createRequire(import.meta.url);
 const fails = [];
@@ -27,7 +27,7 @@ for (const want of ['lds-btn--primary', 'lds-nav--bar', 'lds-toast', 'lds-toolti
   if (!html.includes(want)) fails.push(`missing ${want} in rendered output`);
 }
 // The controllers subpath has to be reachable even where there is no DOM to use it.
-if (typeof mountToasts !== 'function') fails.push('@lew/lds/controllers did not export mountToasts');
+if (typeof mountToasts !== 'function') fails.push('@lew-ds/lds/controllers did not export mountToasts');
 
 // 2. the sprite the installed components point at actually exists on disk
 const iconHtml = icon({ name: 'warning-fill' });
@@ -45,18 +45,18 @@ else {
 }
 
 // 3. every documented subpath export resolves
-for (const sub of ['@lew/lds/css', '@lew/lds/css/themes/product', '@lew/lds/css/lds',
-  '@lew/lds/templates', '@lew/lds/controllers',
-  '@lew/lds/adherence.oxlintrc.json', '@lew/open-icons/icons.svg', '@lew/open-icons/names.json']) {
+for (const sub of ['@lew-ds/lds/css', '@lew-ds/lds/css/themes/product', '@lew-ds/lds/css/lds',
+  '@lew-ds/lds/templates', '@lew-ds/lds/controllers',
+  '@lew-ds/lds/adherence.oxlintrc.json', '@lew-ds/open-icons/icons.svg', '@lew-ds/open-icons/names.json']) {
   try { require.resolve(sub); } catch (e) { fails.push(`subpath does not resolve: ${sub}`); }
 }
 
 // 4. the CSS the package ships can find its fonts
-const cssPath = require.resolve('@lew/lds/css');
+const cssPath = require.resolve('@lew-ds/lds/css');
 const css = readFileSync(cssPath, 'utf8');
-const ldsCss = readFileSync(require.resolve('@lew/lds/css/lds'), 'utf8');
+const ldsCss = readFileSync(require.resolve('@lew-ds/lds/css/lds'), 'utf8');
 for (const m of ldsCss.matchAll(/url\('(fonts\/[^']+)'\)/g)) {
-  const font = new URL(m[1], `file://${require.resolve('@lew/lds/css/lds')}`);
+  const font = new URL(m[1], `file://${require.resolve('@lew-ds/lds/css/lds')}`);
   if (!existsSync(fileURLToPath(font))) fails.push(`CSS references a font not in the package: ${m[1]}`);
 }
 if (!css.includes('@import')) fails.push('css entry does not import the layers');

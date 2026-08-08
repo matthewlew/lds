@@ -1,5 +1,5 @@
 import React from 'react';
-import { Select } from '@lew/lds-react';
+import { Select } from '@lew-ds/lds-react';
 
 export const Default = () => (
   <Select
