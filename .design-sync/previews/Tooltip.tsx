@@ -1,13 +1,13 @@
 import React from 'react';
-import { Tooltip, Button } from '@lew/lds-react';
+import { Tooltip, Button } from '@lew-ds/lds-react';
 import { ensureInlineSprite } from './_sprite';
-import { setIconSprite } from '@lew/lds-react';
+import { setIconSprite } from '@lew-ds/lds-react';
 
 ensureInlineSprite();
 setIconSprite('');
 
 // Tooltip has no controlled `open` prop — it opens on hover/focus via the
-// vanilla controller's own DOM listeners. @lew/lds-react's components DO
+// vanilla controller's own DOM listeners. @lew-ds/lds-react's components DO
 // forward refs to their real rendered root (unlike the old React version —
 // see NOTES.md), so focusing the actual <Button ref> on mount is the
 // component's own real open path, not a stand-in for it.

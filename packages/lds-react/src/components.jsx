@@ -11,7 +11,7 @@ import {
   avatar, banner, button, buttonGroup, card, checkbox, chip, emptyState,
   icon, inline, link, menu, modal, nav, radio, row, select, skeleton,
   table, tabs, tag, textField, toast, toggle,
-} from '@lew/lds';
+} from '@lew-ds/lds';
 import { makeTemplateComponent } from './runtime.jsx';
 
 export const Avatar = makeTemplateComponent('Avatar', avatar);

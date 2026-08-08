@@ -48,7 +48,7 @@ vector craftsmanship does not scale in a high-velocity organisation. Every new
 icon is a small negotiation with every icon already drawn, and the negotiation
 is conducted by eye.
 
-`@lew/open-icons` treats iconography as a parametric system instead — stroke
+`@lew-ds/open-icons` treats iconography as a parametric system instead — stroke
 weight axes, optical sizing, corner radii defined as rules rather than as
 outcomes. A new icon then matches by construction rather than by hand, and
 generation tools can produce contextually aligned symbols on demand.

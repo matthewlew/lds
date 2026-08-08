@@ -94,8 +94,8 @@ const config = {
   rules: {
     'no-restricted-imports': ['warn', {
       patterns: [{
-        group: ['@lew/lds/src/**', '**/lds/src/templates/*', '**/lds/src/controllers/*'],
-        message: "Import from '@lew/lds', '@lew/lds/templates' or '@lew/lds/controllers', not package internals.",
+        group: ['@lew-ds/lds/src/**', '**/lds/src/templates/*', '**/lds/src/controllers/*'],
+        message: "Import from '@lew-ds/lds', '@lew-ds/lds/templates' or '@lew-ds/lds/controllers', not package internals.",
       }],
     }],
     'no-restricted-syntax': ['warn',

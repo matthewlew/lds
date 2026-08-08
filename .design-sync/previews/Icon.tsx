@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon, setIconSprite } from '@lew/lds-react';
+import { Icon, setIconSprite } from '@lew-ds/lds-react';
 import { ensureInlineSprite } from './_sprite';
 
 // See _sprite.ts for why this is inlined rather than a plain URL.

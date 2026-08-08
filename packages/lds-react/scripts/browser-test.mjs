@@ -88,6 +88,10 @@ await page.click('#textarea textarea');
 await page.keyboard.type('hi');
 check(await text('#out-textarea') === 'hi', `Textarea onChange did not deliver typed text, got ${await text('#out-textarea')}`);
 await page.evaluate(() => window.__bumpTick());
+// React 18 schedules this update async (setState from outside a React event
+// handler isn't flushed synchronously) — wait for it rather than racing it.
+await page.waitForFunction(() => document.getElementById('out-tick')?.textContent === '1', null, { timeout: 2000 })
+  .catch(() => {});
 check(await text('#out-tick') === '1', 'unrelated state bump did not re-render the app');
 const stillFocused = await page.evaluate(() =>
   document.activeElement === document.querySelector('#textarea textarea'));

@@ -1,5 +1,5 @@
 {
-  "name": "@lew/lds",
+  "name": "@lew-ds/lds",
   "version": "1.0.0",
   "description": "Lew Design System — components as plain HTML, over a one-token CSS architecture, with four themes and light/dark.",
   "license": "MIT",
@@ -38,7 +38,7 @@
     }
   },
   "dependencies": {
-    "@lew/open-icons": "^1.0.0"
+    "@lew-ds/open-icons": "^1.0.0"
   },
   "scripts": {
     "test": "node ../../scripts/markup-contract-test.mjs"

@@ -1,7 +1,7 @@
 // Shared by every preview that renders an <Icon> or a component with an icon
 // slot (Button, Chip, Menu, Tag, EmptyState, Row, ...).
 //
-// @lew/open-icons resolves its sprite URL via `import.meta.url`, which is
+// @lew-ds/open-icons resolves its sprite URL via `import.meta.url`, which is
 // meaningless once esbuild folds every module into one IIFE — it resolves
 // against the *bundle's* URL, not the package's, so the default sprite href
 // is wrong wherever this bundle is hosted (confirmed broken locally: Icon

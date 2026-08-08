@@ -1,5 +1,5 @@
 import React from 'react';
-import { Textarea } from '@lew/lds-react';
+import { Textarea } from '@lew-ds/lds-react';
 
 export const WithCount = () => (
   <div style={{ width: 320 }}>

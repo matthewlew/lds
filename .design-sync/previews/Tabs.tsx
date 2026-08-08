@@ -1,7 +1,7 @@
 import React from 'react';
-import { Tabs } from '@lew/lds-react';
+import { Tabs } from '@lew-ds/lds-react';
 import { ensureInlineSprite } from './_sprite';
-import { setIconSprite } from '@lew/lds-react';
+import { setIconSprite } from '@lew-ds/lds-react';
 
 ensureInlineSprite();
 setIconSprite('');

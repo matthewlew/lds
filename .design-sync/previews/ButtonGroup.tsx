@@ -1,5 +1,5 @@
 import React from 'react';
-import { ButtonGroup, Button } from '@lew/lds-react';
+import { ButtonGroup, Button } from '@lew-ds/lds-react';
 
 export const Default = () => (
   <ButtonGroup>

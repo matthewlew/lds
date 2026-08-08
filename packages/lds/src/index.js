@@ -1,8 +1,8 @@
-// @lew/lds — the Lew Design System, as plain HTML.
+// @lew-ds/lds — the Lew Design System, as plain HTML.
 //
 // A component is a function that returns a string of markup:
 //
-//   import { banner, button, h, mount } from '@lew/lds';
+//   import { banner, button, h, mount } from '@lew-ds/lds';
 //   mount(el, h(banner, { status: 'error', title: 'Failed' }, 'Retry.'));
 //
 // No framework, no build step, no runtime. The five components that hold state
@@ -17,9 +17,9 @@
 // the system without a component branching on the theme's name. Import the CSS
 // once at your app's entry point:
 //
-//   import '@lew/lds/css';
+//   import '@lew-ds/lds/css';
 //
-// The sprite resolves through @lew/open-icons by default; call setIconSprite if
+// The sprite resolves through @lew-ds/open-icons by default; call setIconSprite if
 // you serve it from somewhere else.
 //
 // Every component's markup is pinned by markup-contract.json — 103 cases,

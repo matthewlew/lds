@@ -11,8 +11,8 @@
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import * as templates from '@lew/lds/templates';
-import { setIconSprite, getIconSprite } from '@lew/lds';
+import * as templates from '@lew-ds/lds/templates';
+import { setIconSprite, getIconSprite } from '@lew-ds/lds';
 import { CASES } from './component-cases.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');

@@ -1,5 +1,5 @@
 {
-  "name": "@lew/open-icons",
+  "name": "@lew-ds/open-icons",
   "version": "1.0.0",
   "description": "Open Icons — 174 symbols on a 24px grid, stroke 2. A standalone SVG sprite with no dependency on any design system.",
   "license": "MIT",
