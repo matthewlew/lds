@@ -1,20 +1,20 @@
-// @lew/lds-react — React components over @lew/lds.
+// @lew-ds/lds-react — React components over @lew-ds/lds.
 //
-// @lew/lds itself stays framework-free: every template is still `(props) =>
+// @lew-ds/lds itself stays framework-free: every template is still `(props) =>
 // string`, every controller still `mountX(el, config) -> {dispose, update}`.
 // This package doesn't change any of that — it wraps it, so a React app (a
 // Claude Design canvas, a Claude Code scaffold, a future React consumer) gets
 // real components with real props and real event handlers, while a
 // framework-free app (Roadtrip, today) never has to install React at all.
 //
-//   import { Button, Modal } from '@lew/lds-react';
+//   import { Button, Modal } from '@lew-ds/lds-react';
 //   <Button variant="primary" onClick={() => setOpen(true)}>Open</Button>
 //   <Modal title="Confirm" onClose={() => setOpen(false)}>…</Modal>
 //
-// Import the same CSS you already import for @lew/lds — this package carries
+// Import the same CSS you already import for @lew-ds/lds — this package carries
 // no styles of its own:
 //
-//   import '@lew/lds/css';
+//   import '@lew-ds/lds/css';
 //
 // See README.md for the composition and event-handling model this wraps
 // (dangerouslySetInnerHTML + delegated events, not a virtual DOM).
@@ -33,4 +33,4 @@ export { toSlot } from './runtime.jsx';
 export {
   setIconSprite, getIconSprite, resolveSprite, STATUS_ICON,
   hueForName, initialsForName, DIAL_CODES, dialOptions,
-} from '@lew/lds';
+} from '@lew-ds/lds';

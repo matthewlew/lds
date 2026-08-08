@@ -1,4 +1,4 @@
-# @lew/lds
+# @lew-ds/lds
 
 The Lew Design System as plain HTML over a one-token CSS architecture:
 primitives → semantic emphasis roles → components → themes.
@@ -10,7 +10,7 @@ system without a single component branching on the theme's name.
 ## Install
 
 ```bash
-npm install @lew/lds
+npm install @lew-ds/lds
 ```
 
 No framework, no peer dependencies, no build step.
@@ -18,8 +18,8 @@ No framework, no peer dependencies, no build step.
 A component is a function that returns a string of HTML:
 
 ```js
-import { button, textField, h, mount } from '@lew/lds';
-import '@lew/lds/css';
+import { button, textField, h, mount } from '@lew-ds/lds';
+import '@lew-ds/lds/css';
 
 mount(document.getElementById('form'),
   h('div', { className: 'stack' },
@@ -50,7 +50,7 @@ CodeField, SegmentedControl, Textarea, Toast and Tooltip need behaviour a string
 cannot carry, so each ships a controller alongside its template:
 
 ```js
-import { mountCodeField, mountToasts } from '@lew/lds/controllers';
+import { mountCodeField, mountToasts } from '@lew-ds/lds/controllers';
 
 const code = mountCodeField(el, { length: 6, onChange: (v) => check(v) });
 code.update({ verifying: true });
@@ -76,7 +76,7 @@ binding that produced it, not an accident of the current one.
 
 ## Icons
 
-Icons come from [`@lew/open-icons`](../open-icons), a separate package with no
+Icons come from [`@lew-ds/open-icons`](../open-icons), a separate package with no
 dependency on LDS, so an app can consume the sprite without consuming the design
 system. It is installed as a dependency here and every component resolves
 against it by default.
@@ -85,7 +85,7 @@ If you serve the sprite from your own static directory or a CDN, say so once at
 startup:
 
 ```js
-import { setIconSprite } from '@lew/lds';
+import { setIconSprite } from '@lew-ds/lds';
 setIconSprite('/static/icons.svg');
 ```
 
@@ -136,9 +136,9 @@ Four themes ship, each a class on `<html>` alongside `mode-light` / `mode-dark`:
 | theme | class | import |
 | --- | --- | --- |
 | Core / Portfolio | *(none)* | ships at `:root` |
-| Palette | `theme-palette` | `@lew/lds/css/themes/palette` |
-| Product | `theme-product` | `@lew/lds/css/themes/product` |
-| Roadtrip | `theme-roadtrip` | `@lew/lds/css/themes/roadtrip` |
+| Palette | `theme-palette` | `@lew-ds/lds/css/themes/palette` |
+| Product | `theme-product` | `@lew-ds/lds/css/themes/product` |
+| Roadtrip | `theme-roadtrip` | `@lew-ds/lds/css/themes/roadtrip` |
 
 Themes only override tokens — `--c-*`, `--gray-*`, `--th-*`, `--text-*`, radii,
 shadows, density, icon size. Components never branch on a theme name.
@@ -146,7 +146,7 @@ shadows, density, icon size. Components never branch on a theme name.
 ## Fonts
 
 Coconat (display), Ronzino (UI and body) and Martian Mono (meta) self-host from
-`@lew/lds/fonts/`, which resolves to `css/fonts/` inside the package.
+`@lew-ds/lds/fonts/`, which resolves to `css/fonts/` inside the package.
 
 They live *inside* `css/` on purpose: `lds.css` reaches them with a relative
 `url('fonts/…')`, so the stylesheet and its fonts have to travel together. Serve

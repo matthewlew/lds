@@ -19,7 +19,7 @@
 import React, { useContext, useMemo } from 'react';
 import {
   mountCodeField, mountSegmentedControl, mountTextarea, mountToasts, mountTooltip,
-} from '@lew/lds';
+} from '@lew-ds/lds';
 import {
   toSlot, useControllerMount, useForwardRootRef, useSelfChangeFlag, useSlotPortals,
   useSlotResolution, useStableCallback,

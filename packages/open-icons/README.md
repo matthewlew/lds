@@ -1,4 +1,4 @@
-# @lew/open-icons
+# @lew-ds/open-icons
 
 174 symbols on a 24px grid with a live area of 20×20 and a stroke of 2, from the
 [Open Icons](https://github.com/matthewlew/open-icons) set (MIT).
@@ -17,7 +17,7 @@ wrapper over exactly this.
 ## Install
 
 ```bash
-npm install @lew/open-icons
+npm install @lew-ds/open-icons
 ```
 
 ## Using it
@@ -26,7 +26,7 @@ The sprite is the product. The JS surface exists only so a bundler can resolve
 the asset URL and so icon names can be checked at build time.
 
 ```js
-import { spriteUrl, useHref, hasIcon, ICON_NAMES } from '@lew/open-icons';
+import { spriteUrl, useHref, hasIcon, ICON_NAMES } from '@lew-ds/open-icons';
 
 useHref('chevron-right');        // → "/assets/icons-a1b2c3.svg#chevron-right"
 hasIcon('definitely-not-real');  // → false
@@ -37,7 +37,7 @@ To copy the sprite into your own static directory instead, import the file
 path directly:
 
 ```js
-import sprite from '@lew/open-icons/icons.svg';
+import sprite from '@lew-ds/open-icons/icons.svg';
 ```
 
 `icons.json` (`{grid, stroke, icons: {name: innerMarkup}}`) is there for anything

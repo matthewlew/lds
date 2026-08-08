@@ -6,9 +6,9 @@ import {
   modal, nav, raw, row, segmentedControl, select, table, tabs, tag, textField, textarea,
   toast, toggle, tooltip, mountCodeField, mountSegmentedControl, mountTextarea,
   mountToasts, mountTooltip, dialOptions, setIconSprite, cx, escapeHtml, initialsForName,
-} from '@lew/lds';
-import type { RawHtml, Slot, Status, Hue } from '@lew/lds';
-import { ICON_NAMES, hasIcon, useHref, spriteUrl } from '@lew/open-icons';
+} from '@lew-ds/lds';
+import type { RawHtml, Slot, Status, Hue } from '@lew-ds/lds';
+import { ICON_NAMES, hasIcon, useHref, spriteUrl } from '@lew-ds/open-icons';
 
 setIconSprite('/icons.svg');
 

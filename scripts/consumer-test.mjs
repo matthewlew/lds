@@ -14,25 +14,30 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+// The packages a framework-free consumer installs, in dependency order.
+const CONSUMED = ['@lew-ds/open-icons', '@lew-ds/lds'];
 const work = mkdtempSync(join(tmpdir(), 'lds-consumer-'));
 const run = (cmd, args, cwd) => execFileSync(cmd, args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
 
 try {
   const packed = join(work, 'pack');
   mkdirSync(packed, { recursive: true });
-  run('npm', ['pack', '-w', '@lew/open-icons', '-w', '@lew/lds', '--pack-destination', packed], ROOT);
+  // Ask npm for the tarball names rather than spelling them out: `npm pack`
+  // derives the filename from the package name, so a scope rename would
+  // otherwise silently break this pass.
+  const packedNames = JSON.parse(
+    run('npm', ['pack', '--json', ...CONSUMED.flatMap((pkg) => ['-w', pkg]), '--pack-destination', packed], ROOT),
+  );
+  const tarball = Object.fromEntries(packedNames.map(({ name, filename }) => [name, join(packed, filename)]));
 
   const app = join(work, 'app');
   mkdirSync(app, { recursive: true });
   cpSync(join(ROOT, 'scripts/consumer-check.mjs'), join(app, 'check.mjs'), { recursive: true });
   writeFileSync(join(app, 'package.json'), JSON.stringify({
     name: 'lds-consumer-check', version: '1.0.0', type: 'module', private: true,
-    dependencies: {
-      '@lew/open-icons': `file:${join(packed, 'lew-open-icons-1.0.0.tgz')}`,
-      '@lew/lds': `file:${join(packed, 'lew-lds-1.0.0.tgz')}`,
-      // Nothing else. That the app installs with no framework at all is part of
-      // what this is checking.
-    },
+    // Nothing beyond the packages themselves. That the app installs with no
+    // framework at all is part of what this is checking.
+    dependencies: Object.fromEntries(CONSUMED.map((pkg) => [pkg, `file:${tarball[pkg]}`])),
   }, null, 2));
 
   run('npm', ['install', '--silent', '--no-audit', '--no-fund'], app);

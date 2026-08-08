@@ -1,14 +1,14 @@
-# @lew/lds-react
+# @lew-ds/lds-react
 
-React components over [`@lew/lds`](../lds) — for a React app (a Claude Design canvas, a Claude Code scaffold, a future React consumer) to build with real LDS components and real props, without `@lew/lds` itself needing React.
+React components over [`@lew-ds/lds`](../lds) — for a React app (a Claude Design canvas, a Claude Code scaffold, a future React consumer) to build with real LDS components and real props, without `@lew-ds/lds` itself needing React.
 
-`@lew/lds` is framework-free: every component is `(props) => htmlString`; the five stateful ones ship a `mountX(el, config) -> {dispose(), update()}` controller alongside. This package doesn't change any of that — it's a separate, additive layer that wraps it. **No existing consumer of `@lew/lds` needs to change anything** — see "What this means for other apps" below.
+`@lew-ds/lds` is framework-free: every component is `(props) => htmlString`; the five stateful ones ship a `mountX(el, config) -> {dispose(), update()}` controller alongside. This package doesn't change any of that — it's a separate, additive layer that wraps it. **No existing consumer of `@lew-ds/lds` needs to change anything** — see "What this means for other apps" below.
 
 ## Usage
 
 ```jsx
-import { Button, Modal, TextField } from '@lew/lds-react';
-import '@lew/lds/css';
+import { Button, Modal, TextField } from '@lew-ds/lds-react';
+import '@lew-ds/lds/css';
 
 function ConfirmDialog({ onClose }) {
   return (
@@ -20,7 +20,7 @@ function ConfirmDialog({ onClose }) {
 }
 ```
 
-Every component from `@lew/lds`'s templates has a matching PascalCase export here (`button` → `Button`, `textField` → `TextField`, …), plus the five stateful ones and a `ToastProvider`/`useToast()` pair for Toast (see below). Import the same CSS you already import for `@lew/lds` — this package carries no styles of its own.
+Every component from `@lew-ds/lds`'s templates has a matching PascalCase export here (`button` → `Button`, `textField` → `TextField`, …), plus the five stateful ones and a `ToastProvider`/`useToast()` pair for Toast (see below). Import the same CSS you already import for `@lew-ds/lds` — this package carries no styles of its own.
 
 ### Composition
 
@@ -81,19 +81,19 @@ function SaveButton() {
 }
 ```
 
-## What this means for other apps using `@lew/lds`
+## What this means for other apps using `@lew-ds/lds`
 
-**Nothing changes for anyone today.** `@lew/lds` — templates, controllers, CSS, the `exports` map — is untouched by this package. Specifically:
+**Nothing changes for anyone today.** `@lew-ds/lds` — templates, controllers, CSS, the `exports` map — is untouched by this package. Specifically:
 
 - **Roadtrip** (the real first consumer, plain vanilla JS with no build step) needs zero changes. It doesn't depend on this package and never will unless it specifically wants to.
 - **Any other framework-free consumer** is in the same position — this is a new, separate `packages/lds-react` workspace member; it doesn't touch `packages/lds`.
-- **A future React consumer** (Claude Design's synced project, a Claude Code scaffold, or a genuinely new React app) installs `@lew/lds-react` alongside `@lew/lds` and gets real components. Nothing to migrate — there's no prior React version of these components still in use anywhere in this repo (`project/` holds the historical pre-productionization export; it's explicitly not built, see `docs/build.mjs`'s comment on it).
+- **A future React consumer** (Claude Design's synced project, a Claude Code scaffold, or a genuinely new React app) installs `@lew-ds/lds-react` alongside `@lew-ds/lds` and gets real components. Nothing to migrate — there's no prior React version of these components still in use anywhere in this repo (`project/` holds the historical pre-productionization export; it's explicitly not built, see `docs/build.mjs`'s comment on it).
 
-**The ongoing cost is keeping this package in sync**, not any one-time migration: a new component or prop added to `@lew/lds` needs a matching entry in `components.jsx`'s config table (most are a few lines — a template's own `Props` interface already enumerates its `Slot` fields) or, for a new stateful component, a hand-written wrapper alongside the other four in `controllers.jsx`. `npm test -w @lew/lds-react` (SSR smoke test + a real-browser Playwright suite) is meant to catch drift quickly, not to be run only occasionally.
+**The ongoing cost is keeping this package in sync**, not any one-time migration: a new component or prop added to `@lew-ds/lds` needs a matching entry in `components.jsx`'s config table (most are a few lines — a template's own `Props` interface already enumerates its `Slot` fields) or, for a new stateful component, a hand-written wrapper alongside the other four in `controllers.jsx`. `npm test -w @lew-ds/lds-react` (SSR smoke test + a real-browser Playwright suite) is meant to catch drift quickly, not to be run only occasionally.
 
 ## Testing
 
 - `scripts/smoke-test.mjs` — renders every wrapper via `react-dom/server`, checks the resulting markup.
 - `scripts/browser-test.mjs` — drives the five stateful components and delegated-event components in a real Chromium page via Playwright: focus movement, event delegation (a click on Chip's remove button doesn't also fire its own `onClick`), the self-change-vs-external-change distinction that keeps typing from losing focus, and nested-composition interactivity.
 
-Both run via `npm test -w @lew/lds-react`, and as part of the monorepo's own `npm test`.
+Both run via `npm test -w @lew-ds/lds-react`, and as part of the monorepo's own `npm test`.

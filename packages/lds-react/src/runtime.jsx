@@ -23,7 +23,7 @@
 import React, { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { raw } from '@lew/lds';
+import { raw } from '@lew-ds/lds';
 
 function isSlottable(value) {
   if (value === null || value === undefined || typeof value !== 'object') return false; // primitive

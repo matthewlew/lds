@@ -2,15 +2,15 @@
 //
 // The markup contract proves each component emits the right HTML. This proves
 // the things around it: that everything documented is actually exported, that
-// the sprite is resolved through @lew/open-icons and honours setIconSprite, that
+// the sprite is resolved through @lew-ds/open-icons and honours setIconSprite, that
 // text going into a slot is escaped and `raw()` is not, and that h() composes
 // templates rather than merely concatenating them.
 //
 // It replaces the old render-test, which needed React to answer the same
 // questions.
-import * as LDS from '@lew/lds';
-import * as templates from '@lew/lds/templates';
-import * as controllers from '@lew/lds/controllers';
+import * as LDS from '@lew-ds/lds';
+import * as templates from '@lew-ds/lds/templates';
+import * as controllers from '@lew-ds/lds/controllers';
 
 const fails = [];
 const eq = (actual, expected, what) => {
@@ -34,13 +34,13 @@ const HELPERS = [
 ];
 
 for (const name of [...COMPONENTS, ...CONTROLLERS, ...HELPERS]) {
-  if (LDS[name] === undefined) fails.push(`@lew/lds does not export ${name}`);
+  if (LDS[name] === undefined) fails.push(`@lew-ds/lds does not export ${name}`);
 }
 for (const name of COMPONENTS) {
-  if (typeof templates[name] !== 'function') fails.push(`@lew/lds/templates does not export ${name}`);
+  if (typeof templates[name] !== 'function') fails.push(`@lew-ds/lds/templates does not export ${name}`);
 }
 for (const name of CONTROLLERS) {
-  if (typeof controllers[name] !== 'function') fails.push(`@lew/lds/controllers does not export ${name}`);
+  if (typeof controllers[name] !== 'function') fails.push(`@lew-ds/lds/controllers does not export ${name}`);
 }
 // Every component in the contract must be reachable — a template that exists but
 // is not exported is a component nobody can use.
@@ -49,7 +49,7 @@ if (COMPONENTS.length !== 28) fails.push(`expected 28 components, listed ${COMPO
 // ---- the sprite -------------------------------------------------------------
 const original = LDS.getIconSprite();
 if (!/open-icons/.test(original)) {
-  fails.push(`the default sprite should resolve into @lew/open-icons, got ${original}`);
+  fails.push(`the default sprite should resolve into @lew-ds/open-icons, got ${original}`);
 }
 // Read through a getter, not a default parameter: a default parameter is bound
 // once and would ignore a later setIconSprite.

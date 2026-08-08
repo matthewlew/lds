@@ -1,11 +1,11 @@
-# design-sync NOTES — @lew/lds-react → Claude Design "LDS (Lew Design System)"
+# design-sync NOTES — @lew-ds/lds-react → Claude Design "LDS (Lew Design System)"
 
-## 2026-08-07 — retargeted from `@lew/lds` to `@lew/lds-react`
+## 2026-08-07 — retargeted from `@lew-ds/lds` to `@lew-ds/lds-react`
 
-`@lew/lds` was rewritten to be framework-free (no React — `(props) =>
+`@lew-ds/lds` was rewritten to be framework-free (no React — `(props) =>
 htmlString` templates + `mountX()` controllers) in a prior PR. This skill
 requires React (both `_ds_bundle.js` and previews render via React), so the
-sync broke until a new sibling package, `@lew/lds-react`, was built:
+sync broke until a new sibling package, `@lew-ds/lds-react`, was built:
 thin React wrappers over the same vanilla templates/controllers, same prop
 shapes where possible. `cfg.pkg` / `cfg.tokensPkg` now point at it.
 
@@ -13,11 +13,11 @@ shapes where possible. `cfg.pkg` / `cfg.tokensPkg` now point at it.
 itself** — design-sync bounds those two fields to `PKG_DIR` as a hard
 security rule (`package-build.mjs`: "a path anywhere under workspaceRoot
 would let a malicious dep's config exfiltrate project-root files"), and
-`@lew/lds-react` ships no CSS of its own by design (it depends on
-`@lew/lds`'s). `.design-sync/prepare-css.sh` copies `packages/lds/css` →
+`@lew-ds/lds-react` ships no CSS of its own by design (it depends on
+`@lew-ds/lds`'s). `.design-sync/prepare-css.sh` copies `packages/lds/css` →
 `packages/lds-react/css` for exactly this — gitignored, regenerated, **run
 it before every build/resync on this pkg** or `cssEntry`/`tokensGlob` won't
-resolve. It does not touch `@lew/lds-react`'s committed package.json/exports
+resolve. It does not touch `@lew-ds/lds-react`'s committed package.json/exports
 — this is sync-only plumbing.
 
 **Caught live during this retarget, twice — both `prepare-css.sh` (before
@@ -42,7 +42,7 @@ Below this point, most of the CSS/token/sprite/theme findings still apply
 verbatim (same actual stylesheet, same sprite, same fonts — just reached via
 the copy above instead of directly). Sections describing `packages/lds`'s
 former **React** source layout (component file locations, `forwardRef`
-absence) are marked stale where superseded — `@lew/lds-react`'s wrappers DO
+absence) are marked stale where superseded — `@lew-ds/lds-react`'s wrappers DO
 forward refs, so the `Tooltip` ref-workaround below may no longer be needed;
 verify against a fresh build rather than assuming either way.
 
@@ -52,8 +52,8 @@ verify against a fresh build rather than assuming either way.
 system — React components, `type: module`, no build step, `main` points
 straight at `src/index.js`) and `packages/open-icons` (sprite-based icon set,
 also source-direct). `npm ci` at the repo root installs everything; npm
-workspaces symlink `node_modules/@lew/lds` → `packages/lds` and
-`node_modules/@lew/open-icons` → `packages/open-icons`.
+workspaces symlink `node_modules/@lew-ds/lds` → `packages/lds` and
+`node_modules/@lew-ds/open-icons` → `packages/open-icons`.
 
 - `cfg.entry` for the converter: `./packages/lds/src/index.js` (no dist —
   ships source directly; `--node-modules ./node_modules`, repo root, since
@@ -82,8 +82,8 @@ nothing extra.
 `apca-palette.css` (raw hue ramps `--red-*`/`--orange-*`/etc., ~9 `var()`
 refs inside `lds.css`, used only by an optional decorative "hue" utility
 class) is wired in as tokens via the **self-referential tokensPkg trick**:
-`cfg.tokensPkg: "@lew/lds"`, `cfg.tokensGlob: "css/apca-palette.css"` — this
-works because npm workspaces symlink `node_modules/@lew/lds` back to
+`cfg.tokensPkg: "@lew-ds/lds"`, `cfg.tokensGlob: "css/apca-palette.css"` — this
+works because npm workspaces symlink `node_modules/@lew-ds/lds` back to
 `packages/lds`, so the package can be its own "tokens package". `tokensGlob`
 only accepts one pattern (no array), so this couldn't also pull in
 `css/themes/*.css` in the same field — see extra-assets below for those.
@@ -95,7 +95,7 @@ the real shipped fonts (Coconat, MartianMono). Nothing to fix.
 
 ## Icon sprite — MUST be inlined, not referenced by URL
 
-`@lew/open-icons`'s `spriteUrl` resolves via `import.meta.url`, which is
+`@lew-ds/open-icons`'s `spriteUrl` resolves via `import.meta.url`, which is
 meaningless once esbuild folds everything into the `_ds_bundle.js` IIFE (it
 resolves against the bundle's own location, not the package's) — the default
 sprite href is wrong wherever this bundle is hosted.
@@ -268,7 +268,7 @@ re-sync; confirm via `_screenshots/review/<group>__<Name>.png` before
 assuming an unchanged warn list is still benign.
 
 - **`[RENDER_THIN]` on CodeField, Icon, Menu, Modal, Select, Table** — every
-  wrapped component in `@lew/lds-react` renders inside a `display: contents`
+  wrapped component in `@lew-ds/lds-react` renders inside a `display: contents`
   div (see `packages/lds-react/src/runtime.jsx`'s `makeTemplateComponent`
   doc comment) so it participates in the parent's layout directly rather
   than sitting in an extra box. A `display: contents` element's own

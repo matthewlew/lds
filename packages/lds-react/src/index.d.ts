@@ -1,11 +1,11 @@
-// Types for @lew/lds-react.
+// Types for @lew-ds/lds-react.
 //
-// Every `Slot` prop from @lew/lds's own types (title, children, actions, …)
+// Every `Slot` prop from @lew-ds/lds's own types (title, children, actions, …)
 // widens to accept a React node here, on top of everything it already took
 // (text, `raw()` markup) — see runtime.jsx's `toSlot` for how a node gets
 // flattened to markup before the vanilla template ever sees it. List-shaped
 // props (Menu's `items`, Table's `rows`, …) are NOT widened — their entries
-// stay whatever @lew/lds already typed them as (see components.jsx's
+// stay whatever @lew-ds/lds already typed them as (see components.jsx's
 // per-component comments on that).
 import type { ReactNode, ForwardRefExoticComponent, RefAttributes, ReactElement, CSSProperties } from 'react';
 import type {
@@ -13,7 +13,7 @@ import type {
   AvatarProps as VAvatarProps,
   MenuItem, SelectOption, SelectOptGroup, SegmentedOption,
   TableColumn, TabItem,
-} from '@lew/lds/templates';
+} from '@lew-ds/lds/templates';
 
 export type ReactSlot = ReactNode | RawHtml;
 
@@ -400,10 +400,10 @@ export interface ToastApi {
 }
 export declare function useToast(): ToastApi;
 
-// ---- re-exported from @lew/lds ------------------------------------------------
+// ---- re-exported from @lew-ds/lds ------------------------------------------------
 
 export {
   setIconSprite, getIconSprite, resolveSprite, STATUS_ICON,
   hueForName, initialsForName, DIAL_CODES, dialOptions,
-} from '@lew/lds';
-export type { Status, Emphasis, Hue, Size, RawHtml } from '@lew/lds/templates';
+} from '@lew-ds/lds';
+export type { Status, Emphasis, Hue, Size, RawHtml } from '@lew-ds/lds/templates';

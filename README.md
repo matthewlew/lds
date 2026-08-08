@@ -6,8 +6,8 @@ gallery that documents both.
 ```
 index.html            the showcase — the source of truth for what the system looks like
 dist/                 the plain CSS the showcase paints from
-packages/open-icons   @lew/open-icons — 174-symbol SVG sprite, no LDS dependency
-packages/lds          @lew/lds — components as plain HTML + the one-token CSS architecture
+packages/open-icons   @lew-ds/open-icons — 174-symbol SVG sprite, no LDS dependency
+packages/lds          @lew-ds/lds — components as plain HTML + the one-token CSS architecture
 docs/                 the gallery cards and build, the decision record, and the philosophy notes
 project/              the original Claude Design export — the historical reference
 legacy/               superseded material kept for reference
@@ -40,12 +40,12 @@ open site/index.html
 
 ## The two packages
 
-**[`@lew/open-icons`](packages/open-icons)** ships the sprite and nothing else.
+**[`@lew-ds/open-icons`](packages/open-icons)** ships the sprite and nothing else.
 It has no dependency on LDS, so an app can use the icons without taking on the
 design system — `<svg><use href="/icons.svg#search"/></svg>` needs no CSS, no
 components and no JavaScript.
 
-**[`@lew/lds`](packages/lds)** is the design system: 28 components over a
+**[`@lew-ds/lds`](packages/lds)** is the design system: 28 components over a
 one-token CSS cascade, four themes × light/dark. Components emit class names and
 carry no styles, so a theme repaints the system without any component knowing a
 theme exists.
@@ -81,7 +81,7 @@ duplicate id or a dangling reference. All 174 symbols are otherwise byte-identic
 to the export.
 
 **Components assumed a global framework and a relative sprite path.** They now
-resolve icons through `@lew/open-icons`, with `setIconSprite` for apps serving the
+resolve icons through `@lew-ds/open-icons`, with `setIconSprite` for apps serving the
 file from elsewhere.
 
 **The docs ran on a CDN.** Cards loaded React, ReactDOM and Babel from unpkg with
