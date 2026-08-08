@@ -64,7 +64,7 @@ for (const m of dts.matchAll(/export declare function (\w+)\(props\?: (\w+)\)/g)
 }
 
 // ---- token registry, read from the CSS -------------------------------------
-const css = ['apca-palette.css', 'lds.css', 'themes/palette.css', 'themes/product.css', 'themes/roadtrip.css']
+const css = ['apca-palette.css', 'lds.css', 'themes/palette.css', 'themes/product.css']
   .map((f) => readFileSync(join(CSS, f), 'utf8')).join('\n');
 
 const tokenKinds = {};

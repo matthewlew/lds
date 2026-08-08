@@ -1,6 +1,14 @@
 /* ==========================================================================
    LDS theme: roadtrip — dark-native, dense, one interactive colour.
 
+   NOT PART OF THE PUBLISHED PACKAGE. This lives in theme-proposals/, not
+   packages/lds/css/themes/, and @lew-ds/lds does not export it — see this
+   folder's README. It exists here only so the gallery's Themes card can show
+   LDS wearing it. The design system ships components and a token contract
+   (--c-*, --gray-*, --surface-*, --th-*, radii/shadow/density); a specific
+   product's theme belongs in that product's own repo, authored against the
+   contract, not bundled into LDS as a preset.
+
    A proposal theme. It exists so the roadtrip app can be seen wearing LDS
    before a single component is swapped, and so the places where LDS and
    roadtrip's own token set disagree are visible rather than discovered

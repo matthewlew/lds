@@ -47,7 +47,8 @@ design system — `<svg><use href="/icons.svg#search"/></svg>` needs no CSS, no
 components and no JavaScript.
 
 **[`@lew-ds/lds`](packages/lds)** is the design system: 28 components over a
-one-token CSS cascade, four themes × light/dark. Components emit class names and
+one-token CSS cascade, two shipped themes × light/dark, plus a token contract
+themes outside this repo can build against. Components emit class names and
 carry no styles, so a theme repaints the system without any component knowing a
 theme exists.
 
