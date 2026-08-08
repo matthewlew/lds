@@ -1,6 +1,13 @@
-/* LDS hues v3 — smooth per-hue chroma, APCA-calibrated */
+/* LDS hues v3 — smooth per-hue chroma, APCA-calibrated.
+
+   Nine hues here, and gray is deliberately NOT one of them. It used to ship a
+   warm pink-beige ramp with no relationship to any theme's surfaces, so the
+   system carried two neutrals: this one for hue-gray, and a second for paper,
+   borders and ink. Two spellings, two temperatures, one meaning. The neutral now
+   lives with the theme as --gray-*, which is what hue-gray points at, so a
+   neutral tag matches the surface it sits on in every theme. */
 :root{
-  --hue-anchor:29;
+  --hue-anchor:29; /* @kind other */
   --red-50:#FFEAE6;
   --red-100:#FFE6E2;
   --red-200:#FED5CE;
@@ -89,15 +96,4 @@
   --pink-800:#752860;
   --pink-900:#4D173E;
   --pink-950:#380F2D;
-  --gray-50:#F5EDE8;
-  --gray-100:#F3EAE6;
-  --gray-200:#E6DDD8;
-  --gray-300:#D4CBC6;
-  --gray-400:#BDB3AF;
-  --gray-500:#9C928E;
-  --gray-600:#7D746F;
-  --gray-700:#665D58;
-  --gray-800:#4F4642;
-  --gray-900:#352D28;
-  --gray-950:#271F1C;
 }

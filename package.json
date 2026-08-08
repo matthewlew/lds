@@ -8,7 +8,7 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run build -w @lew-ds/open-icons && node scripts/build-adherence.mjs && npm run docs",
+    "build": "npm run build -w @lew-ds/open-icons && node scripts/build-adherence.mjs && node scripts/sync-dist-css.mjs && npm run docs",
     "docs": "node docs/build.mjs",
     "test": "npm run test -w @lew-ds/open-icons && node scripts/api-test.mjs && node scripts/css-test.mjs && node scripts/theme-source-test.mjs && node scripts/markup-contract-test.mjs && npm run typecheck && node scripts/consumer-test.mjs && npm run test -w @lew-ds/lds-react && npm run test:site",
     "test:site": "npm run docs && node scripts/site-test.mjs && node scripts/card-contract.mjs && node scripts/card-interaction-test.mjs && node scripts/dom-test.mjs",

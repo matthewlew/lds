@@ -9,12 +9,12 @@
      get them for free, which is why it never declared them.
 
      It has to now. .emph-plain resolves all seven object-colour roles from
-     --grey-*, so with core's neutrals set to oat a dashboard rendered on cream
+     --gray-*, so with core's neutrals set to oat a dashboard rendered on cream
      paper with warm borders. "Neutral, dense, dependable" is the whole brief
      for this theme, and neutral is the word that stopped being true. */
-  --grey-50:#F8F8F8;  --grey-100:#F0F0F0; --grey-200:#E2E2E2; --grey-300:#CACACA;
-  --grey-400:#ADADAD; --grey-500:#898989; --grey-600:#6B6B6B; --grey-700:#4E4E4E;
-  --grey-800:#333333; --grey-900:#1C1C1C; --grey-950:#0E0E0E;
+  --gray-50:#F8F8F8;  --gray-100:#F0F0F0; --gray-200:#E2E2E2; --gray-300:#CACACA;
+  --gray-400:#ADADAD; --gray-500:#898989; --gray-600:#6B6B6B; --gray-700:#4E4E4E;
+  --gray-800:#333333; --gray-900:#1C1C1C; --gray-950:#0E0E0E;
 
   --th-display:'Inter',system-ui,sans-serif;
   --th-body:'Inter',system-ui,sans-serif;

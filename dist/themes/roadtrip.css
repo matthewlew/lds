@@ -42,23 +42,23 @@
 
   /* ---- Neutral ramp ----
      Declared, not inherited. .emph-plain resolves all seven object-colour
-     roles from --grey-*, so a theme that sets only --c-* renders roadtrip's
+     roles from --gray-*, so a theme that sets only --c-* renders roadtrip's
      dark blue chrome on the portfolio's oat paper.
 
      Roadtrip's neutrals are a cool dark ramp. Its five dark surfaces do NOT
      live here — they land on the surface-elevation roles below, which is what
      those roles were added for. The ramp carries text, borders and icons. */
-  --grey-50:#F4F5F7;   /* interpolated */
-  --grey-100:#E8EAED;  /* --rt-text */
-  --grey-200:#CFD3D8;  /* interpolated */
-  --grey-300:#B4B9C0;  /* interpolated */
-  --grey-400:#9AA0A8;  /* --rt-muted */
-  --grey-500:#7B818A;  /* interpolated */
-  --grey-600:#626770;  /* --rt-faint / --rt-reserved */
-  --grey-700:#454951;  /* interpolated */
-  --grey-800:#2F3037;  /* --rt-surface-raised */
-  --grey-900:#1C1D21;  /* --rt-bg-sunken */
-  --grey-950:#0E0F12;  /* --rt-bg-base — the frame behind everything */
+  --gray-50:#F4F5F7;   /* interpolated */
+  --gray-100:#E8EAED;  /* --rt-text */
+  --gray-200:#CFD3D8;  /* interpolated */
+  --gray-300:#B4B9C0;  /* interpolated */
+  --gray-400:#9AA0A8;  /* --rt-muted */
+  --gray-500:#7B818A;  /* interpolated */
+  --gray-600:#626770;  /* --rt-faint / --rt-reserved */
+  --gray-700:#454951;  /* interpolated */
+  --gray-800:#2F3037;  /* --rt-surface-raised */
+  --gray-900:#1C1D21;  /* --rt-bg-sunken */
+  --gray-950:#0E0F12;  /* --rt-bg-base — the frame behind everything */
 
   /* ---- Surfaces ----
      All five, distinct, straight from roadtrip's own tokens. This is the whole
