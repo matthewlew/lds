@@ -30,6 +30,10 @@
   "keywords": ["icons", "svg", "sprite", "open-icons"],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/matthewlew/open-icons.git"
+    "url": "git+https://github.com/matthewlew/lds.git",
+    "directory": "packages/open-icons"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

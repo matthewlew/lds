@@ -38,7 +38,7 @@
     }
   },
   "dependencies": {
-    "@lew/open-icons": "1.0.0"
+    "@lew/open-icons": "^1.0.0"
   },
   "scripts": {
     "test": "node ../../scripts/markup-contract-test.mjs"
@@ -51,5 +51,13 @@
     "vanilla",
     "no-build",
     "lds"
-  ]
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matthewlew/lds.git",
+    "directory": "packages/lds"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }
