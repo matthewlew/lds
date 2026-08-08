@@ -5,7 +5,7 @@ gallery that documents both.
 
 ```
 index.html            the showcase — the source of truth for what the system looks like
-dist/                 the plain CSS the showcase paints from
+dist/                 the plain CSS the showcase paints from — synced from packages/lds/css/, not edited directly
 packages/open-icons   @lew-ds/open-icons — 174-symbol SVG sprite, no LDS dependency
 packages/lds          @lew-ds/lds — components as plain HTML + the one-token CSS architecture
 docs/                 the gallery cards and build, the decision record, and the philosophy notes
@@ -14,20 +14,21 @@ legacy/               superseded material kept for reference
 chats/                the design conversations that produced it
 ```
 
-## Two CSS trees, and why
+## One CSS tree
 
-`dist/` and `packages/lds/css/` are **different lineages, not different
-versions.** The two `lds.css` files differ by ~1,800 lines.
+`dist/` used to be a hand-maintained copy of `packages/lds/css/` and drifted:
+it kept an old `--grey-*` spelling and slightly different palette values after
+the real source (`project/`, and downstream `packages/lds/css/`) was retuned
+to `--gray-*`. `gray` is correct — it's what `project/lds.css` and the
+`.hue-gray` class name have always used; `grey` was the typo.
 
-`dist/` is the plain-CSS system the showcase and the portfolio were built
-against. `packages/lds/css/` is the npm package's CSS, which is larger and
-newer and very nearly a superset — the measured gaps are three tokens
-(`--grey-50`, `--grey-400`, `--grey-800`) and one class (`lds-tag--info`).
+`npm run build` now runs `scripts/sync-dist-css.mjs`, which copies
+`packages/lds/css/{lds.css,apca-palette.css,themes/*.css}` into `dist/` on
+every build. `dist/` is a build output, not a second source — CI's
+"generated files are up to date" check catches it if it's ever hand-edited.
 
-Closing those four gaps is what would let the two collapse into one, and would
-also let `matthewlew.github.io` drop its vendored snapshot and consume the
-package directly. Until then, treat a swap between them as a breaking change
-that fails silently rather than loudly.
+This is also what let `matthewlew.github.io` drop its vendored snapshot and
+consume the published `@lew-ds/lds` package directly instead.
 
 ## Quick start
 
