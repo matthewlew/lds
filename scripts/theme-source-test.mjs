@@ -33,8 +33,8 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 
 const THEMES = [{
   name: 'roadtrip',
-  css: join(ROOT, 'packages/lds/css/themes/roadtrip.css'),
-  lock: join(ROOT, 'packages/lds/css/themes/roadtrip.tokens.lock.json'),
+  css: join(ROOT, 'packages/lds/theme-proposals/roadtrip.css'),
+  lock: join(ROOT, 'packages/lds/theme-proposals/roadtrip.tokens.lock.json'),
   // Overridable: the source lives in another repo that is not always checked out.
   source: process.env.ROADTRIP_TOKENS
     ? resolvePath(process.env.ROADTRIP_TOKENS)

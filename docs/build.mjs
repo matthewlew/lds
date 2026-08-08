@@ -32,6 +32,11 @@ mkdirSync(CARDS_OUT, { recursive: true });
 cpSync(join(ROOT, 'packages/lds/css'), ASSETS, { recursive: true });
 cpSync(join(ROOT, 'packages/open-icons/icons.svg'), join(ASSETS, 'icons.svg'));
 
+// roadtrip.css is a proposal theme, not part of the published package (see
+// packages/lds/theme-proposals/README.md) — copied separately so the Themes
+// card can still demo it without it being inside the npm-published css/ tree.
+cpSync(join(ROOT, 'packages/lds/theme-proposals/roadtrip.css'), join(ASSETS, 'themes/roadtrip.css'));
+
 await esbuild.build({
   entryPoints: [join(ROOT, 'packages/lds/src/index.js')],
   bundle: true,

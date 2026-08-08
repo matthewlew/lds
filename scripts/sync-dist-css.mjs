@@ -15,7 +15,7 @@ const DIST = join(ROOT, 'dist');
 for (const file of ['lds.css', 'apca-palette.css']) {
   cpSync(join(SRC, file), join(DIST, file));
 }
-for (const file of ['palette.css', 'product.css', 'roadtrip.css']) {
+for (const file of ['palette.css', 'product.css']) {
   cpSync(join(SRC, 'themes', file), join(DIST, 'themes', file));
 }
 

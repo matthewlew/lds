@@ -22,7 +22,7 @@ const SRC = join(ROOT, 'packages/lds/src');
 const fails = [];
 const files = [
   'apca-palette.css', 'lds.css',
-  'themes/palette.css', 'themes/product.css', 'themes/roadtrip.css',
+  'themes/palette.css', 'themes/product.css',
 ];
 
 let all = '';

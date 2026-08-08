@@ -1,7 +1,7 @@
 {
   "name": "@lew-ds/lds",
   "version": "1.0.0",
-  "description": "Lew Design System — components as plain HTML, over a one-token CSS architecture, with four themes and light/dark.",
+  "description": "Lew Design System — components as plain HTML, over a one-token CSS architecture, with a token contract, two shipped themes, and light/dark.",
   "license": "MIT",
   "type": "module",
   "sideEffects": [
@@ -28,7 +28,6 @@
     "./css/lds": "./css/lds.css",
     "./css/themes/palette": "./css/themes/palette.css",
     "./css/themes/product": "./css/themes/product.css",
-    "./css/themes/roadtrip": "./css/themes/roadtrip.css",
     "./fonts/*": "./css/fonts/*",
     "./adherence.oxlintrc.json": "./adherence.oxlintrc.json",
     "./package.json": "./package.json",

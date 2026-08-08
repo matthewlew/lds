@@ -131,17 +131,22 @@ Core ships the portfolio brand (oat neutrals, green accent ramp) at `:root` with
 no theme file needed. Emphasis classes (`emph-plain/subtle/soft/strong/stark`)
 resolve the object colour roles; `hue-*` repoints the brand ramp for status use.
 
-Four themes ship, each a class on `<html>` alongside `mode-light` / `mode-dark`:
+Two general-purpose themes ship, each a class on `<html>` alongside
+`mode-light` / `mode-dark`:
 
 | theme | class | import |
 | --- | --- | --- |
 | Core / Portfolio | *(none)* | ships at `:root` |
 | Palette | `theme-palette` | `@lew-ds/lds/css/themes/palette` |
 | Product | `theme-product` | `@lew-ds/lds/css/themes/product` |
-| Roadtrip | `theme-roadtrip` | `@lew-ds/lds/css/themes/roadtrip` |
 
 Themes only override tokens — `--c-*`, `--gray-*`, `--th-*`, `--text-*`, radii,
-shadows, density, icon size. Components never branch on a theme name.
+shadows, density, icon size. Components never branch on a theme name. This
+token surface is the contract: a product with its own theme (Roadtrip's, for
+instance) authors a class against these same names in its own repo and
+imports `@lew-ds/lds` for components, rather than LDS bundling a
+product-specific theme as a preset. See `packages/lds/theme-proposals/` for
+why one exception exists in this repo's gallery, not in the published package.
 
 ## Fonts
 
