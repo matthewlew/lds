@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Tag } from '@lew/lds';
+import { Table, Tag } from '@lew/lds-react';
 
 const columns = [
   { key: 'name', label: 'Name' },

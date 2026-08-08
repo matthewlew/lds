@@ -80,6 +80,18 @@ check('Link', h(LR.Link, { href: '/x', variant: 'standalone' }, 'Learn more'),
 check('Menu', h(LR.Menu, { items: [{ label: 'Edit' }, { separator: true }, { label: 'Delete', danger: true }] }),
   ['lds-menu', 'Edit', 'lds-menu__item--danger', 'Delete']);
 
+// A JSX icon in a list-shaped field composes via the same portal mechanism
+// as a flat slot (see useListSlotResolution) — placeholder present, no
+// "[object Object]" string coercion (the bug this was added to catch: the
+// vanilla template's slot() stringifies anything it doesn't recognize).
+// See browser-test.mjs for proof the icon actually renders once mounted.
+{
+  const html = renderToStaticMarkup(h(LR.Menu, { items: [{ label: 'Rename', icon: h('b', null, 'i') }] }));
+  assert.ok(html.includes('data-lds-slot='), 'Menu with JSX icon: expected a portal placeholder');
+  assert.ok(!html.includes('[object Object]'), 'Menu with JSX icon: stringified instead of composing');
+  count++;
+}
+
 check('Modal with close/back', h(LR.Modal, { title: 'Confirm', onClose: () => {}, onBack: () => {} }, 'Body'),
   ['lds-modal', 'lds-modal__close', 'lds-modal__back', 'Confirm', 'Body']);
 
@@ -100,10 +112,25 @@ check('Skeleton', h(LR.Skeleton, { variant: 'title' }), ['lds-skeleton--title'])
 check('Table', h(LR.Table, { columns: [{ key: 'a', label: 'A' }], rows: [{ a: '1' }] }),
   ['lds-table', '<th>A</th>', '<td>1</td>']);
 
+// Same "[object Object]" bug as Menu's icon, for a cell value (a status
+// badge is the natural real-world case — see this preview's own history).
+{
+  const html = renderToStaticMarkup(h(LR.Table, {
+    columns: [{ key: 'status', label: 'Status' }],
+    rows: [{ status: h(LR.Tag, { hue: 'green' }, 'Active') }],
+  }));
+  assert.ok(html.includes('data-lds-slot='), 'Table with JSX cell: expected a portal placeholder');
+  assert.ok(!html.includes('[object Object]'), 'Table with JSX cell: stringified instead of composing');
+  count++;
+}
+
 check('Tabs', h(LR.Tabs, { tabs: [{ id: 'x', label: 'X' }], active: 'x' }),
   ['lds-tabs', 'lds-tabs__tab--active', 'X']);
 
 check('Tag', h(LR.Tag, { hue: 'blue' }, 'Beta'), ['lds-tag', 'hue-blue', 'Beta']);
+
+check('Toast', h(LR.Toast, { status: 'error', title: 'Failed', dismissible: true }, 'Retry.'),
+  ['lds-toast', 'Failed', 'Retry.', 'lds-toast__dismiss']);
 
 check('TextField with endAction', h(LR.TextField, { label: 'Password', endAction: { icon: 'eye', label: 'Show', onClick: () => {} } }),
   ['lds-field', 'lds-field__adorn--action', 'Password']);

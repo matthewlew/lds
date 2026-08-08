@@ -1,5 +1,5 @@
 import React from 'react';
-import { Radio } from '@lew/lds';
+import { Radio } from '@lew/lds-react';
 
 // Radio has no RadioGroup parent — a real group is composed by hand, several
 // <Radio> siblings sharing one `name` so only one can be checked at a time.

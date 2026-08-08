@@ -152,7 +152,7 @@ export interface LinkProps extends ReactHtmlProps {
 export declare const Link: ForwardRefExoticComponent<LinkProps & RefAttributes<HTMLAnchorElement>>;
 
 export interface MenuProps extends ReactHtmlProps {
-  /** Entries are passed through unconverted — see the module doc comment. */
+  /** `label`/`icon`/`hint` accept a React node, same as a flat slot prop. */
   items?: MenuItem[];
 }
 export declare const Menu: ForwardRefExoticComponent<MenuProps & RefAttributes<HTMLDivElement>>;
@@ -219,7 +219,9 @@ export interface SelectProps extends ReactHtmlProps {
   help?: ReactSlot;
   error?: ReactSlot;
   required?: boolean;
-  /** Entries' labels are passed through unconverted — see the module doc comment. */
+  /** A top-level option's `label` accepts a React node. A group's own
+   * `label` is a plain string in the vanilla type (not a slot); an option
+   * nested inside a group's `options` is not reached — see README.md. */
   options?: (SelectOption | SelectOptGroup)[];
   value?: string;
   defaultValue?: string;
@@ -234,14 +236,15 @@ export interface SkeletonProps extends ReactHtmlProps {
 export declare const Skeleton: ForwardRefExoticComponent<SkeletonProps & RefAttributes<HTMLSpanElement>>;
 
 export interface TableProps extends ReactHtmlProps {
-  /** Column labels and cell values are passed through unconverted — see the module doc comment. */
+  /** A column's `label` accepts a React node. */
   columns?: TableColumn[];
+  /** Every cell value accepts a React node (e.g. a `<Tag>` for a status column). */
   rows?: Record<string, unknown>[];
 }
 export declare const Table: ForwardRefExoticComponent<TableProps & RefAttributes<HTMLTableElement>>;
 
 export interface TabsProps extends ReactHtmlProps {
-  /** Entries are passed through unconverted — see the module doc comment. */
+  /** `label`/`section` accept a React node, same as a flat slot prop. */
   tabs?: TabItem[];
   active?: string;
 }
@@ -341,16 +344,32 @@ export declare const Textarea: ForwardRefExoticComponent<TextareaProps & RefAttr
 export interface TooltipProps extends ReactHtmlProps {
   label?: ReactSlot;
   placement?: 'top' | 'bottom' | 'left' | 'right';
-  /** The trigger. Composed to markup, same as every other slot — an
-   * interactive child (e.g. a `<Button onClick>` passed here) will render
-   * correctly but its own handler will not fire; this is the same
-   * constraint the vanilla `mountTooltip` doc comment shows (`children:
-   * button({ … })` — a plain call, no handler attached either). */
+  /** The trigger — a React node composes via a real portal, so an
+   * interactive child (e.g. a `<Button onClick>` passed here) keeps its
+   * own handler. */
   children?: ReactSlot;
 }
-export declare const Tooltip: ForwardRefExoticComponent<TooltipProps & RefAttributes<HTMLDivElement>>;
+export declare const Tooltip: ForwardRefExoticComponent<TooltipProps & RefAttributes<HTMLSpanElement>>;
 
-// ---- toast (provider + hook, not a per-instance component) -------------------
+// ---- toast ---------------------------------------------------------------
+
+/** The presentational half — one message rendered in place, for a static
+ * composition. For the real, interactive, queue-managed usage, see
+ * `ToastProvider`/`useToast` below. */
+export interface ToastProps extends ReactHtmlProps {
+  status?: Status;
+  title?: ReactSlot;
+  children?: ReactSlot;
+  actions?: ReactSlot;
+  dismissible?: boolean;
+  onDismiss?: (e: MouseEvent) => void;
+  dismissLabel?: string;
+  icon?: ReactSlot;
+  iconHref?: string;
+}
+export declare const Toast: ForwardRefExoticComponent<ToastProps & RefAttributes<HTMLDivElement>>;
+
+// ---- toast provider + hook (not a per-instance component) --------------------
 
 export interface ToastProviderProps {
   children?: ReactNode;

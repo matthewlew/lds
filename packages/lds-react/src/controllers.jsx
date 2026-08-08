@@ -21,8 +21,8 @@ import {
   mountCodeField, mountSegmentedControl, mountTextarea, mountToasts, mountTooltip,
 } from '@lew/lds';
 import {
-  mergeRefs, toSlot, useControllerMount, useSelfChangeFlag, useSlotPortals, useSlotResolution,
-  useStableCallback,
+  toSlot, useControllerMount, useForwardRootRef, useSelfChangeFlag, useSlotPortals,
+  useSlotResolution, useStableCallback,
 } from './runtime.jsx';
 
 const CONTAINER_STYLE = { display: 'contents' };
@@ -35,9 +35,10 @@ export const CodeField = React.forwardRef(function CodeField(props, forwardedRef
   const [resolved, portalSpecs] = useSlotResolution(rawConfig, ['label', 'help', 'error']);
   const ref = useControllerMount(mountCodeField, resolved, selfChangeRef);
   const portals = useSlotPortals(ref, portalSpecs);
+  useForwardRootRef(ref, forwardedRef);
   return React.createElement(
     React.Fragment, null,
-    React.createElement('div', { ref: mergeRefs(ref, forwardedRef), style: CONTAINER_STYLE }),
+    React.createElement('div', { ref, style: CONTAINER_STYLE }),
     ...portals,
   );
 });
@@ -48,7 +49,8 @@ export const SegmentedControl = React.forwardRef(function SegmentedControl(props
   const handleChange = useStableCallback((next) => { markSelfChange(); if (onChange) onChange(next); });
   const config = { ...rest, value: value ?? defaultValue, onChange: handleChange };
   const ref = useControllerMount(mountSegmentedControl, config, selfChangeRef);
-  return React.createElement('div', { ref: mergeRefs(ref, forwardedRef), style: CONTAINER_STYLE });
+  useForwardRootRef(ref, forwardedRef);
+  return React.createElement('div', { ref, style: CONTAINER_STYLE });
 });
 
 export const Textarea = React.forwardRef(function Textarea(props, forwardedRef) {
@@ -59,9 +61,10 @@ export const Textarea = React.forwardRef(function Textarea(props, forwardedRef) 
   const [resolved, portalSpecs] = useSlotResolution(rawConfig, ['label', 'help', 'error']);
   const ref = useControllerMount(mountTextarea, resolved, selfChangeRef);
   const portals = useSlotPortals(ref, portalSpecs);
+  useForwardRootRef(ref, forwardedRef);
   return React.createElement(
     React.Fragment, null,
-    React.createElement('div', { ref: mergeRefs(ref, forwardedRef), style: CONTAINER_STYLE }),
+    React.createElement('div', { ref, style: CONTAINER_STYLE }),
     ...portals,
   );
 });
@@ -72,9 +75,10 @@ export const Tooltip = React.forwardRef(function Tooltip(props, forwardedRef) {
   const [resolved, portalSpecs] = useSlotResolution(rawConfig, ['children', 'label']);
   const ref = useControllerMount(mountTooltip, resolved);
   const portals = useSlotPortals(ref, portalSpecs);
+  useForwardRootRef(ref, forwardedRef);
   return React.createElement(
     React.Fragment, null,
-    React.createElement('div', { ref: mergeRefs(ref, forwardedRef), style: CONTAINER_STYLE }),
+    React.createElement('div', { ref, style: CONTAINER_STYLE }),
     ...portals,
   );
 });

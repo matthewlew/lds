@@ -10,12 +10,22 @@
 // template to the next (Modal doesn't forward it at all; CodeField forwards
 // it onto every digit input), which is a vanilla-template detail this test
 // has no need to depend on.
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
-  Banner, Chip, Modal, CodeField, SegmentedControl, Textarea, Tooltip, Button,
-  ToastProvider, useToast,
+  Banner, Chip, CodeField, Menu, Modal, SegmentedControl, Table, Tag, Textarea,
+  Tooltip, Button, ToastProvider, useToast,
 } from '../src/index.jsx';
+
+// A ref should resolve to the REAL rendered root (the actual <button>), not
+// the internal `display: contents` wrapper div — see useForwardRootRef's
+// doc comment in runtime.jsx. Exposed on window for the test to inspect,
+// since there's no other outward-facing way to observe a ref's target.
+function RefProbe() {
+  const ref = useRef(null);
+  window.__refProbeTagName = () => (ref.current ? ref.current.tagName : null);
+  return React.createElement(Button, { ref, id: 'ref-probe' }, 'Probe');
+}
 
 function ToastButtons() {
   const { toast } = useToast();
@@ -83,6 +93,19 @@ function App() {
       React.createElement(Button, {
         id: 'nested-button', onClick: () => setNestedClicked(true),
       }, 'Nested'))),
+
+    React.createElement(RefProbe, null),
+
+    // A JSX icon/cell value in a list-shaped field must actually render —
+    // not stringify to "[object Object]" (see components.jsx's Menu/Table
+    // listSlotKeys comments for the bug this locks in).
+    React.createElement('div', { id: 'menu-jsx-icon' }, React.createElement(Menu, {
+      items: [{ label: 'Rename', icon: React.createElement('b', { className: 'probe-icon' }, 'i') }],
+    })),
+    React.createElement('div', { id: 'table-jsx-cell' }, React.createElement(Table, {
+      columns: [{ key: 'status', label: 'Status' }],
+      rows: [{ status: React.createElement(Tag, { hue: 'green' }, 'Active') }],
+    })),
 
     React.createElement(ToastProvider, null, React.createElement(ToastButtons, null)));
 }

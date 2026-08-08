@@ -1,5 +1,5 @@
 import React from 'react';
-import { Toggle } from '@lew/lds';
+import { Toggle } from '@lew/lds-react';
 
 export const Default = () => (
   <div style={{ width: 320 }}>

@@ -35,11 +35,22 @@ A `Slot` prop (`children`, `title`, `actions`, `icon`, …) accepts a React node
 
 A nested wrapped component keeps its own event handlers — clicking "Confirm" above really does fire `onConfirm`, because composition uses a real `createPortal`, not a flatten-to-string. (An earlier version of this package tried flattening slot content with `renderToStaticMarkup`; that broke on exactly this case — nesting a hook-using component inside another's render corrupts React's render dispatcher, since it's not reentrant. See `src/runtime.jsx`'s doc comments for the mechanism that replaced it.)
 
-**List-shaped props are the one exception.** Menu's `items`, Table's `columns`/`rows`, Tabs' `tabs`, Select's `options`, SegmentedControl's `options` are passed through unconverted — their entries are typically plain strings, and a nested field inside one of them (e.g. a JSX icon in a menu item) won't auto-compose. Call the exported `toSlot()` yourself on that one field if you need it:
+**List-shaped props compose too** — Menu's `items[].label/icon/hint`, Table's `columns[].label`/every `rows[]` cell, Tabs' `tabs[].label/section`, and Select's top-level `options[].label` all accept a React node the same way a flat slot prop does:
 
 ```jsx
-<Menu items={[{ label: 'Delete', icon: toSlot(<TrashIcon/>), danger: true }]} />
+<Menu items={[{ label: 'Delete', icon: <TrashIcon/>, danger: true }]} />
+<Table columns={[{ key: 'status', label: 'Status' }]} rows={[{ status: <Tag hue="green">Active</Tag> }]} />
 ```
+
+**One level of nesting is the actual limit**: an option nested inside one of Select's own `{label, options}` groups isn't reached (SegmentedControl's `options[].label` is a plain string in the vanilla type, not a slot, so there's nothing to convert there either). Call the exported `toSlot()` yourself on a field this doesn't reach:
+
+```jsx
+<Select options={[{ label: 'Region', options: [{ value: 'us', label: toSlot(<FlagUS/>) }] }]} />
+```
+
+### Refs
+
+Every component forwards a ref to its real rendered root — `<Button ref={r}>` gives you the actual `<button>`/`<a>` element, not an internal wrapper, so `.focus()`, measuring, and the like work as expected. (Internally, each component renders inside a `display: contents` div so it participates in the parent's layout normally; the ref is redirected past that wrapper to the real element underneath.)
 
 ### Form controls
 

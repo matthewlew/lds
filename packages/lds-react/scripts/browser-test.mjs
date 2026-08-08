@@ -114,6 +114,18 @@ check(await text('#nested .lds-btn') === 'Nested', 'nested Button did not render
 await page.click('#nested-button');
 check(await text('#out-nested-clicked') === 'true', "nested Button's own onClick did not fire — composition should preserve it, not just its markup");
 
+// ---- List-shaped slot fields: a JSX value renders for real, no [object Object] --
+check((await text('#menu-jsx-icon')).includes('Rename') && !(await text('#menu-jsx-icon')).includes('[object Object]'),
+  'Menu with a JSX icon field did not render cleanly');
+check(await page.locator('#menu-jsx-icon .probe-icon').count() === 1, 'Menu item icon did not actually mount');
+check((await text('#table-jsx-cell')).includes('Active') && !(await text('#table-jsx-cell')).includes('[object Object]'),
+  'Table with a JSX cell value did not render cleanly');
+check(await page.locator('#table-jsx-cell .lds-tag').count() === 1, "Table cell's <Tag> did not actually mount");
+
+// ---- Ref forwarding: resolves to the real element, not the wrapper div -----
+const refTag = await page.evaluate(() => window.__refProbeTagName());
+check(refTag === 'BUTTON', `ref did not resolve to the real <button>, got <${refTag}>`);
+
 await browser.close();
 server.close();
 await rm(work, { recursive: true, force: true });

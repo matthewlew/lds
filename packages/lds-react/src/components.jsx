@@ -10,7 +10,7 @@
 import {
   avatar, banner, button, buttonGroup, card, checkbox, chip, emptyState,
   icon, inline, link, menu, modal, nav, radio, row, select, skeleton,
-  table, tabs, tag, textField, toggle,
+  table, tabs, tag, textField, toast, toggle,
 } from '@lew/lds';
 import { makeTemplateComponent } from './runtime.jsx';
 
@@ -63,10 +63,9 @@ export const Link = makeTemplateComponent('Link', link, {
   handlers: [{ name: 'onClick', event: 'click', selector: null }],
 });
 
-// `items[].label/icon/hint` are passed through unconverted — see toSlot's doc
-// comment in runtime.jsx. Pre-render a nested field with `toSlot()` yourself
-// if one needs JSX rather than text.
-export const Menu = makeTemplateComponent('Menu', menu);
+export const Menu = makeTemplateComponent('Menu', menu, {
+  listSlotKeys: { items: ['label', 'icon', 'hint'] },
+});
 
 export const Modal = makeTemplateComponent('Modal', modal, {
   slotKeys: ['title', 'children', 'actions', 'cancel'],
@@ -91,22 +90,30 @@ export const Row = makeTemplateComponent('Row', row, {
   handlers: [{ name: 'onClick', event: 'click', selector: null }],
 });
 
-// `options[].label` (and optgroup `options`) is passed through unconverted —
-// same reasoning as Menu's `items`.
+// A group entry's own `label` is a plain string in the vanilla type (not a
+// Slot) — harmless to include here, since a non-JSX value just passes
+// through untouched. What this does NOT reach is an option nested inside a
+// group's own `options[]` — one level deeper than useListSlotResolution
+// walks. Not fixed: no current usage needs it, and it would cost a second,
+// conditional list-resolution pass for a shape (grouped AND JSX-labelled)
+// that hasn't come up.
 export const Select = makeTemplateComponent('Select', select, {
   slotKeys: ['label', 'help', 'error'],
+  listSlotKeys: { options: ['label'] },
   withChange: true,
 });
 
 export const Skeleton = makeTemplateComponent('Skeleton', skeleton);
 
-// `columns[].label` and each row's cell values are passed through
-// unconverted — same reasoning as Menu's `items`.
-export const Table = makeTemplateComponent('Table', table);
+// `rows[]` field keys aren't fixed (caller-defined columns), so every field
+// on every row is checked — `null` means that to `useListSlotResolution`.
+export const Table = makeTemplateComponent('Table', table, {
+  listSlotKeys: { columns: ['label'], rows: null },
+});
 
-// `tabs[].label`/`section` is passed through unconverted — same reasoning as
-// Menu's `items`.
-export const Tabs = makeTemplateComponent('Tabs', tabs);
+export const Tabs = makeTemplateComponent('Tabs', tabs, {
+  listSlotKeys: { tabs: ['label', 'section'] },
+});
 
 export const Tag = makeTemplateComponent('Tag', tag, {
   slotKeys: ['children', 'icon'],
@@ -116,6 +123,15 @@ export const TextField = makeTemplateComponent('TextField', textField, {
   slotKeys: ['label', 'help', 'error', 'iconStart', 'iconEnd', 'prefix'],
   handlers: [{ name: 'endAction.onClick', event: 'click', selector: '.lds-field__adorn--action' }],
   withChange: true,
+});
+
+// The presentational half of Toast — renders one message in place, for a
+// static composition (a design mockup, a "what does an error toast look
+// like" card). The real, interactive, queue-managed usage is
+// `<ToastProvider>` + `useToast()` in controllers.jsx; this is not that.
+export const Toast = makeTemplateComponent('Toast', toast, {
+  slotKeys: ['title', 'children', 'actions', 'icon'],
+  handlers: [{ name: 'onDismiss', event: 'click', selector: '.lds-toast__dismiss' }],
 });
 
 export const Toggle = makeTemplateComponent('Toggle', toggle, {

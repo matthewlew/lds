@@ -21,7 +21,7 @@
 export {
   Avatar, Banner, Button, ButtonGroup, Card, Checkbox, Chip, EmptyState,
   Icon, Inline, Link, Menu, Modal, Nav, Radio, Row, Select, Skeleton,
-  Table, Tabs, Tag, TextField, Toggle,
+  Table, Tabs, Tag, TextField, Toast, Toggle,
 } from './components.jsx';
 
 export {

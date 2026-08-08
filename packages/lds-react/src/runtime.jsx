@@ -40,10 +40,11 @@ function isSlottable(value) {
  * for whatever hook runs next (surfaces as "Invalid hook call" somewhere
  * unrelated). That's exactly why the template/controller wrappers below use
  * a portal instead of this for their own slot props — this is exported for
- * the cases that have no persistent DOM node to portal into (Toast's
- * imperative `toast()` call; a nested field inside a list-shaped prop like
- * Menu's `items`), which is safe specifically because it runs from a click
- * handler or a manual call outside any render.
+ * the cases that have no persistent DOM node to portal into: Toast's
+ * imperative `toast()` call, or a field one level deeper than
+ * `useListSlotResolution` walks (an option nested inside one of Select's own
+ * `{label, options}` groups). Safe in both cases specifically because they
+ * run from a click handler or a manual call outside any render.
  */
 export function toSlot(value) {
   if (!isSlottable(value)) return value;
@@ -62,6 +63,24 @@ export function mergeRefs(...refs) {
       else r.current = node;
     }
   };
+}
+
+/**
+ * Points a forwarded ref at the REAL rendered root — `containerRef`'s first
+ * child — rather than the `display: contents` wrapper div itself. The
+ * wrapper isn't in the layout or accessibility tree (that's the point of
+ * `display: contents`), so a ref resolving to it can't be focused, measured,
+ * or otherwise used as the DOM node a consumer asked for. Re-syncs after
+ * every render (no dependency array) since a prop change replaces the real
+ * root wholesale — same reasoning as `useSlotPortals`.
+ */
+export function useForwardRootRef(containerRef, forwardedRef) {
+  useLayoutEffect(() => {
+    if (!forwardedRef) return;
+    const node = containerRef.current ? containerRef.current.firstElementChild : null;
+    if (typeof forwardedRef === 'function') forwardedRef(node);
+    else forwardedRef.current = node;
+  });
 }
 
 /**
@@ -89,6 +108,39 @@ export function useSlotResolution(props, slotKeys) {
       portals.push({ id, node: value });
     }
   }
+  return [resolved, portals];
+}
+
+/**
+ * The same resolution as `useSlotResolution`, for an array-shaped prop whose
+ * entries carry `Slot` fields — Menu's `items[].icon/label/hint`, Table's
+ * `rows[]` (every cell, since column keys are caller-defined so there's no
+ * fixed field list — pass `null` for `slotKeys` to check every field on
+ * every entry), Select's `options[]` (including one level of `{label,
+ * options}` groups). Every entry keeps its own placement in the array;
+ * entries that need no resolution pass through as the exact same reference.
+ */
+export function useListSlotResolution(list, slotKeys) {
+  const uid = useId();
+  const portals = [];
+  if (!Array.isArray(list)) return [list, portals];
+  const resolved = list.map((item, i) => {
+    if (item === null || typeof item !== 'object') return item;
+    const keys = slotKeys ?? Object.keys(item);
+    let changed = false;
+    const out = { ...item };
+    for (const key of keys) {
+      if (!(key in item)) continue;
+      const value = item[key];
+      if (isSlottable(value)) {
+        const id = `${uid}-i${i}-${key}`;
+        out[key] = raw(`<span data-lds-slot="${id}" style="display:contents"></span>`);
+        portals.push({ id, node: value });
+        changed = true;
+      }
+    }
+    return changed ? out : item;
+  });
   return [resolved, portals];
 }
 
@@ -214,21 +266,36 @@ export function useChangeHandler(ref, html, props, enabled) {
  * layout rather than sitting inside an extra box. Slot props are portaled in
  * (see `useSlotResolution`/`useSlotPortals`), so a nested wrapped component
  * passed as e.g. `children` keeps its own event handlers.
+ *
+ * `opts.listSlotKeys` is `{ propName: fieldKeys | null }` for an
+ * array-shaped prop whose entries carry `Slot` fields (Menu's `items`,
+ * Table's `rows`) — see `useListSlotResolution`. `null` field keys means
+ * "check every field on every entry" (Table's rows: column keys are
+ * caller-defined, so there's no fixed list).
  */
 export function makeTemplateComponent(displayName, templateFn, opts = {}) {
-  const { slotKeys = [], handlers = [], withChange = false } = opts;
+  const { slotKeys = [], handlers = [], withChange = false, listSlotKeys = {} } = opts;
+  const listProps = Object.keys(listSlotKeys);
   const Component = React.forwardRef(function TemplateComponent(props, forwardedRef) {
     const ref = useRef(null);
     const [resolvedProps, portalSpecs] = useSlotResolution(props, slotKeys);
+    for (const propName of listProps) {
+      if (!(propName in resolvedProps)) continue;
+      // eslint-disable-next-line react-hooks/rules-of-hooks -- listProps is fixed per component (from opts), so this loop runs the same hooks in the same order every render, same guarantee as calling them unrolled.
+      const [resolvedList, listPortals] = useListSlotResolution(resolvedProps[propName], listSlotKeys[propName]);
+      resolvedProps[propName] = resolvedList;
+      portalSpecs.push(...listPortals);
+    }
     const html = templateFn(resolvedProps);
     useDomHandlers(ref, html, handlers, props);
     useChangeHandler(ref, html, props, withChange);
     const portals = useSlotPortals(ref, portalSpecs);
+    useForwardRootRef(ref, forwardedRef);
     return React.createElement(
       React.Fragment,
       null,
       React.createElement('div', {
-        ref: mergeRefs(ref, forwardedRef),
+        ref,
         style: { display: 'contents' },
         'data-lds-component': displayName,
         dangerouslySetInnerHTML: { __html: html },

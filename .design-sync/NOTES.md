@@ -1,4 +1,50 @@
-# design-sync NOTES — @lew/lds → Claude Design "LDS (Lew Design System)"
+# design-sync NOTES — @lew/lds-react → Claude Design "LDS (Lew Design System)"
+
+## 2026-08-07 — retargeted from `@lew/lds` to `@lew/lds-react`
+
+`@lew/lds` was rewritten to be framework-free (no React — `(props) =>
+htmlString` templates + `mountX()` controllers) in a prior PR. This skill
+requires React (both `_ds_bundle.js` and previews render via React), so the
+sync broke until a new sibling package, `@lew/lds-react`, was built:
+thin React wrappers over the same vanilla templates/controllers, same prop
+shapes where possible. `cfg.pkg` / `cfg.tokensPkg` now point at it.
+
+**`cssEntry`/`tokensGlob` still need real content inside `packages/lds-react`
+itself** — design-sync bounds those two fields to `PKG_DIR` as a hard
+security rule (`package-build.mjs`: "a path anywhere under workspaceRoot
+would let a malicious dep's config exfiltrate project-root files"), and
+`@lew/lds-react` ships no CSS of its own by design (it depends on
+`@lew/lds`'s). `.design-sync/prepare-css.sh` copies `packages/lds/css` →
+`packages/lds-react/css` for exactly this — gitignored, regenerated, **run
+it before every build/resync on this pkg** or `cssEntry`/`tokensGlob` won't
+resolve. It does not touch `@lew/lds-react`'s committed package.json/exports
+— this is sync-only plumbing.
+
+**Caught live during this retarget, twice — both `prepare-css.sh` (before
+build) and `extra-assets.sh` (after build) are REQUIRED on every single
+`package-build.mjs` **and** `resync.mjs` invocation, no exceptions.**
+`resync.mjs` rebuilds `ds-bundle/` from scratch exactly like
+`package-build.mjs` does, so a run like `node .ds-sync/resync.mjs …` with no
+trailing `&& sh .design-sync/extra-assets.sh` silently ships every icon
+missing — not a crash, not a validate error: `<use href="#person">`
+references a `<symbol>` that was never inlined (the sprite fetch 404s on a
+missing `icons.svg`), so the icon element is present in the DOM, fully
+correctly styled and sized, and paints nothing. `[RENDER_THIN]` does NOT
+catch this reliably (icons sit inside otherwise-content-ful cards). The only
+way it surfaced here was screenshotting one specific cell (Avatar's
+`Fallback` story, icon-only) and noticing the circle was empty — every OTHER
+icon-bearing preview in this same broken capture pass silently had the same
+defect and would have graded fine on a careless look. **Always chain it**:
+`node .ds-sync/resync.mjs … && sh .design-sync/extra-assets.sh` — never run
+build/resync and grading as separate steps with a gap between them.
+
+Below this point, most of the CSS/token/sprite/theme findings still apply
+verbatim (same actual stylesheet, same sprite, same fonts — just reached via
+the copy above instead of directly). Sections describing `packages/lds`'s
+former **React** source layout (component file locations, `forwardRef`
+absence) are marked stale where superseded — `@lew/lds-react`'s wrappers DO
+forward refs, so the `Tooltip` ref-workaround below may no longer be needed;
+verify against a fresh build rather than assuming either way.
 
 ## Repo shape
 
@@ -214,6 +260,26 @@ wants to take them:
    as-is. Fix: either have `Menu.js` add `hue-red` when `danger` is set
    (mirroring `Button`), or point `.lds-menu__item--danger` at
    `var(--red-700)` directly.
+
+## Known render warns
+
+Triaged as legitimate — `package-validate.mjs` re-prints these on every
+re-sync; confirm via `_screenshots/review/<group>__<Name>.png` before
+assuming an unchanged warn list is still benign.
+
+- **`[RENDER_THIN]` on CodeField, Icon, Menu, Modal, Select, Table** — every
+  wrapped component in `@lew/lds-react` renders inside a `display: contents`
+  div (see `packages/lds-react/src/runtime.jsx`'s `makeTemplateComponent`
+  doc comment) so it participates in the parent's layout directly rather
+  than sitting in an extra box. A `display: contents` element's own
+  `getBoundingClientRect()` is always zero by spec, even though its content
+  paints normally — whatever measurement the render check uses trips on
+  that for these six specifically. Confirmed via direct screenshot
+  (`_screenshots/general__<Name>.png` and the per-story
+  `_screenshots/review/` sheets) that all six render their full content
+  correctly. `Icon` additionally trips the separate, pre-existing
+  icon-only/no-text heuristic documented above — two different warns,
+  same "not a defect" outcome.
 
 ## Re-sync risks
 
