@@ -8,7 +8,7 @@
 // `exports` subpath that does not resolve, or a URL inside the CSS that pointed
 // somewhere real in the repo and somewhere else in the tarball.
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync, cpSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, rmSync, readFileSync, writeFileSync, cpSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -16,6 +16,14 @@ import { fileURLToPath } from 'node:url';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const work = mkdtempSync(join(tmpdir(), 'lds-consumer-'));
 const run = (cmd, args, cwd) => execFileSync(cmd, args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+
+// npm's tarball name for a scoped package: strip the @, join scope and name
+// with a dash, append the version. Read from each package's own package.json
+// rather than hardcoding it, so a version bump can't silently break this.
+const tarballName = (pkgDir) => {
+  const { name, version } = JSON.parse(readFileSync(join(ROOT, pkgDir, 'package.json'), 'utf8'));
+  return `${name.replace('@', '').replace('/', '-')}-${version}.tgz`;
+};
 
 try {
   const packed = join(work, 'pack');
@@ -28,8 +36,8 @@ try {
   writeFileSync(join(app, 'package.json'), JSON.stringify({
     name: 'lds-consumer-check', version: '1.0.0', type: 'module', private: true,
     dependencies: {
-      '@lew-ds/open-icons': `file:${join(packed, 'lew-ds-open-icons-1.0.0.tgz')}`,
-      '@lew-ds/lds': `file:${join(packed, 'lew-ds-lds-1.0.0.tgz')}`,
+      '@lew-ds/open-icons': `file:${join(packed, tarballName('packages/open-icons'))}`,
+      '@lew-ds/lds': `file:${join(packed, tarballName('packages/lds'))}`,
       // Nothing else. That the app installs with no framework at all is part of
       // what this is checking.
     },

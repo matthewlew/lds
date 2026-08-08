@@ -1,6 +1,6 @@
 {
   "name": "@lew-ds/lds",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Lew Design System — components as plain HTML, over a one-token CSS architecture, with a token contract, two shipped themes, and light/dark.",
   "license": "MIT",
   "type": "module",
