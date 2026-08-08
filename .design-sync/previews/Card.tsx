@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Button } from '@lew/lds';
+import { Card, Button } from '@lew/lds-react';
 
 export const Default = () => (
   <div style={{ width: 320 }}>

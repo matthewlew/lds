@@ -1,5 +1,5 @@
 import React from 'react';
-import { Checkbox } from '@lew/lds';
+import { Checkbox } from '@lew/lds-react';
 
 export const Default = () => <Checkbox label="Email me about product updates" />;
 

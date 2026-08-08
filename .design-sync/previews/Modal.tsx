@@ -1,7 +1,7 @@
 import React from 'react';
-import { Modal, Button, ButtonGroup } from '@lew/lds';
+import { Modal, Button, ButtonGroup } from '@lew/lds-react';
 import { ensureInlineSprite } from './_sprite';
-import { setIconSprite } from '@lew/lds';
+import { setIconSprite } from '@lew/lds-react';
 
 ensureInlineSprite();
 setIconSprite('');

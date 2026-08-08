@@ -1,7 +1,7 @@
 import React from 'react';
-import { Avatar } from '@lew/lds';
+import { Avatar } from '@lew/lds-react';
 import { ensureInlineSprite } from './_sprite';
-import { setIconSprite } from '@lew/lds';
+import { setIconSprite } from '@lew/lds-react';
 
 ensureInlineSprite();
 setIconSprite('');

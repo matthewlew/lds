@@ -1,5 +1,5 @@
 import React from 'react';
-import { Skeleton } from '@lew/lds';
+import { Skeleton } from '@lew/lds-react';
 
 // A loading placeholder for a card: title, two lines of body text (the last
 // one shorter, via `last`), and a caption.
