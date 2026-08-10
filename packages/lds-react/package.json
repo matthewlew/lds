@@ -1,6 +1,6 @@
 {
   "name": "@lew-ds/lds-react",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "React bindings for the Lew Design System — wraps @lew-ds/lds's framework-free templates and controllers as React components, for React-based consumers (Claude Design, Claude Code) without changing @lew-ds/lds itself.",
   "license": "MIT",
   "type": "module",
