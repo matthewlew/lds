@@ -13,7 +13,7 @@
 import React, { useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
-  Banner, Chip, CodeField, Menu, Modal, SegmentedControl, Table, Tag, Textarea,
+  Banner, Chip, CodeField, Menu, Modal, SegmentedControl, Table, Tag, Textarea, TextField,
   Tooltip, Button, ToastProvider, useToast,
 } from '../src/index.jsx';
 
@@ -44,6 +44,7 @@ function App() {
   const [code, setCode] = useState('');
   const [segment, setSegment] = useState('a');
   const [textareaValue, setTextareaValue] = useState('');
+  const [textFieldValue, setTextFieldValue] = useState('');
   const [unrelatedTick, setUnrelatedTick] = useState(0);
   const [nestedClicked, setNestedClicked] = useState(false);
 
@@ -83,6 +84,11 @@ function App() {
     React.createElement('div', { id: 'out-tick' }, String(unrelatedTick)),
     React.createElement('div', { id: 'textarea' }, React.createElement(Textarea, {
       value: textareaValue, onChange: (e) => setTextareaValue(e.target.value),
+    })),
+
+    React.createElement('div', { id: 'out-textfield' }, textFieldValue),
+    React.createElement('div', { id: 'textfield' }, React.createElement(TextField, {
+      label: 'Name', onChange: (e) => setTextFieldValue(e.target.value),
     })),
 
     React.createElement('div', { id: 'tooltip' }, React.createElement(Tooltip, { label: 'A label' },

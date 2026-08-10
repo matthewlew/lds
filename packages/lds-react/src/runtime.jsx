@@ -20,7 +20,7 @@
 // presentational components, and the five stateful ones exist precisely
 // because SOME components can't tolerate that (a re-rendered <textarea>
 // loses the caret) — those get real controllers, not a fresh render.
-import React, { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
+import React, { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { raw } from '@lew-ds/lds';
@@ -146,16 +146,10 @@ export function useListSlotResolution(list, slotKeys) {
 
 /**
  * Projects each resolved slot's real React node into the placeholder the
- * template rendered for it. Re-locates placeholders after every commit
- * (`useLayoutEffect` with no dependency array) rather than gating on a
- * changed-markup signal, and only calls `setState` when a target actually
- * changed — returning the SAME Map when nothing did lets React bail out of
- * the extra render, which is what keeps this from looping. A prop change
- * replaces the DOM subtree wholesale (see the module doc), so the
- * placeholders themselves are new nodes each time; an unrelated re-render
- * leaves the existing ones in place, and this simply reuses them.
+ * template rendered for it. Re-locates placeholders when the template markup
+ * changes.
  */
-export function useSlotPortals(ref, portals) {
+export function useSlotPortals(ref, portals, html) {
   const [targets, setTargets] = useState(() => new Map());
 
   useLayoutEffect(() => {
@@ -171,7 +165,7 @@ export function useSlotPortals(ref, portals) {
       }
       return changed ? next : prev;
     });
-  });
+  }, [html]);
 
   return portals
     .map(({ id, node }) => { const el = targets.get(id); return el ? createPortal(node, el) : null; })
@@ -287,9 +281,10 @@ export function makeTemplateComponent(displayName, templateFn, opts = {}) {
       portalSpecs.push(...listPortals);
     }
     const html = templateFn(resolvedProps);
+    const innerHtml = useMemo(() => ({ __html: html }), [html]);
     useDomHandlers(ref, html, handlers, props);
     useChangeHandler(ref, html, props, withChange);
-    const portals = useSlotPortals(ref, portalSpecs);
+    const portals = useSlotPortals(ref, portalSpecs, html);
     useForwardRootRef(ref, forwardedRef);
     return React.createElement(
       React.Fragment,
@@ -298,7 +293,7 @@ export function makeTemplateComponent(displayName, templateFn, opts = {}) {
         ref,
         style: { display: 'contents' },
         'data-lds-component': displayName,
-        dangerouslySetInnerHTML: { __html: html },
+        dangerouslySetInnerHTML: innerHtml,
       }),
       ...portals,
     );
