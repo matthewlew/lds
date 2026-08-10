@@ -97,6 +97,13 @@ const stillFocused = await page.evaluate(() =>
   document.activeElement === document.querySelector('#textarea textarea'));
 check(stillFocused, 'Textarea lost focus on an unrelated parent re-render (update() should patch, not remount)');
 
+await page.click('#textfield input');
+await page.keyboard.type('hi');
+check(await text('#out-textfield') === 'hi',
+  `TextField onChange stopped after the first render, got ${await text('#out-textfield')}`);
+check(await page.locator('#textfield input').inputValue() === 'hi',
+  `TextField DOM value was replaced during typing, got ${await page.locator('#textfield input').inputValue()}`);
+
 // ---- Tooltip: opens on hover, via the vanilla controller underneath ---------
 await page.hover('#tooltip-trigger');
 const tooltipOpen = await page.evaluate(() =>
