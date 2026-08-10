@@ -1,0 +1,18 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "bootstrap-sha": "4de5b14d70294504b26cc324682b372842515206",
+  "include-component-in-tag": true,
+  "packages": {
+    "packages/lds-react": {
+      "release-type": "node",
+      "component": "lds-react",
+      "extra-files": [
+        {
+          "type": "json",
+          "path": "/package-lock.json",
+          "jsonpath": "$.packages['packages/lds-react'].version"
+        }
+      ]
+    }
+  }
+}
