@@ -568,11 +568,11 @@
   --thumb-ratio:4 / 3 /* @kind other */;
   --media-ratio:16 / 9 /* @kind other */;
 }
-/* CONTRACT for themes: supply --gray-*/--c-* ONCE. Either a single dark-native
+/* CONTRACT for themes: supply --gray-* / --c-* ONCE. Either a single dark-native
    ramp with no .mode-dark override of your own (roadtrip.css does this — its
    frame is always dark, so it never redeclares under .mode-dark), or a light
-   ramp here that this block derives dark --surface-*/--text-*/etc. from via
-   var(). A theme that redeclares its own --gray-*/--c-* under .mode-dark gets
+   ramp here that this block derives dark --surface-* / --text-* / etc. from via
+   var(). A theme that redeclares its own --gray-* / --c-* under .mode-dark gets
    inverted TWICE: once by its own override, once by this block reading
    whatever ramp is cascaded at that point. One inversion, owned by exactly
    one side — never both. */
