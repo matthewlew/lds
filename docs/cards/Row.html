@@ -13,10 +13,10 @@
 <body style="margin:0;padding:28px;background:var(--gray-50,#FAF9EA);font-family:var(--th-body);">
 <div id="root"></div>
 <script src="../assets/lds.js"></script>
-<script>LDS.setIconSprite("../assets/icons.svg");</script>
+<script src="../assets/icons.js"></script>
 <script>
 const { row, checkbox, h, mount, raw } = LDS;
-const H = '../assets/icons.svg';
+const H = LDS.getIconSprite();
 // Two independent selections, held as plain values. A row carries no id in the
 // markup, so a click finds its value by position within its own sheet.
 const ONE = [['5min','Every 5 minutes'],['15min','Every 15 minutes'],['hour','Every hour']];

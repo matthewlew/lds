@@ -76,6 +76,13 @@ npm test          # assert: no placeholders, no duplicate ids, no dangling url(#
 
 `npm test` fails the build on any of the three, so the defect cannot come back.
 
+## Masked glyphs need the sprite in the page
+
+Chromium does not apply a mask to content
+`<use>` clones from an external file, so `<use href="/icons.svg#warning-fill">`
+draws nothing there. Masked glyphs render only when the sprite is in the page —
+`@lew-ds/lds` ships `inlineIconSprite` / `loadIconSprite` for that.
+
 ## The stroke is not a CSS knob
 
 The geometry is weight-aware: every clearance in the set is a ratio of the

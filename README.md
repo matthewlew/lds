@@ -134,10 +134,10 @@ baseline is captured from a git worktree at the previous commit instead.
 | `markup-contract` | all 103 frozen component cases still emit exactly the same HTML |
 | `typecheck` | the published `.d.ts` surface compiles against real usage |
 | `consumer-test` | both packages pack, install into a throwaway app with **no other dependencies**, and work through bare specifiers |
-| `site-test` | all 33 built pages load in headless Chromium with no console errors, no failed requests, and no `<use>` pointing at a missing symbol |
+| `site-test` | all 33 built pages load in headless Chromium with no console errors, no failed requests, no `<use>` pointing at a missing symbol, and no masked glyph referenced through an external sprite (Chromium draws those blank) |
 | `card-contract` | every gallery card renders the DOM it is frozen at |
 | `card-interaction` | every rewritten demo still responds to a real click — the contract only sees the first paint |
-| `dom-test` | the five controllers actually behave — focus walking, selection, queue eviction, dismissal, disposal |
+| `dom-test` | the five controllers actually behave — focus walking, selection, queue eviction, dismissal, disposal — and the icon sprite inlines and repoints existing icons |
 
 `css-test` deliberately does **not** check whether a custom property is defined
 at `:root` versus under a class. The conditional ones — `.hue-*` retints, the

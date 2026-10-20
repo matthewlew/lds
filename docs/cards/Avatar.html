@@ -13,10 +13,10 @@ body{margin:0;padding:28px;background:var(--gray-50,#FAF9EA);font-family:var(--t
 <body>
 <div id="root"></div>
 <script src="../assets/lds.js"></script>
-<script>LDS.setIconSprite("../assets/icons.svg");</script>
+<script src="../assets/icons.js"></script>
 <script>
 const { avatar, row, h, mount, raw } = LDS;
-const H = '../assets/icons.svg';
+const H = LDS.getIconSprite();
 const NAMES = ['Jane Rivera','Sam Okonkwo','Lee Park','Ana Novák','Tomas Whitfield','Priya Raman','Chen Wei','Marcus Bell','Nour Haddad'];
 const SIZES = [['xs','24'],['sm','32'],[undefined,'40 · default'],['lg','48'],['xl','64'],['2xl','96']];
 function Demo(){

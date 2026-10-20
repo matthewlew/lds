@@ -11,10 +11,10 @@
 <body style="margin:0;padding:28px;background:var(--gray-50,#FAF9EA);font-family:var(--th-body)">
 <div id="root"></div>
 <script src="../assets/lds.js"></script>
-<script>LDS.setIconSprite("../assets/icons.svg");</script>
+<script src="../assets/icons.js"></script>
 <script>
 const { button, h, mount, raw } = LDS;
-const H = '../assets/icons.svg';
+const H = LDS.getIconSprite();
 const sizes = [
   ['Small — 13px label, 36px','sm'],
   ['Default — 14px label, 44px',undefined],

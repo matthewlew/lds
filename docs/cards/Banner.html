@@ -14,10 +14,10 @@
 <body style="margin:0;background:var(--gray-50,#FAF9EA);font-family:var(--th-body);">
 <div id="root"></div>
 <script src="../assets/lds.js"></script>
-<script>LDS.setIconSprite("../assets/icons.svg");</script>
+<script src="../assets/icons.js"></script>
 <script>
 const { banner, button, h, mount, raw } = LDS;
-const H = '../assets/icons.svg';
+const H = LDS.getIconSprite();
 function Demo(){
   return h('div',null,
     // page banner is full-bleed on purpose: it sits outside the content padding
