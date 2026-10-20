@@ -175,6 +175,39 @@ check(await bubble.getAttribute('data-open') === 'true', 'Tooltip: did not open 
 await page.keyboard.press('Escape');
 check(await bubble.getAttribute('data-open') === 'false', 'Tooltip: Escape did not close it');
 
+// ---- Icon sprite -------------------------------------------------------------
+// Masked glyphs draw nothing through an external <use> in Chromium, so the
+// sprite can be inlined. On a page holding only the bundle: icons rendered
+// BEFORE inlining are repointed, icons rendered after resolve in-document, and
+// a second call does not insert a second sprite.
+const bare = await browser.newPage();
+bare.on('pageerror', (e) => fails.push(`pageerror: ${e.message}`));
+// The gallery index is same-origin and does not inline the sprite itself.
+await bare.goto(`${base}/`, { waitUntil: 'networkidle' });
+await bare.evaluate(() => { document.body.innerHTML = '<div id="t"></div>'; });
+await bare.addScriptTag({ url: `${base}/assets/lds.js` });
+const sprite = await bare.evaluate(async (base) => {
+  LDS.setIconSprite(`${base}/assets/icons.svg`);
+  const t = document.getElementById('t');
+  t.innerHTML = LDS.banner({ status: 'warning', children: 'Before' });
+  await LDS.loadIconSprite();
+  await LDS.loadIconSprite();
+  t.insertAdjacentHTML('beforeend', LDS.banner({ status: 'error', children: 'After' }));
+  return {
+    sprites: document.querySelectorAll('[data-icon-sprite]').length,
+    current: LDS.getIconSprite(),
+    hrefs: [...t.querySelectorAll('use')].map((u) => u.getAttribute('href')),
+    resolves: [...t.querySelectorAll('use')].every((u) =>
+      document.getElementById(u.getAttribute('href').slice(1))?.tagName === 'symbol'),
+  };
+}, base);
+check(sprite.sprites === 1, `inlineIconSprite: expected one sprite in the document, found ${sprite.sprites}`);
+check(sprite.current === '', `inlineIconSprite: components still resolve against ${sprite.current}`);
+check(sprite.hrefs.join() === '#warning-fill,#close-circle-fill',
+  `inlineIconSprite: icons not repointed in-document: ${sprite.hrefs.join()}`);
+check(sprite.resolves, 'inlineIconSprite: a <use> does not resolve to an inlined symbol');
+await bare.close();
+
 await browser.close();
 server.close();
 
@@ -183,4 +216,4 @@ if (fails.length) {
   console.error(`\n${fails.length} controller problem(s)`);
   process.exit(1);
 }
-console.log('dom-test: all five controllers behave — focus, selection, queueing, dismissal and disposal');
+console.log('dom-test: all five controllers behave — focus, selection, queueing, dismissal and disposal — and the sprite inlines');

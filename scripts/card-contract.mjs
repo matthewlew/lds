@@ -67,6 +67,9 @@ for (const path of pages) {
       // what this migration changes. What they PRODUCE is compared; what they are
       // is not.
       if (node.tagName === 'SCRIPT') return '';
+      // The inlined icon sprite is infrastructure, like a script: what it draws
+      // shows up through the <use> elements that reference it.
+      if (node.hasAttribute('data-icon-sprite')) return '';
       const attrs = [...node.attributes]
         .filter((a) => !VOLATILE.test(a.name))
         // A generated id is referenced by aria-describedby/for; both sides are

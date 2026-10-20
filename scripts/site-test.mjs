@@ -81,23 +81,34 @@ for (const path of pages) {
   if (painted < 3) problems.push(`page rendered only ${painted} elements`);
 
   // Any <use> pointing at a symbol the sprite does not define draws nothing.
-  const badIcons = await page.evaluate(async () => {
+  // So does a MASKED symbol (warning-fill, copy…) referenced from another file:
+  // Chromium does not apply a mask through an external <use>, which is why the
+  // cards inline the sprite (inlineIconSprite) and reference `#id`.
+  const { badIcons, maskedExternal } = await page.evaluate(async () => {
     const hrefs = [...document.querySelectorAll('use')]
       .map((u) => u.getAttribute('href') || u.getAttribute('xlink:href'))
       .filter(Boolean);
     const bad = [];
+    const masked = [];
     const cache = new Map();
     for (const href of hrefs) {
       const [file, id] = href.split('#');
-      if (!file || !id) continue;
+      if (!id) continue;
+      if (!file) {
+        if (document.getElementById(id)?.tagName !== 'symbol') bad.push(href);
+        continue;
+      }
       if (!cache.has(file)) {
         const text = await fetch(file).then((r) => r.ok ? r.text() : '').catch(() => '');
         cache.set(file, text);
       }
-      if (!cache.get(file).includes(`id="${id}"`)) bad.push(href);
+      const symbol = cache.get(file).match(new RegExp(`<symbol id="${id}"[^>]*>[\\s\\S]*?</symbol>`));
+      if (!symbol) bad.push(href);
+      else if (symbol[0].includes('<mask')) masked.push(href);
     }
-    return [...new Set(bad)];
+    return { badIcons: [...new Set(bad)], maskedExternal: [...new Set(masked)] };
   });
+  if (maskedExternal.length) problems.push(`masked icons through an external sprite draw nothing in Chromium: ${maskedExternal.join(', ')}`);
   if (badIcons.length) problems.push(`icons not in sprite: ${badIcons.join(', ')}`);
 
   if (problems.length) fails.push(`${path}\n    ${problems.join('\n    ')}`);

@@ -92,6 +92,38 @@ setIconSprite('/static/icons.svg');
 Any component also takes a one-off `iconHref`. Icon props take either a sprite
 name (`iconStart: 'check'`) or composed markup.
 
+### Masked glyphs need the sprite in the page
+
+53 of the glyphs cut a detail out of their shape with an SVG mask — among them
+`warning-fill` and `close-circle-fill`, which Banner, Inline and Toast use for
+warning and error, and outline glyphs such as `copy`, `download` and `eye-off`.
+Chromium does not apply a mask to anything `<use>` clones from another file, so
+referenced as `icons.svg#warning-fill` those glyphs draw **nothing**: the
+blocking statuses lose their icon with no error anywhere.
+
+Inline the sprite once at startup and every component references it in-document
+instead:
+
+```js
+import { loadIconSprite } from '@lew-ds/lds';
+await loadIconSprite();            // fetches the configured sprite and inlines it
+```
+
+or, with the markup already in hand (a bundler `?raw` import, a server render):
+
+```js
+import { inlineIconSprite } from '@lew-ds/lds';
+import sprite from '@lew-ds/open-icons/icons.svg?raw';
+inlineIconSprite(sprite);
+```
+
+Call it before rendering; icons already in the document that point at the
+previous sprite URL are repointed; a one-off `iconHref` still points where you
+sent it. The sprite stays at full size, fixed and clipped out of view — not
+`display:none` or `visibility:hidden`, which break masks too. Its symbol ids
+(`search`, `home`…) join the document's id space, so avoid page elements with
+the same ids.
+
 ## Components
 
 | | |
@@ -183,5 +215,6 @@ npm test
 Diffs every component against the frozen markup contract, checks that every icon name
 and CSS class the components reference actually exists, typechecks the published
 `.d.ts` surface against real usage, and loads all 32 docs cards in a headless
-browser asserting no console errors, no failed requests, and no `<use>` pointing
-at a symbol the sprite does not define.
+browser asserting no console errors, no failed requests, no `<use>` pointing
+at a symbol the sprite does not define, and no masked glyph referenced through an
+external sprite.

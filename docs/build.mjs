@@ -31,6 +31,12 @@ mkdirSync(CARDS_OUT, { recursive: true });
 // whole is what keeps those two in step.
 cpSync(join(ROOT, 'packages/lds/css'), ASSETS, { recursive: true });
 cpSync(join(ROOT, 'packages/open-icons/icons.svg'), join(ASSETS, 'icons.svg'));
+// The cards inline the sprite rather than reference the file: Chromium draws
+// nothing for a masked glyph (warning-fill, copy…) cloned from an external file.
+// A classic script, so it runs before the card renders and is cached across
+// cards. See inlineIconSprite in packages/lds/src/icon-sprite.js.
+writeFileSync(join(ASSETS, 'icons.js'),
+  `LDS.inlineIconSprite(${JSON.stringify(readFileSync(join(ROOT, 'packages/open-icons/icons.svg'), 'utf8'))});\n`);
 
 // roadtrip.css is a proposal theme, not part of the published package (see
 // packages/lds/theme-proposals/README.md) — copied separately so the Themes

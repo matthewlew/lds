@@ -26,7 +26,7 @@
 // diffed on every test run — so the HTML is a specification rather than an
 // implementation detail.
 
-export { setIconSprite, getIconSprite, resolveSprite } from './icon-sprite.js';
+export { setIconSprite, getIconSprite, resolveSprite, inlineIconSprite, loadIconSprite } from './icon-sprite.js';
 export { STATUS_ICON } from './status-icons.js';
 export { hueForName, initialsForName } from './avatar-name.js';
 export { DIAL_CODES, dialOptions } from './dial-codes.js';

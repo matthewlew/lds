@@ -10,14 +10,14 @@
 <body style="margin:0;padding:28px;background:var(--gray-50,#FAF9EA);font-family:var(--th-body);">
 <div id="root"></div>
 <script src="../assets/lds.js"></script>
-<script>LDS.setIconSprite("../assets/icons.svg");</script>
+<script src="../assets/icons.js"></script>
 <script>
   window.dialOptions = LDS.dialOptions; window.DIAL_CODES = LDS.DIAL_CODES;
   window.dispatchEvent(new Event('dial-ready'));
 </script>
 <script>
 const { textField, select, codeField, mountCodeField, h, mount, raw } = LDS;
-const H = '../assets/icons.svg';
+const H = LDS.getIconSprite();
 let show = false;
 // The dial data is a published export now, so there is nothing to wait for.
 // Country names ride on the optgroup, which a native select shows in the open

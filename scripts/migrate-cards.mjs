@@ -43,7 +43,7 @@ function convert(input) {
   src = src.replace(/<script src="https:\/\/unpkg\.com\/react@[^>]*><\/script>\s*/g, '');
   src = src.replace(
     /<script src="https:\/\/unpkg\.com\/react-dom@[^>]*><\/script>\s*/g,
-    '<script src="../assets/lds.js"></script>\n<script>LDS.setIconSprite("../assets/icons.svg");</script>\n',
+    '<script src="../assets/lds.js"></script>\n<script src="../assets/icons.js"></script>\n',
   );
   src = src.replace(/<script type="text\/babel">/g, '<script>');
 

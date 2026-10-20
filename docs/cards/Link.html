@@ -23,10 +23,10 @@ body{margin:0;padding:28px;background:var(--gray-50,#FAF9EA);font-family:var(--t
 <body>
 <div id="root"></div>
 <script src="../assets/lds.js"></script>
-<script>LDS.setIconSprite("../assets/icons.svg");</script>
+<script src="../assets/icons.js"></script>
 <script>
 const { link, button, h, mount, raw } = LDS;
-const H = '../assets/icons.svg';
+const H = LDS.getIconSprite();
 function Demo(){
   return h('div',{style:{display:'flex',gap:44,flexWrap:'wrap',alignItems:'flex-start'}},
     h('div',{className:'col'},

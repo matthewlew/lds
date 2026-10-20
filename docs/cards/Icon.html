@@ -13,10 +13,10 @@
 <body style="margin:0;padding:28px;background:var(--gray-50,#FAF9EA);font-family:var(--th-body);">
 <div id="root"></div>
 <script src="../assets/lds.js"></script>
-<script>LDS.setIconSprite("../assets/icons.svg");</script>
+<script src="../assets/icons.js"></script>
 <script>
 const { icon, h, mount, raw } = LDS;
-const H = '../assets/icons.svg';
+const H = LDS.getIconSprite();
 // A cross-section of the set, in the order a UI reaches for them.
 const SHOWN = [
   'search','close','check','add','minus','menu','filter','sort',
