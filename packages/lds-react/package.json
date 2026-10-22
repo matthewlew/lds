@@ -1,40 +1,49 @@
 {
   "name": "@lew-ds/lds-react",
   "version": "1.0.1",
-  "description": "React bindings for the Lew Design System — wraps @lew-ds/lds's framework-free templates and controllers as React components, for React-based consumers (Claude Design, Claude Code) without changing @lew-ds/lds itself.",
+  "description": "React components for the Lew Design System: the markup of @lew-ds/lds's templates as JSX, server-rendered with every slot in the HTML. Stateless components are server components; only the five stateful ones are client components.",
   "license": "MIT",
   "type": "module",
+  "sideEffects": false,
   "files": [
-    "src"
+    "dist",
+    "types"
   ],
-  "main": "./src/index.jsx",
-  "types": "./src/index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./types/index.d.ts",
   "exports": {
     ".": {
-      "types": "./src/index.d.ts",
-      "default": "./src/index.jsx"
+      "types": "./types/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./icon-sprite": {
+      "types": "./types/icon-sprite.d.ts",
+      "default": "./dist/icon-sprite.js"
     },
     "./package.json": "./package.json"
   },
   "dependencies": {
-    "@lew-ds/lds": "^1.0.0"
+    "@lew-ds/lds": "^1.1.1",
+    "@lew-ds/open-icons": "^1.0.0"
   },
   "peerDependencies": {
-    "react": "^18.0.0 || ^19.0.0",
-    "react-dom": "^18.0.0 || ^19.0.0"
+    "react": "^19.0.0"
   },
   "devDependencies": {
     "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.4",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },
   "scripts": {
-    "test": "node scripts/smoke-test.mjs && node scripts/browser-test.mjs"
+    "build": "node scripts/build.mjs",
+    "prepack": "node scripts/build.mjs",
+    "prepublishOnly": "node scripts/dependency-floor.mjs",
+    "test": "node scripts/build.mjs && node scripts/parity-test.mjs && node scripts/server-test.mjs && tsc -p tsconfig.json && node scripts/browser-test.mjs"
   },
   "keywords": [
     "design-system",
     "react",
+    "react-server-components",
     "components",
     "lds"
   ],
