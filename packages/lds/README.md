@@ -68,7 +68,7 @@ a server — `attachTooltip(wrapper)` binds behaviour without re-rendering.
 
 ### The markup is the specification
 
-`markup-contract.json` pins the exact HTML all 28 components emit across 103
+`markup-contract.json` pins the exact HTML all 28 components emit across 114
 prop combinations, and `npm test` diffs against it. It was generated from the
 React implementation this package used to be, and frozen before that
 implementation was removed — so the markup is a guarantee that outlived the
@@ -117,6 +117,20 @@ import sprite from '@lew-ds/open-icons/icons.svg?raw';
 inlineIconSprite(sprite);
 ```
 
+To inline only the glyphs the app draws rather than all 174, build the sprite
+from their names with `@lew-ds/open-icons/sprite`, adding `COMPONENT_ICONS`
+(the glyphs components draw on their own — a dismiss button's close, a row's
+chevron, the status icons):
+
+```js
+import { COMPONENT_ICONS, inlineIconSprite } from '@lew-ds/lds';
+import { buildSprite } from '@lew-ds/open-icons/sprite';
+inlineIconSprite(buildSprite([...COMPONENT_ICONS, 'search', 'edit']));
+```
+
+The same string server-renders into the document as it is; `inlineIconSprite`
+then finds it by id and only repoints components at it.
+
 Call it before rendering; icons already in the document that point at the
 previous sprite URL are repointed; a one-off `iconHref` still points where you
 sent it. The sprite stays at full size, fixed and clipped out of view — not
@@ -149,6 +163,34 @@ A toast is chrome the system raises and it leaves on its own. If dismissing it
 can lose information the user needs, it wanted to be a banner. Errors raised as
 toasts never auto-dismiss.
 
+### Button
+
+`variant` defaults to `primary` — unless `emphasis` is set, which then paints
+the button by itself: `button({ emphasis: 'strong' })` is the full brand fill.
+(`.lds-btn--primary`'s tokens come later in the stylesheet than `.emph-*`'s and
+win, so adding the variant would paint primary's soft tint instead.)
+
+With `href` it renders an anchor with the same paint, and stays a link: it
+navigates, so it has a link's role, not `role="button"`. A disabled one drops
+the href and says `role="link"` with `aria-disabled`.
+
+### Fields
+
+TextField, Textarea and Select tie their help or error line to the control with
+`aria-describedby`, added to any `aria-describedby` you pass, as `${id}-note` —
+so pass `id`, which the label needs too. An error is announced
+(`role="alert"`) and marks the control `aria-invalid`. `required` is set on the
+control as well as drawn on the label.
+
+### Table
+
+`columns` and `rows` for a plain grid; a column's `className` goes on its
+header and each of its cells. For anything more — a `<th scope="row">` naming
+its row, an attribute on a row, a struck-through row — compose the `<thead>`
+and `<tbody>` yourself and pass them as `children` (`raw()` markup). A row
+header in the body is painted as a body cell, and cells inherit their row's
+`vertical-align` (middle by default), so a row can align its cells to the top.
+
 ### Tooltip
 
 A tooltip is what an icon-only button says when you ask it its name — it opens on
@@ -156,6 +198,18 @@ hover **and** on focus, because hover alone means a keyboard user never gets the
 label. It must not hold anything interactive: a hover bubble cannot be reached by
 a pointer without a hover bridge, so a control inside one is unreachable for some
 users. That case wants a Menu or a Modal.
+
+`placement` is `top` (the default), `bottom`, `start` or `end`; `left` and
+`right` are read as `start` and `end`. Once bound (`mountTooltip` or
+`attachTooltip`), the open bubble is positioned `fixed` from the trigger, so a
+panel's `overflow: hidden` or a table's scroll container cannot clip it (it
+corrects for an ancestor with a transform or backdrop-filter, such as a
+`.lds-glass` panel, which is what `fixed` then resolves against), and it closes
+when a scroll or resize moves the trigger. `dispose()` takes back the
+description it added. The bubble describes its trigger
+(`aria-describedby`) only when it says something the trigger's `aria-label`
+does not: an icon button named "Search" with a "Search" tooltip is not read out
+twice.
 
 ## Theming
 

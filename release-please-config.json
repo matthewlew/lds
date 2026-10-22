@@ -24,6 +24,17 @@
           "jsonpath": "$.packages['packages/lds-react'].version"
         }
       ]
+    },
+    "packages/open-icons": {
+      "release-type": "node",
+      "component": "open-icons",
+      "extra-files": [
+        {
+          "type": "json",
+          "path": "/package-lock.json",
+          "jsonpath": "$.packages['packages/open-icons'].version"
+        }
+      ]
     }
   }
 }

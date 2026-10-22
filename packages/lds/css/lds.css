@@ -556,6 +556,11 @@
   --border-hover:var(--gray-500);
   --bg-hover:var(--gray-100);
   --bg-pressed:var(--gray-200);
+  /* The accent — focus rings, a card's kicker, a selected caret — was the one
+     role left out of these defaults, so outside an .emph-* class every
+     `outline: … var(--text-accent)` was void and keyboard focus drew no ring at
+     all. .emph-plain's values, light and dark. */
+  --text-accent:var(--c-600);
   /* A switch's resting fill is a FILL, not a boundary — borrowing --border for
      it is what made the off state disappear. */
   --track-off:var(--gray-300);
@@ -592,6 +597,7 @@
   --border-hover:var(--gray-400);
   --bg-hover:var(--gray-900);
   --bg-pressed:var(--gray-800);
+  --text-accent:var(--c-100);
   --track-off:var(--gray-700);
   --track-off-hover:var(--gray-600);
 }
@@ -1807,14 +1813,24 @@ a:focus-visible,.lds-link:focus-visible{
   font-weight:var(--weight-medium);color:var(--text-subdued);font-size:var(--size-0);
   letter-spacing:var(--tracking-wide);border-bottom:1px solid var(--border);
 }
-.lds-table td{
+/* A `<th scope="row">` in the body is a body cell that names its row, not a
+   column header, so it takes td's paint; the `th` rule above is for the head.
+   Alignment is inherited rather than pinned: the browser's tbody is already
+   middle, so nothing moves by default, and a row with one multi-line cell can
+   set its own `vertical-align: top` without every cell overriding it. */
+.lds-table td,
+.lds-table tbody th{
   padding:calc(12px * var(--density)) calc(12px * var(--density));
   border-bottom:1px solid var(--border-subdued);color:var(--text);
-  vertical-align:middle;
+  vertical-align:inherit;
+}
+.lds-table tbody th{
+  text-align:start;font-size:inherit;font-weight:var(--weight-regular);letter-spacing:normal;
 }
 .lds-table tbody tr{transition:background var(--dur-fast);}
 .lds-table tbody tr:hover{background:var(--bg-hover);}
-.lds-table tbody tr:last-child td{border-bottom:none;}
+.lds-table tbody tr:last-child td,
+.lds-table tbody tr:last-child th{border-bottom:none;}
 .lds-table--empty{
   padding:calc(32px * var(--density));text-align:center;color:var(--text-subdued);
 }
@@ -2846,7 +2862,10 @@ a.lds-row:focus-visible,
 .lds-table--sticky thead th.lds-table__col--freeze{
   z-index:3;background:var(--surface-raised);
 }
-.lds-table tbody tr:hover td.lds-table__col--freeze{background:var(--bg-hover);}
+/* A frozen first column is usually the row header, a <th scope="row">, so the
+   hover fill covers both cells: the frozen cell is opaque, and left out it
+   would stay a solid block in the middle of the hovered row. */
+.lds-table tbody tr:hover :is(td, th).lds-table__col--freeze{background:var(--bg-hover);}
 /* A frozen column eats the width it exists to preserve once the viewport is
    narrow enough that the table is mostly the frozen column. */
 @media (max-width:767.98px){

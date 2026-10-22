@@ -83,6 +83,43 @@ Chromium does not apply a mask to content
 draws nothing there. Masked glyphs render only when the sprite is in the page —
 `@lew-ds/lds` ships `inlineIconSprite` / `loadIconSprite` for that.
 
+### Only the glyphs you draw
+
+The whole sprite is about 180KB. An app that draws twenty glyphs can inline a
+sprite of just those, about 15KB, built from their names:
+
+```js
+import { buildSprite } from '@lew-ds/open-icons/sprite';
+
+const sprite = buildSprite(['search', 'close', 'warning-fill']);
+// '<svg xmlns=… id="open-icons-sprite" aria-hidden="true" … style="position:fixed;…">
+//    <defs><symbol id="search" …>…</symbol>…</defs></svg>'
+```
+
+Put the string in the page — server-rendered into the document, or through
+`@lew-ds/lds`'s `inlineIconSprite(sprite)` — and reference glyphs in-document,
+`<use href="#search"/>`. The symbols are the ones `icons.svg` holds, with the
+same ids and the `${u}` mask ids already made unique, so a glyph draws the same
+from either. The sprite is fixed and clipped out of view rather than
+`display:none`, which disables masks too, and carries the id `inlineIconSprite`
+uses, so a page that already has it is not given a second.
+
+`buildSprite` throws on a name the set does not have, rather than leaving a
+blank square to be noticed later. `spriteSymbols(names)` returns the
+`<symbol>` elements alone, for an app writing its own `<svg>` around them.
+
+With `@lew-ds/lds`, add the glyphs its components draw on their own (a
+dismiss button's close, a row's chevron, the status icons):
+
+```js
+import { COMPONENT_ICONS } from '@lew-ds/lds';
+buildSprite([...COMPONENT_ICONS, ...APP_ICONS]);
+```
+
+The helper is a subpath of its own, `@lew-ds/open-icons/sprite`, so the glyph
+table it draws from is loaded only by the code that builds a sprite — typically
+on the server — and never by everything that imports `spriteUrl`.
+
 ## The stroke is not a CSS knob
 
 The geometry is weight-aware: every clearance in the set is a ratio of the

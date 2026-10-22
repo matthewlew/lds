@@ -22,12 +22,13 @@
 // The sprite resolves through @lew-ds/open-icons by default; call setIconSprite if
 // you serve it from somewhere else.
 //
-// Every component's markup is pinned by markup-contract.json — 103 cases,
+// Every component's markup is pinned by markup-contract.json — 114 cases,
 // diffed on every test run — so the HTML is a specification rather than an
 // implementation detail.
 
 export { setIconSprite, getIconSprite, resolveSprite, inlineIconSprite, loadIconSprite } from './icon-sprite.js';
 export { STATUS_ICON } from './status-icons.js';
+export { COMPONENT_ICONS } from './component-icons.js';
 export { hueForName, initialsForName } from './avatar-name.js';
 export { DIAL_CODES, dialOptions } from './dial-codes.js';
 
@@ -65,10 +66,10 @@ export { textField } from './templates/text-field.js';
 export { textarea } from './templates/textarea.js';
 export { toast } from './templates/toast.js';
 export { toggle } from './templates/toggle.js';
-export { tooltip } from './templates/tooltip.js';
+export { tooltip, tooltipPlacement } from './templates/tooltip.js';
 
 // Controllers — the behaviour a template cannot carry.
-export { mountCodeField } from './controllers/code-field.js';
+export { mountCodeField, codeAfterInput } from './controllers/code-field.js';
 export { mountSegmentedControl } from './controllers/segmented-control.js';
 export { mountTextarea } from './controllers/textarea.js';
 export { mountToasts } from './controllers/toast.js';

@@ -11,6 +11,9 @@
 //   - `style` objects hyphenate and take a `px` unit where the property needs one.
 //   - on form controls, `checked` and `value` are emitted LAST regardless of
 //     where they sat in the prop bag — React pulls them out and appends them.
+//     On an <input> or a <button>, React 19 also moves `name` and the form*
+//     overrides to just before them, because it may rewrite them for a form
+//     action; and an <option>'s `selected` follows its other attributes.
 //
 // That last one is not a detail anyone would guess. It is why the frozen
 // contract exists: `<input type="checkbox" disabled="" readonly="" checked=""/>`
@@ -99,28 +102,35 @@ function one(key, value) {
   return ` ${attrName(key)}="${escapeHtml(value)}"`;
 }
 
-// React appends these after every other attribute on a form control, `checked`
-// first — verified against the serialiser, not assumed.
-const DEFERRED = ['checked', 'defaultChecked', 'value', 'defaultValue'];
+// What React appends after every other attribute, per element, in the order it
+// appends them — read off React 19's server renderer, not assumed.
+const FORM_ACTION = ['name', 'formAction', 'formEncType', 'formMethod', 'formTarget'];
+const VALUE = ['checked', 'defaultChecked', 'value', 'defaultValue'];
+const DEFERRED = {
+  input: [...FORM_ACTION, ...VALUE],
+  button: FORM_ACTION,
+  select: VALUE,
+  textarea: VALUE,
+  option: ['selected'],
+};
 
 /**
  * Serialises a prop bag to an attribute string, in prop order.
  *
- * `tag` matters only for form controls, where `value` and `checked` are moved to
- * the end to match React.
+ * `tag` matters only for the elements React reorders: on form controls `value`
+ * and `checked` go to the end (after `name` on an input or a button), and an
+ * option's `selected` follows its other attributes.
  */
 export function attrs(props, tag) {
   if (!props) return '';
-  const defer = tag === 'input' || tag === 'select' || tag === 'textarea';
+  const deferred = DEFERRED[tag] ?? [];
   let out = '';
   for (const [key, value] of Object.entries(props)) {
-    if (defer && DEFERRED.includes(key)) continue;
+    if (deferred.includes(key)) continue;
     out += one(key, value);
   }
-  if (defer) {
-    for (const key of DEFERRED) {
-      if (key in props) out += one(key, props[key]);
-    }
+  for (const key of deferred) {
+    if (key in props) out += one(key, props[key]);
   }
   return out;
 }

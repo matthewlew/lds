@@ -20,6 +20,15 @@ export interface MountedCodeField extends Mounted<CodeFieldConfig> {
   /** The digits entered so far. */
   readonly value: string;
 }
+/**
+ * What one input event in box `i` does to a code: the new code and the box to
+ * focus, or null when nothing it brought is a digit. `mountCodeField` runs on
+ * this; a binding with its own state (React) calls it to behave the same.
+ */
+export declare function codeAfterInput(
+  code: string, length: number, i: number,
+  event: { inputType?: string; data?: string | null }, boxValue: string,
+): { code: string; focus: number } | null;
 export declare function mountCodeField(container: Element, config?: CodeFieldConfig): MountedCodeField;
 
 export interface SegmentedControlConfig extends SegmentedControlProps {
@@ -71,8 +80,11 @@ export declare function mountTooltip(container: Element, config?: TooltipConfig)
 /**
  * Binds tooltip markup that is already in the document — one composed into a
  * bigger render, or one that arrived from the server. Sets the trigger's
- * aria-describedby and wires hover, focus and Escape. Without it, composed
- * tooltip markup is present and inert.
+ * aria-describedby (unless the bubble only repeats the trigger's aria-label)
+ * and wires hover, focus and Escape. The open bubble is positioned `fixed` from
+ * the trigger, so an ancestor's `overflow` cannot clip it, and closes when a
+ * scroll or resize moves the trigger. Without it, composed tooltip markup is
+ * present and inert.
  */
 export declare function attachTooltip(wrapper: Element): { readonly open: boolean; dispose(): void };
 

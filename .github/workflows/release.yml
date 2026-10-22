@@ -18,6 +18,7 @@ jobs:
     outputs:
       lds-created: ${{ steps.release.outputs['packages/lds--release_created'] }}
       lds-react-created: ${{ steps.release.outputs['packages/lds-react--release_created'] }}
+      open-icons-created: ${{ steps.release.outputs['packages/open-icons--release_created'] }}
     steps:
       - id: release
         uses: googleapis/release-please-action@5c625bfb5d1ff62eadeeb3772007f7f66fdcf071 # v4
@@ -58,3 +59,21 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: npm test --workspace @lew-ds/lds-react
       - run: npm publish --workspace @lew-ds/lds-react --access public
+
+  publish-open-icons:
+    needs: release
+    if: needs.release.outputs.open-icons-created == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - run: npm install --global npm@11.18.0
+      - run: npm ci
+      - run: npm test --workspace @lew-ds/open-icons
+      - run: npm publish --workspace @lew-ds/open-icons --access public

@@ -8,7 +8,7 @@
 // components the same way, with no adapter in between. `dispose()` removes every
 // listener it added and clears the container; `update()` re-renders from the new
 // config without losing the controller's own state.
-export { mountCodeField } from './code-field.js';
+export { mountCodeField, codeAfterInput } from './code-field.js';
 export { mountSegmentedControl } from './segmented-control.js';
 export { mountTextarea } from './textarea.js';
 export { mountToasts } from './toast.js';

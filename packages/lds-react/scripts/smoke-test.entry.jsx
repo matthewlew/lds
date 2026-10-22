@@ -110,7 +110,7 @@ check('Select', h(LR.Select, { label: 'Country', options: ['US', 'CA'] }),
 check('Skeleton', h(LR.Skeleton, { variant: 'title' }), ['lds-skeleton--title']);
 
 check('Table', h(LR.Table, { columns: [{ key: 'a', label: 'A' }], rows: [{ a: '1' }] }),
-  ['lds-table', '<th>A</th>', '<td>1</td>']);
+  ['lds-table', '<th scope="col">A</th>', '<td>1</td>']);
 
 // Same "[object Object]" bug as Menu's icon, for a cell value (a status
 // badge is the natural real-world case — see this preview's own history).

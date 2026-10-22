@@ -43,4 +43,4 @@ export { codeField } from './code-field.js';
 export { segmentedControl } from './segmented-control.js';
 export { textarea } from './textarea.js';
 export { toast } from './toast.js';
-export { tooltip } from './tooltip.js';
+export { tooltip, tooltipPlacement } from './tooltip.js';
