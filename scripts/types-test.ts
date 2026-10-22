@@ -6,9 +6,11 @@ import {
   modal, nav, raw, row, segmentedControl, select, table, tabs, tag, textField, textarea,
   toast, toggle, tooltip, mountCodeField, mountSegmentedControl, mountTextarea,
   mountToasts, mountTooltip, dialOptions, setIconSprite, cx, escapeHtml, initialsForName,
+  COMPONENT_ICONS,
 } from '@lew-ds/lds';
 import type { RawHtml, Slot, Status, Hue } from '@lew-ds/lds';
 import { ICON_NAMES, hasIcon, useHref, spriteUrl } from '@lew-ds/open-icons';
+import { buildSprite, spriteSymbols, SPRITE_ID } from '@lew-ds/open-icons/sprite';
 
 setIconSprite('/icons.svg');
 
@@ -54,6 +56,13 @@ export function markup(): string {
     toast({ status: 'success', title: 'Saved', dismissible: false }),
     toggle({ label: 'On', help: 'h', checked: true, readOnly: true }),
     tooltip({ label: 'Search', placement: 'right', children: safe }),
+    tooltip({ label: 'Search', placement: 'end', children: safe }),
+    button({ emphasis: 'strong', children: 'Pay' }),
+    textField({ label: 'Amount', id: 'amount', error: 'Enter an amount.', 'aria-describedby': 'hint' }),
+    table({ 'aria-label': 'Fees', columns: [{ key: 'a', label: 'A', className: 'num' }], rows: [{ a: '1' }] }),
+    table({ children: raw('<tbody><tr><th scope="row">Visa</th></tr></tbody>') }),
+    buildSprite([...COMPONENT_ICONS, 'search'], { id: SPRITE_ID }),
+    spriteSymbols(new Set(['search'])),
     cx('a', false, 'b'),
     escapeHtml('<b>'),
   ].join('');

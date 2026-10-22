@@ -2,6 +2,9 @@ import { tooltip as tooltipTemplate } from '../templates/tooltip.js';
 
 let seq = 0;
 
+// The gap the stylesheet leaves between trigger and bubble (`calc(100% + 6px)`).
+const GAP = 6;
+
 // Opens on hover AND on focus. Hover alone means a keyboard user never gets the
 // label — and for an icon-only button, the tooltip IS the label.
 //
@@ -19,18 +22,71 @@ export function attachTooltip(wrapper) {
   if (!bubble) return { open: false, dispose() {} };
 
   // aria-describedby, not aria-label: the trigger keeps whatever accessible name
-  // it already has, and the tooltip adds to it rather than replacing it.
+  // it already has, and the tooltip adds to it rather than replacing it — when
+  // it has something to add. An icon-only button is usually named by the same
+  // words its tooltip shows, and describing it with them again has a screen
+  // reader say "Search, button, Search".
   if (!bubble.id) bubble.id = `lds-tooltip-${seq++}`;
   const trigger = Array.from(wrapper.children).find((el) => el !== bubble);
-  if (trigger) trigger.setAttribute('aria-describedby', bubble.id);
+  const describes = trigger && bubble.textContent.trim() !== (trigger.getAttribute('aria-label') ?? '').trim();
+  if (describes) {
+    const ids = (trigger.getAttribute('aria-describedby') ?? '').split(/\s+/).filter(Boolean);
+    if (!ids.includes(bubble.id)) trigger.setAttribute('aria-describedby', [...ids, bubble.id].join(' '));
+  }
+
+  // The open bubble is placed `fixed` from the trigger's box, at the spot the
+  // stylesheet's `data-placement` rule would put it. Positioned `absolute` it
+  // belongs to the nearest scroll container, and a panel's `overflow: hidden`
+  // or a table's `overflow-x: auto` cuts it off near the edge. Fixed, it is
+  // drawn against the viewport — so it closes on scroll or resize rather than
+  // staying where the trigger used to be. Only when the trigger has actually
+  // moved: a scroll event is delivered a frame late, and the one from scrolling
+  // a trigger into view would otherwise close the bubble the pointer just
+  // opened on arriving.
+  let placedAt = null;
+  const place = () => {
+    const box = (trigger ?? wrapper).getBoundingClientRect();
+    placedAt = box;
+    const across = box.left + box.width / 2;
+    const down = box.top + box.height / 2;
+    const at = {
+      top: [box.top - GAP, across, 'translate(-50%, -100%)'],
+      bottom: [box.bottom + GAP, across, 'translateX(-50%)'],
+      start: [down, box.left - GAP, 'translate(-100%, -50%)'],
+      end: [down, box.right + GAP, 'translateY(-50%)'],
+    };
+    const [top, left, transform] = at[bubble.getAttribute('data-placement')] ?? at.top;
+    Object.assign(bubble.style, {
+      position: 'fixed', top: `${top}px`, left: `${left}px`, right: 'auto', bottom: 'auto', transform,
+    });
+  };
+  const unplace = () => {
+    for (const prop of ['position', 'top', 'left', 'right', 'bottom', 'transform']) bubble.style.removeProperty(prop);
+  };
+
+  const onMove = () => {
+    const box = (trigger ?? wrapper).getBoundingClientRect();
+    if (Math.abs(box.left - placedAt.left) > 0.5 || Math.abs(box.top - placedAt.top) > 0.5) hide();
+  };
 
   let open = false;
   const set = (next) => {
+    if (next === open) return;
     open = next;
+    if (open) {
+      place();
+      window.addEventListener('scroll', onMove, { capture: true, passive: true });
+      window.addEventListener('resize', onMove);
+    } else {
+      window.removeEventListener('scroll', onMove, { capture: true });
+      window.removeEventListener('resize', onMove);
+    }
+    // A closed bubble keeps its last place: it is hidden, takes no layout, and
+    // clearing it would jump it back to its absolute spot mid-fade.
     bubble.setAttribute('data-open', open ? 'true' : 'false');
   };
-  const show = () => set(true);
-  const hide = () => set(false);
+  function show() { set(true); }
+  function hide() { set(false); }
   // Escape closes a tooltip that is covering something the user is trying to
   // read, without moving focus off the trigger.
   const onKeyDown = (e) => { if (e.key === 'Escape' && open) hide(); };
@@ -45,6 +101,8 @@ export function attachTooltip(wrapper) {
   return {
     get open() { return open; },
     dispose() {
+      hide();
+      unplace();
       wrapper.removeEventListener('mouseenter', show);
       wrapper.removeEventListener('mouseleave', hide);
       wrapper.removeEventListener('focusin', show);

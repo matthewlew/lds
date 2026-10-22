@@ -13,6 +13,12 @@ import { slot } from './escape.js';
 // The bubble ships closed. Opening it on hover AND on focus is the controller's
 // job — hover alone means a keyboard user never gets the label, and for an
 // icon-only button the tooltip IS the label.
+// The stylesheet draws four placements: top, bottom, start and end. `left` and
+// `right` are what the types used to say, which the stylesheet never drew; they
+// are read as start and end rather than emitted as a placement nothing
+// positions.
+const PLACEMENTS = { left: 'start', right: 'end' };
+
 export function tooltip({ label, placement = 'top', children, id, className = '', ...rest } = {}) {
   return `<span${attrs({ className: cx('lds-tooltip', className), ...rest })}>`
     + slot(children)
@@ -21,6 +27,6 @@ export function tooltip({ label, placement = 'top', children, id, className = ''
     // than replacing it.
     + `<span${attrs({
       id, className: 'lds-tooltip__bubble', role: 'tooltip',
-      'data-placement': placement, 'data-open': 'false',
+      'data-placement': PLACEMENTS[placement] ?? placement, 'data-open': 'false',
     })}>${slot(label)}</span></span>`;
 }

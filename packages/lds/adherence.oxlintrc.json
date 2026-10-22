@@ -153,8 +153,8 @@
         "message": "skeleton() variant must be one of 'text' | 'title' | 'circle' | 'block'."
       },
       {
-        "selector": "CallExpression[callee.name='table'] > ObjectExpression > Property > Identifier[name!=/^(?:columns|rows|className|style|children|id)$/]",
-        "message": "table() doesn't accept that prop. Declared props: columns, rows."
+        "selector": "CallExpression[callee.name='table'] > ObjectExpression > Property > Identifier[name!=/^(?:columns|rows|children|className|style|id)$/]",
+        "message": "table() doesn't accept that prop. Declared props: columns, rows, children."
       },
       {
         "selector": "CallExpression[callee.name='tabs'] > ObjectExpression > Property > Identifier[name!=/^(?:tabs|active|className|style|children|id)$/]",
@@ -185,8 +185,8 @@
         "message": "tooltip() doesn't accept that prop. Declared props: label, placement, children."
       },
       {
-        "selector": "CallExpression[callee.name='tooltip'] > ObjectExpression > Property[key.name='placement'] > Literal[value!=/^(?:top|bottom|left|right)$/]",
-        "message": "tooltip() placement must be one of 'top' | 'bottom' | 'left' | 'right'."
+        "selector": "CallExpression[callee.name='tooltip'] > ObjectExpression > Property[key.name='placement'] > Literal[value!=/^(?:top|bottom|start|end|left|right)$/]",
+        "message": "tooltip() placement must be one of 'top' | 'bottom' | 'start' | 'end' | 'left' | 'right'."
       }
     ]
   },

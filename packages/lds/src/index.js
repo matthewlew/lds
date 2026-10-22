@@ -22,12 +22,13 @@
 // The sprite resolves through @lew-ds/open-icons by default; call setIconSprite if
 // you serve it from somewhere else.
 //
-// Every component's markup is pinned by markup-contract.json — 103 cases,
+// Every component's markup is pinned by markup-contract.json — 113 cases,
 // diffed on every test run — so the HTML is a specification rather than an
 // implementation detail.
 
 export { setIconSprite, getIconSprite, resolveSprite, inlineIconSprite, loadIconSprite } from './icon-sprite.js';
 export { STATUS_ICON } from './status-icons.js';
+export { COMPONENT_ICONS } from './component-icons.js';
 export { hueForName, initialsForName } from './avatar-name.js';
 export { DIAL_CODES, dialOptions } from './dial-codes.js';
 

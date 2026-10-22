@@ -10,6 +10,8 @@ import {
 import { mountToasts } from '@lew-ds/lds/controllers';
 import { banner } from '@lew-ds/lds/templates';
 import { ICON_NAMES, spriteUrl, hasIcon } from '@lew-ds/open-icons';
+import { buildSprite } from '@lew-ds/open-icons/sprite';
+import { COMPONENT_ICONS } from '@lew-ds/lds';
 
 const require = createRequire(import.meta.url);
 const fails = [];
@@ -42,6 +44,12 @@ else {
     if (svg.includes('${u}')) fails.push('installed sprite still contains the ${u} placeholder');
     if (!svg.includes('id="k-warning-fill"')) fails.push('installed sprite has the un-uniqued mask id');
   }
+}
+
+// 2b. a sprite of just the components' own glyphs builds from the installed set
+const subset = buildSprite(COMPONENT_ICONS);
+if (!subset.includes('id="k-warning-fill"') || subset.includes('id="add"')) {
+  fails.push('buildSprite(COMPONENT_ICONS) did not hold exactly the components\' glyphs');
 }
 
 // 3. every documented subpath export resolves

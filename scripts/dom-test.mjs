@@ -159,10 +159,10 @@ await page.evaluate(() => {
 });
 const bubble = page.locator('#t .lds-tooltip__bubble');
 check(await bubble.getAttribute('data-open') === 'false', 'Tooltip: should ship closed');
-// The trigger keeps its own name and is DESCRIBED by the tooltip.
-const describedBy = await page.locator('#t .lds-btn').getAttribute('aria-describedby');
-check(describedBy && describedBy === await bubble.getAttribute('id'),
-  'Tooltip: aria-describedby does not point at the bubble');
+// A bubble that only repeats the trigger's aria-label adds nothing to it, and
+// describing the trigger with it would have the name read out twice.
+check(await page.locator('#t .lds-btn').getAttribute('aria-describedby') === null,
+  'Tooltip: described the trigger with its own aria-label');
 
 await page.locator('#t .lds-tooltip').hover();
 check(await bubble.getAttribute('data-open') === 'true', 'Tooltip: did not open on hover');
@@ -174,6 +174,53 @@ await page.locator('#t .lds-btn').focus();
 check(await bubble.getAttribute('data-open') === 'true', 'Tooltip: did not open on focus');
 await page.keyboard.press('Escape');
 check(await bubble.getAttribute('data-open') === 'false', 'Tooltip: Escape did not close it');
+
+// A bubble that says more than the trigger's name DESCRIBES the trigger, added
+// to whatever it was already described by.
+await page.evaluate(() => {
+  window.tip.dispose();
+  window.tip = LDS.mountTooltip(document.getElementById('t'), {
+    label: 'Search all cards',
+    children: LDS.raw(LDS.button({ iconOnly: true, iconStart: 'search', 'aria-label': 'Search', 'aria-describedby': 'hint' })),
+  });
+});
+check(await page.locator('#t .lds-btn').getAttribute('aria-describedby')
+  === `hint ${await bubble.getAttribute('id')}`,
+  'Tooltip: aria-describedby does not add the bubble to the trigger\'s own');
+
+// Inside a clipping panel the open bubble is fixed at the trigger, so the
+// panel's overflow cannot cut it off, and scrolling closes it.
+await page.evaluate(() => {
+  window.tip.dispose();
+  document.body.innerHTML = '<div style="height:200vh;padding-top:120px">'
+    + '<div id="clip" style="overflow:hidden;width:160px;height:40px;margin-left:120px"><span id="t"></span></div></div>';
+  window.tip = LDS.mountTooltip(document.getElementById('t'), {
+    label: 'Opens the statement for this card', placement: 'top',
+    children: LDS.raw(LDS.button({ iconOnly: true, iconStart: 'search', 'aria-label': 'Open' })),
+  });
+});
+await page.locator('#t .lds-btn').focus();
+const placed = await page.evaluate(() => {
+  const b = document.querySelector('#t .lds-tooltip__bubble').getBoundingClientRect();
+  const trigger = document.querySelector('#t .lds-btn').getBoundingClientRect();
+  const clip = document.getElementById('clip').getBoundingClientRect();
+  return {
+    position: getComputedStyle(document.querySelector('#t .lds-tooltip__bubble')).position,
+    above: b.bottom <= trigger.top, outside: b.top < clip.top,
+    centred: Math.abs((b.left + b.right) / 2 - (trigger.left + trigger.right) / 2) < 1,
+  };
+});
+check(placed.position === 'fixed', `Tooltip: open bubble is ${placed.position}, not fixed`);
+check(placed.above && placed.centred, 'Tooltip: fixed bubble is not centred above its trigger');
+check(placed.outside, 'Tooltip: bubble did not escape its clipping ancestor');
+await page.mouse.wheel(0, 200);
+await page.waitForFunction(() => document.querySelector('#t .lds-tooltip__bubble').getAttribute('data-open') === 'false', null, { timeout: 2000 })
+  .catch(() => fails.push('Tooltip: scrolling did not close the fixed bubble'));
+await page.evaluate(() => {
+  window.tip.dispose();
+  document.body.innerHTML = '<div id="t"></div>';
+  window.scrollTo(0, 0);
+});
 
 // ---- Icon sprite -------------------------------------------------------------
 // Masked glyphs draw nothing through an external <use> in Chromium, so the

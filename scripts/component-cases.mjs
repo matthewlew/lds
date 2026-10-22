@@ -7,7 +7,11 @@
 //
 // Slot values are plain strings on purpose. A slot is a passthrough in both
 // bindings, so composed markup adds nothing a string does not already cover,
-// and strings keep the fixtures readable and framework-free.
+// and strings keep the fixtures readable and framework-free. The one exception
+// is a slot whose whole point is composed markup — a table's own rows — which
+// takes `raw()`, since a string there would be escaped as text.
+import { raw } from '@lew-ds/lds/templates';
+
 export const CASES = [
   ['Avatar', 'initials', { name: 'Ada Lovelace' }],
   ['Avatar', 'fallback icon', {}],
@@ -38,6 +42,8 @@ export const CASES = [
   ['Button', 'fab', { fab: true, iconStart: 'add' }],
   ['Button', 'fab extended', { fab: true, extended: true, iconStart: 'add', children: 'New' }],
   ['Button', 'disabled', { disabled: true, children: 'Nope' }],
+  ['Button', 'emphasis without variant', { emphasis: 'strong', children: 'Pay' }],
+  ['Button', 'emphasis with variant', { variant: 'secondary', emphasis: 'soft', children: 'Hold' }],
 
   ['ButtonGroup', 'default', { children: 'KIDS' }],
   ['ButtonGroup', 'split fill', { align: 'split', width: 'fill', children: 'KIDS' }],
@@ -96,12 +102,15 @@ export const CASES = [
   ['Select', 'options', { label: 'L', id: 's1', options: ['a', 'b'], help: 'h' }],
   ['Select', 'optgroups', { options: [{ label: 'G', options: ['x', { value: 'y', label: 'Y' }] }] }],
   ['Select', 'error required', { label: 'L', required: true, error: 'Bad', options: ['a'] }],
+  ['Select', 'error with id', { label: 'L', id: 's2', error: 'Pick one.', options: ['a'], value: 'a' }],
 
   ['Skeleton', 'text', { variant: 'text' }],
   ['Skeleton', 'title', { variant: 'title' }],
   ['Skeleton', 'circle last', { variant: 'circle', last: true }],
 
   ['Table', 'basic', { columns: [{ key: 'a', label: 'A' }, { key: 'b', label: 'B' }], rows: [{ a: '1', b: '2' }] }],
+  ['Table', 'column class + attrs', { 'aria-label': 'Fees', columns: [{ key: 'a', label: 'A', className: 'num' }], rows: [{ a: '1' }] }],
+  ['Table', 'composed', { 'aria-label': 'Cards', children: raw('<thead><tr><th scope="col">Card</th></tr></thead><tbody><tr><th scope="row">Visa</th></tr></tbody>') }],
 
   ['Tabs', 'active+icon', { tabs: [{ id: 'x', label: 'X', icon: 'star' }, { id: 'y', label: 'Y' }], active: 'x' }],
   ['Tabs', 'section', { tabs: [{ section: 'Group' }, { id: 'a', label: 'A' }], active: 'a' }],
@@ -115,6 +124,8 @@ export const CASES = [
   ['TextField', 'icons', { label: 'L', iconStart: 'mail', iconEnd: 'check' }],
   ['TextField', 'error required', { label: 'L', required: true, error: 'Bad' }],
   ['TextField', 'prefix', { label: 'Phone', prefix: 'PREFIX' }],
+  ['TextField', 'error with id', { label: 'Amount', id: 't2', error: 'Enter an amount above $0.' }],
+  ['TextField', 'describedby merged', { label: 'L', id: 't3', help: 'h', 'aria-describedby': 'hint' }],
 
   ['Toggle', 'labelled', { label: 'On', help: 'h', id: 'g1' }],
   ['Toggle', 'checked', { label: 'On', checked: true, readOnly: true }],
@@ -137,6 +148,8 @@ export const CASES = [
   ['Textarea', 'over', { maxLength: 2, value: 'abc', showCount: true }],
   ['Textarea', 'error', { label: 'L', required: true, error: 'Bad', value: '' }],
   ['Textarea', 'plain', { label: 'L', value: 'x' }],
+  ['Textarea', 'help with id', { label: 'Notes', id: 'b2', help: 'Optional.', value: '' }],
+  ['Textarea', 'error with id + describedby', { label: 'Notes', id: 'b3', error: 'Too long.', 'aria-describedby': 'hint', value: '' }],
 
   ['Toast', 'success', { status: 'success', children: 'Saved.' }],
   ['Toast', 'error+title+actions', { status: 'error', title: 'Failed', actions: 'A', children: 'Retry.' }],
@@ -144,4 +157,5 @@ export const CASES = [
 
   ['Tooltip', 'label', { label: 'Search', id: 'tt1', children: 'TRIGGER' }],
   ['Tooltip', 'placement', { label: 'L', id: 'tt2', placement: 'right', children: 'T' }],
+  ['Tooltip', 'placement end', { label: 'L', id: 'tt3', placement: 'end', children: 'T' }],
 ];

@@ -29,7 +29,7 @@ const CONTROLLERS = [
 ];
 const HELPERS = [
   'escapeHtml', 'raw', 'slot', 'h', 'mount', 'attrs', 'cx', 'styleAttr', 'spriteSvg',
-  'setIconSprite', 'getIconSprite', 'resolveSprite', 'inlineIconSprite', 'loadIconSprite', 'STATUS_ICON',
+  'setIconSprite', 'getIconSprite', 'resolveSprite', 'inlineIconSprite', 'loadIconSprite', 'STATUS_ICON', 'COMPONENT_ICONS',
   'hueForName', 'initialsForName', 'DIAL_CODES', 'dialOptions',
 ];
 

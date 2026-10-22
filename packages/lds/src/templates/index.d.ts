@@ -94,6 +94,7 @@ export interface BannerProps extends HtmlProps {
 export declare function banner(props?: BannerProps): string;
 
 export interface ButtonProps extends HtmlProps {
+  /** Defaults to `primary`, unless `emphasis` is set: then no variant, so the emphasis paints. */
   variant?: 'primary' | 'secondary' | 'tertiary';
   size?: 'sm' | 'lg';
   iconOnly?: boolean;
@@ -108,7 +109,10 @@ export interface ButtonProps extends HtmlProps {
   iconEnd?: Slot;
   subtitle?: Slot;
   iconHref?: string;
-  /** Renders as an anchor. With `disabled`, the href is dropped. */
+  /**
+   * Renders as an anchor, which keeps the link role. With `disabled`, the href
+   * is dropped and it says `role="link"` with `aria-disabled`.
+   */
   href?: string;
   disabled?: boolean;
   children?: Slot;
@@ -298,7 +302,9 @@ export type SelectOption = string | { value?: string; label?: Slot };
 export interface SelectOptGroup { label?: string; options?: SelectOption[] }
 export interface SelectProps extends HtmlProps {
   label?: Slot;
+  /** Tied to the control as TextField's is: pass `id`. */
   help?: Slot;
+  /** Replaces `help`; announced (`role="alert"`) and marks the control `aria-invalid`. */
   error?: Slot;
   required?: boolean;
   options?: (SelectOption | SelectOptGroup)[];
@@ -330,10 +336,20 @@ export interface SkeletonProps extends HtmlProps {
 }
 export declare function skeleton(props?: SkeletonProps): string;
 
-export interface TableColumn { key: string; label?: Slot }
+export interface TableColumn {
+  key: string;
+  label?: Slot;
+  /** Set on the column's header and on each of its cells. */
+  className?: string;
+}
 export interface TableProps extends HtmlProps {
   columns?: TableColumn[];
   rows?: Record<string, Slot>[];
+  /**
+   * Composed `<thead>`/`<tbody>` markup, used when there are no `columns`: for
+   * a `<th scope="row">`, an attribute on a row, a struck-through row.
+   */
+  children?: Slot;
 }
 export declare function table(props?: TableProps): string;
 
@@ -366,7 +382,12 @@ export declare function tag(props?: TagProps): string;
 
 export interface TextFieldProps extends HtmlProps {
   label?: Slot;
+  /**
+   * Tied to the control with `aria-describedby` (as `${id}-note`, so pass
+   * `id`), added to any `aria-describedby` you pass.
+   */
   help?: Slot;
+  /** Replaces `help`; announced (`role="alert"`) and marks the control `aria-invalid`. */
   error?: Slot;
   required?: boolean;
   /** A sprite name, or composed markup. */
@@ -384,7 +405,12 @@ export declare function textField(props?: TextFieldProps): string;
 
 export interface TextareaProps extends HtmlProps {
   label?: Slot;
+  /**
+   * Tied to the control with `aria-describedby` (as `${id}-note`, so pass
+   * `id`), added to any `aria-describedby` you pass.
+   */
   help?: Slot;
+  /** Replaces `help`; announced (`role="alert"`) and marks the control `aria-invalid`. */
   error?: Slot;
   required?: boolean;
   maxLength?: number;
@@ -419,7 +445,8 @@ export declare function toggle(props?: ToggleProps): string;
 
 export interface TooltipProps extends HtmlProps {
   label?: Slot;
-  placement?: 'top' | 'bottom' | 'left' | 'right';
+  /** `left` and `right` are read as `start` and `end`. */
+  placement?: 'top' | 'bottom' | 'start' | 'end' | 'left' | 'right';
   /** The trigger, as markup. */
   children?: Slot;
 }

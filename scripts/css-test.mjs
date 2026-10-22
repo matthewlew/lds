@@ -70,6 +70,15 @@ for (const m of readFileSync(join(ROOT, 'packages/lds/src/status-icons.js'), 'ut
 for (const [icon, file] of wanted) {
   if (!names.has(icon)) fails.push(`${file}: references icon "${icon}", which is not in the sprite`);
 }
+// COMPONENT_ICONS is what an app must add to a sprite built from its own list,
+// so it has to be exactly what the components reference — no more, no less.
+{
+  const { COMPONENT_ICONS } = await import('@lew-ds/lds');
+  const scanned = [...wanted.keys()].sort();
+  if (COMPONENT_ICONS.join() !== scanned.join()) {
+    fails.push(`COMPONENT_ICONS is [${COMPONENT_ICONS.join(', ')}] but the components reference [${scanned.join(', ')}]`);
+  }
+}
 
 // The status map is the one place three components must agree.
 const statusSrc = readFileSync(join(ROOT, 'packages/lds/src/status-icons.js'), 'utf8');

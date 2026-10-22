@@ -3,13 +3,18 @@ import { slot } from './escape.js';
 import { spriteSvg } from './sprite.js';
 
 export function button({
-  variant = 'primary', size, iconOnly, fab, extended, emphasis, hue, armed,
+  variant, size, iconOnly, fab, extended, emphasis, hue, armed,
   iconStart, iconEnd, subtitle, iconHref,
   href, disabled, className = '', children, ...rest
 } = {}) {
+  // `primary` is the default only when nothing else sets the paint. An emphasis
+  // with no variant must not pick one up: `.lds-btn--primary` comes later in the
+  // stylesheet than `.emph-*` and its tokens win, so `emphasis: 'strong'` would
+  // otherwise render primary's soft tint instead of the full fill.
+  const tone = variant ?? (emphasis ? undefined : 'primary');
   const stacked = subtitle !== undefined;
   const cls = cx('lds-btn',
-    variant && `lds-btn--${variant}`,
+    tone && `lds-btn--${tone}`,
     size === 'sm' ? 'lds-btn--sm' : size === 'lg' ? 'lds-btn--lg' : '',
     (iconOnly || (fab && !extended)) && 'lds-btn--icon',
     fab && 'lds-btn--fab',
@@ -29,12 +34,16 @@ export function button({
       : label)
     + mark(iconEnd);
   // A link that must look like a button IS this button, rendered as an anchor —
-  // same sizes, same paint. aria-disabled rather than disabled, which an <a>
-  // does not support, and the href is dropped so it is not merely styled dead.
+  // same sizes, same paint, and still a link: it navigates, so it keeps the
+  // anchor's role (a `role="button"` would announce "button" for something that
+  // leaves the page, and Space would not follow it). aria-disabled rather than
+  // disabled, which an <a> does not support, and the href is dropped so it is
+  // not merely styled dead. An <a> with no href has no role at all, so a
+  // disabled one says `role="link"` to stay a (disabled) link.
   if (href !== undefined) {
     return `<a${attrs({
       className: cls, href: disabled ? undefined : href,
-      role: 'button', 'aria-disabled': disabled ? 'true' : undefined,
+      role: disabled ? 'link' : undefined, 'aria-disabled': disabled ? 'true' : undefined,
       'data-armed': armed ? '' : undefined, ...rest,
     })}>${body}</a>`;
   }

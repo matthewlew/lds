@@ -24,6 +24,13 @@ export declare function loadIconSprite(url?: string, doc?: Document): Promise<vo
 /** The glyph each status resolves to. Shared by Banner, Inline and Toast. */
 export declare const STATUS_ICON: Readonly<Record<string, string>>;
 
+/**
+ * The glyphs components draw on their own (a dismiss button's close, a row's
+ * chevron, the status icons). Include them in a sprite built from a list of
+ * names: `buildSprite([...COMPONENT_ICONS, ...yours])`.
+ */
+export declare const COMPONENT_ICONS: readonly string[];
+
 /** The palette hue a name always resolves to. Stable across apps and reloads. */
 export declare function hueForName(name: string): string;
 /** First and last initial — first only when the name is a single word. */
