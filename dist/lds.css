@@ -2862,7 +2862,10 @@ a.lds-row:focus-visible,
 .lds-table--sticky thead th.lds-table__col--freeze{
   z-index:3;background:var(--surface-raised);
 }
-.lds-table tbody tr:hover td.lds-table__col--freeze{background:var(--bg-hover);}
+/* A frozen first column is usually the row header, a <th scope="row">, so the
+   hover fill covers both cells: the frozen cell is opaque, and left out it
+   would stay a solid block in the middle of the hovered row. */
+.lds-table tbody tr:hover :is(td, th).lds-table__col--freeze{background:var(--bg-hover);}
 /* A frozen column eats the width it exists to preserve once the viewport is
    narrow enough that the table is mostly the frozen column. */
 @media (max-width:767.98px){

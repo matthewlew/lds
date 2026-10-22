@@ -19,6 +19,9 @@ import { slot } from './escape.js';
 // positions.
 const PLACEMENTS = { left: 'start', right: 'end' };
 
+/** The placement the stylesheet draws for `placement`. */
+export const tooltipPlacement = (placement = 'top') => PLACEMENTS[placement] ?? placement;
+
 export function tooltip({ label, placement = 'top', children, id, className = '', ...rest } = {}) {
   return `<span${attrs({ className: cx('lds-tooltip', className), ...rest })}>`
     + slot(children)
@@ -27,6 +30,6 @@ export function tooltip({ label, placement = 'top', children, id, className = ''
     // than replacing it.
     + `<span${attrs({
       id, className: 'lds-tooltip__bubble', role: 'tooltip',
-      'data-placement': PLACEMENTS[placement] ?? placement, 'data-open': 'false',
+      'data-placement': tooltipPlacement(placement), 'data-open': 'false',
     })}>${slot(label)}</span></span>`;
 }

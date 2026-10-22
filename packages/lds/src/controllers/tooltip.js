@@ -28,11 +28,28 @@ export function attachTooltip(wrapper) {
   // reader say "Search, button, Search".
   if (!bubble.id) bubble.id = `lds-tooltip-${seq++}`;
   const trigger = Array.from(wrapper.children).find((el) => el !== bubble);
+  const describedIds = () => (trigger.getAttribute('aria-describedby') ?? '').split(/\s+/).filter(Boolean);
   const describes = trigger && bubble.textContent.trim() !== (trigger.getAttribute('aria-label') ?? '').trim();
-  if (describes) {
-    const ids = (trigger.getAttribute('aria-describedby') ?? '').split(/\s+/).filter(Boolean);
-    if (!ids.includes(bubble.id)) trigger.setAttribute('aria-describedby', [...ids, bubble.id].join(' '));
+  // Only an id this binding added is removed again on dispose, so a rebind
+  // (a new label) starts from what the trigger said on its own.
+  let added = false;
+  if (trigger) {
+    const ids = describedIds();
+    if (describes && !ids.includes(bubble.id)) {
+      trigger.setAttribute('aria-describedby', [...ids, bubble.id].join(' '));
+      added = true;
+    } else if (!describes && ids.includes(bubble.id)) {
+      const rest = ids.filter((id) => id !== bubble.id);
+      if (rest.length) trigger.setAttribute('aria-describedby', rest.join(' '));
+      else trigger.removeAttribute('aria-describedby');
+    }
   }
+  const undescribe = () => {
+    if (!added) return;
+    const rest = describedIds().filter((id) => id !== bubble.id);
+    if (rest.length) trigger.setAttribute('aria-describedby', rest.join(' '));
+    else trigger.removeAttribute('aria-describedby');
+  };
 
   // The open bubble is placed `fixed` from the trigger's box, at the spot the
   // stylesheet's `data-placement` rule would put it. Positioned `absolute` it
@@ -56,8 +73,17 @@ export function attachTooltip(wrapper) {
       end: [down, box.right + GAP, 'translateY(-50%)'],
     };
     const [top, left, transform] = at[bubble.getAttribute('data-placement')] ?? at.top;
+    // `fixed` is relative to the viewport — unless an ancestor has a transform,
+    // a filter or a backdrop-filter (a .lds-glass panel, a sheet being
+    // dragged), which makes IT the box fixed descendants are placed in. Pinned
+    // at 0,0 first, the bubble lands on that box's corner, which is the offset
+    // to take back out.
     Object.assign(bubble.style, {
-      position: 'fixed', top: `${top}px`, left: `${left}px`, right: 'auto', bottom: 'auto', transform,
+      position: 'fixed', top: '0px', left: '0px', right: 'auto', bottom: 'auto', transform: 'none',
+    });
+    const origin = bubble.getBoundingClientRect();
+    Object.assign(bubble.style, {
+      top: `${top - origin.top}px`, left: `${left - origin.left}px`, transform,
     });
   };
   const unplace = () => {
@@ -103,6 +129,7 @@ export function attachTooltip(wrapper) {
     dispose() {
       hide();
       unplace();
+      undescribe();
       wrapper.removeEventListener('mouseenter', show);
       wrapper.removeEventListener('mouseleave', hide);
       wrapper.removeEventListener('focusin', show);
