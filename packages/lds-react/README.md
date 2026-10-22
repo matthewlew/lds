@@ -1,99 +1,172 @@
 # @lew-ds/lds-react
 
-React components over [`@lew-ds/lds`](../lds) — for a React app (a Claude Design canvas, a Claude Code scaffold, a future React consumer) to build with real LDS components and real props, without `@lew-ds/lds` itself needing React.
+React components for the Lew Design System. Each one outputs exactly the markup
+of its [`@lew-ds/lds`](../lds) template, written as JSX: it renders on a server
+with every slot in the HTML, hydrates with no wrapper around it, and takes React
+nodes in its slots.
 
-`@lew-ds/lds` is framework-free: every component is `(props) => htmlString`; the five stateful ones ship a `mountX(el, config) -> {dispose(), update()}` controller alongside. This package doesn't change any of that — it's a separate, additive layer that wraps it. **No existing consumer of `@lew-ds/lds` needs to change anything** — see "What this means for other apps" below.
-
-## Usage
+```bash
+npm install @lew-ds/lds-react @lew-ds/lds react
+```
 
 ```jsx
-import { Button, Modal, TextField } from '@lew-ds/lds-react';
+import { Banner, Button, IconButton, Table } from '@lew-ds/lds-react';
+import { IconSprite } from '@lew-ds/lds-react/icon-sprite';
 import '@lew-ds/lds/css';
 
-function ConfirmDialog({ onClose }) {
+export default function Layout({ children }) {
   return (
-    <Modal title="Delete this?" onClose={onClose}>
-      <TextField label="Type DELETE to confirm" />
-      <Button variant="primary" onClick={onClose}>Confirm</Button>
-    </Modal>
+    <html className="mode-light">
+      <body>
+        <IconSprite icons={['search', 'edit', 'add']} />
+        {children}
+      </body>
+    </html>
+  );
+}
+
+export function Statement({ rows }) {
+  return (
+    <>
+      <Banner status="warning" title="Payment due" actions={<Button href="/pay">Pay now</Button>}>
+        Your statement closes on the 30th.
+      </Banner>
+      <Table aria-label="Charges" columns={[{ key: 'what', label: 'Charge' }, { key: 'amount', label: 'Amount', className: 'num' }]} rows={rows} />
+      <IconButton label="Edit statement" icon="edit" />
+    </>
   );
 }
 ```
 
-Every component from `@lew-ds/lds`'s templates has a matching PascalCase export here (`button` → `Button`, `textField` → `TextField`, …), plus the five stateful ones and a `ToastProvider`/`useToast()` pair for Toast (see below). Import the same CSS you already import for `@lew-ds/lds` — this package carries no styles of its own.
+The package carries no styles: import `@lew-ds/lds`'s CSS once. It needs React 19.
 
-### Composition
+## The server-component model
 
-A `Slot` prop (`children`, `title`, `actions`, `icon`, …) accepts a React node, not just text:
+| | Components |
+| --- | --- |
+| **Server components** (no `"use client"`) | Avatar, Banner, Button, ButtonGroup, Card, Checkbox, Chip, EmptyState, Icon, IconButton, IconSprite, Inline, Link, Menu, Modal, Nav, Radio, Row, Select, Skeleton, Table, Tabs, Tag, TextField, Toast, Toggle |
+| **Client components** (`"use client"`) | SegmentedControl, Tooltip, Textarea, CodeField, ToastProvider / `useToast` |
 
-```jsx
-<ButtonGroup>
-  <Button variant="secondary" onClick={onCancel}>Cancel</Button>
-  <Button variant="primary" onClick={onConfirm}>Confirm</Button>
-</ButtonGroup>
-```
+The stateless components use no state and no effects, only `useId` where a label
+or help line needs an id to point at, which React allows on the server. Under a
+React Server Components bundler they render as server components, with their
+markup in the first response. They also work unchanged inside a client component, where their
+handlers (`onClick`, `onDismiss`, `onRemove`, `onClose`, `onChange`…) bind as
+usual. A server component cannot pass a function, so from one you leave the
+handlers off: the markup is identical either way.
 
-A nested wrapped component keeps its own event handlers — clicking "Confirm" above really does fire `onConfirm`, because composition uses a real `createPortal`, not a flatten-to-string. (An earlier version of this package tried flattening slot content with `renderToStaticMarkup`; that broke on exactly this case — nesting a hook-using component inside another's render corrupts React's render dispatcher, since it's not reentrant. See `src/runtime.jsx`'s doc comments for the mechanism that replaced it.)
+Only the five components that hold state are client components. Their first
+paint is still server-rendered, and it is still their template's markup.
 
-**List-shaped props compose too** — Menu's `items[].label/icon/hint`, Table's `columns[].label`/every `rows[]` cell, Tabs' `tabs[].label/section`, and Select's top-level `options[].label` all accept a React node the same way a flat slot prop does:
+Form controls take the templates' spelling, `value` and `checked`. Without an
+`onChange`, which a server component cannot pass, those are the control's
+initial state (React's `defaultValue` / `defaultChecked`). With an `onChange`,
+the control is controlled. The HTML is the same.
 
-```jsx
-<Menu items={[{ label: 'Delete', icon: <TrashIcon/>, danger: true }]} />
-<Table columns={[{ key: 'status', label: 'Status' }]} rows={[{ status: <Tag hue="green">Active</Tag> }]} />
-```
+Nothing in the package imports `react-dom`, so no part of `react-dom/server`
+reaches a client bundle. No component wraps its markup in an element of its
+own. A `className` lands on the template's root, and so do a ref and any other
+attribute, wherever the template passes extra props through. Menu, Modal, Tabs
+and EmptyState don't.
 
-**One level of nesting is the actual limit**: an option nested inside one of Select's own `{label, options}` groups isn't reached (SegmentedControl's `options[].label` is a plain string in the vanilla type, not a slot, so there's nothing to convert there either). Call the exported `toSlot()` yourself on a field this doesn't reach:
+### Icons
 
-```jsx
-<Select options={[{ label: 'Region', options: [{ value: 'us', label: toSlot(<FlagUS/>) }] }]} />
-```
-
-### Refs
-
-Every component forwards a ref to its real rendered root — `<Button ref={r}>` gives you the actual `<button>`/`<a>` element, not an internal wrapper, so `.focus()`, measuring, and the like work as expected. (Internally, each component renders inside a `display: contents` div so it participates in the parent's layout normally; the ref is redirected past that wrapper to the real element underneath.)
-
-### Form controls
-
-`Checkbox`, `Radio`, `Toggle`, `TextField`, `Select` wire `onChange` for you (`input` events for text-like controls, `change` for checkbox/radio/select — the same split React itself makes). Their initial `value`/`checked` comes from props at first render; this package does not force the DOM back to a controlled value on every render, because for `Textarea`/`CodeField` that's exactly what would destroy the focused element on every keystroke (see below).
-
-### The five stateful components
-
-`CodeField`, `SegmentedControl`, `Textarea`, `Tooltip` are controller-backed — mounted once, patched via `update()` on later renders, same as their vanilla `mountX` counterparts. Typing into `Textarea`/`CodeField` doesn't call `update()` at all for a self-inflicted change (see `useSelfChangeFlag` in `src/runtime.jsx`) — the vanilla controller's own keystroke handling already patches the live DOM in place; calling `update()` on top of that would replace the focused element for no reason.
-
-`SegmentedControl`'s and `CodeField`'s `onChange` receive the resolved value directly (`(value: string) => void`), not an event — that's the vanilla controller's own API, carried through rather than reshaped to look like every other control.
-
-### Toast
-
-Toast is global chrome, not a per-instance component — mount one `<ToastProvider>` near your root and raise messages through `useToast()`:
+Every icon is a `<use href="#name">` into a sprite inlined in the page. The
+masked glyphs (`warning-fill`, `close-circle-fill`, `copy`…) draw nothing
+through an external sprite file, and a sprite URL worked out on a server is not
+one the browser can load. So render `<IconSprite>` once, near the root:
 
 ```jsx
-function App() {
-  return (
-    <ToastProvider>
-      <YourApp/>
-    </ToastProvider>
-  );
-}
+import { IconSprite } from '@lew-ds/lds-react/icon-sprite';
 
-function SaveButton() {
-  const { toast } = useToast();
-  return <Button onClick={() => toast({ status: 'success', children: 'Saved.' })}>Save</Button>;
-}
+<IconSprite icons={['search', 'edit']} />   // COMPONENT_ICONS + yours, a few KB
+<IconSprite all />                           // all 174 glyphs, about 180KB
 ```
 
-## What this means for other apps using `@lew-ds/lds`
+It always includes `COMPONENT_ICONS`, the glyphs components draw on their own:
+a dismiss button's close, a row's chevron, the status icons. It throws on a name
+the set does not have. It sits on its own subpath, so the glyph table loads where
+the sprite renders and never in a client bundle that only imports a Button. The
+sprite's symbol ids (`search`, `edit`…) join the document's id space, so don't
+give page elements the same ids.
 
-**Nothing changes for anyone today.** `@lew-ds/lds` — templates, controllers, CSS, the `exports` map — is untouched by this package. Specifically:
+To point one component at a sprite file anyway, pass `iconHref`.
 
-- **Roadtrip** (the real first consumer, plain vanilla JS with no build step) needs zero changes. It doesn't depend on this package and never will unless it specifically wants to.
-- **Any other framework-free consumer** is in the same position — this is a new, separate `packages/lds-react` workspace member; it doesn't touch `packages/lds`.
-- **A future React consumer** (Claude Design's synced project, a Claude Code scaffold, or a genuinely new React app) installs `@lew-ds/lds-react` alongside `@lew-ds/lds` and gets real components. Nothing to migrate — there's no prior React version of these components still in use anywhere in this repo (`project/` holds the historical pre-productionization export; it's explicitly not built, see `docs/build.mjs`'s comment on it).
+## Composition
 
-**The ongoing cost is keeping this package in sync**, not any one-time migration: a new component or prop added to `@lew-ds/lds` needs a matching entry in `components.jsx`'s config table (most are a few lines — a template's own `Props` interface already enumerates its `Slot` fields) or, for a new stateful component, a hand-written wrapper alongside the other four in `controllers.jsx`. `npm test -w @lew-ds/lds-react` (SSR smoke test + a real-browser Playwright suite) is meant to catch drift quickly, not to be run only occasionally.
+Slots take React nodes: `title`, `actions`, `children`, `icon`, a column's
+`label`, a row's cells. Icon props such as `iconStart`, `iconEnd` and `icon` on
+EmptyState also take a sprite name. Larger pieces are built out of the
+components, with no markup of their own. **`IconButton`** is the pattern:
 
-## Testing
+```jsx
+// Tooltip around an icon-only Button, named once: `label` is both the
+// button's aria-label and the tooltip, so they cannot disagree, and the
+// tooltip does not describe the button with the same words again.
+<IconButton label="Edit card" icon="edit" onClick={edit} />
+```
 
-- `scripts/smoke-test.mjs` — renders every wrapper via `react-dom/server`, checks the resulting markup.
-- `scripts/browser-test.mjs` — drives the five stateful components and delegated-event components in a real Chromium page via Playwright: focus movement, event delegation (a click on Chip's remove button doesn't also fire its own `onClick`), the self-change-vs-external-change distinction that keeps typing from losing focus, and nested-composition interactivity.
+| Component | Composes with |
+| --- | --- |
+| Button | `href` renders an anchor with the same paint, keeping the link role. `as={RouterLink}` renders your router's link instead. Inside `<ButtonGroup>` for a set; inside `<Tooltip>` (or as `<IconButton>`) when icon-only |
+| ButtonGroup | Buttons as children; `detail` and `detailNote` make it a conversion bar |
+| Link | `as={RouterLink}`; `variant="standalone"` with `iconEnd` (a name, a node, or `null`) |
+| Row | `href` and `as={RouterLink}` for a whole-row link; any node in `lead`, `trail`, `subtitle` |
+| Table | `columns` + `rows` (nodes in any cell), or compose `<thead>`/`<tbody>` yourself for a `<th scope="row">`, attributes or a key on a row, a struck-through row |
+| Banner, Toast, Card, EmptyState, Modal, Nav | Buttons in `actions`, any node in the text slots |
+| Tag, Chip, Inline | `<Icon>` in `icon` |
+| TextField | `prefix` takes a whole control (a `<Select>` of dial codes) joined into the box; `endAction` is an inset icon button |
+| Select | `options` of strings, `{ value, label }` or `{ label, options }` groups; a label is text, as an `<option>` has to be |
+| Tooltip | wraps its trigger; put nothing interactive in `label` |
+| Toast | raised through `useToast()` under one `<ToastProvider>`; render `<Toast>` directly only for a static example |
 
-Both run via `npm test -w @lew-ds/lds-react`, and as part of the monorepo's own `npm test`.
+## Parity with `@lew-ds/lds`
+
+`npm test` renders each component with `renderToStaticMarkup` and compares it,
+byte for byte, with its template's string for the same props. That covers all of
+the markup contract `@lew-ds/lds` is frozen against, plus React-only cases:
+nodes in slots, `as`, composed tables, IconButton and IconSprite. A template
+change that isn't mirrored here fails the build, so this binding cannot drift
+from `@lew-ds/lds`. Two differences belong to React, not to the markup, and are
+set aside: attribute names are compared case-insensitively, as HTML reads them,
+and the image preload `<link>` React puts before an `<img>` is dropped.
+
+The other test passes:
+
+- `server-test`: `"use client"` on exactly the five; every stateless module loads
+  under React's `react-server` condition; no `react-dom` import; no
+  `display: contents` wrapper; no glyph table in a client bundle; the tarball
+  ships what `exports` names.
+- `browser-test`: server-renders a page, hydrates it in Chromium with no
+  mismatch warnings, and drives it. Handlers fire on stateless components, the
+  selection moves with clicks and arrow keys, the count follows the text, focus
+  walks the code boxes, toasts queue and dismiss, and a tooltip opens outside its
+  clipping panel.
+- `tsc`: the types against real usage, including props that must be rejected.
+
+## Migrating from 1.x
+
+1.x rendered each template to an HTML string, inserted it with
+`dangerouslySetInnerHTML`, and filled React slot content in afterwards through
+portals. Slot content was missing from server-rendered HTML, every component sat
+inside a `display: contents` div, and `react-dom/server` reached client bundles.
+2.0 is plain JSX, and for the same props it renders the same markup.
+
+| 1.x | 2.0 |
+| --- | --- |
+| `react` and `react-dom` ^18 or ^19 as peers | `react` ^19 only; `react-dom` is not used by the package |
+| Shipped `.jsx` source | Ships compiled ES modules (`dist/`) and types (`types/`) |
+| Every component inside a `display: contents` div | No wrapper; a `className`, ref or attribute lands on the template's root |
+| Icons resolved through `setIconSprite`, defaulting to the package's `icons.svg` URL | Icons resolve in-document; render `<IconSprite>` once. `setIconSprite`, `getIconSprite` and `resolveSprite` are no longer exported here. Use `iconHref` to point one component elsewhere |
+| `toSlot(node)` to flatten a node for a slot it didn't reach | Gone: every slot, list items included, takes nodes (except an `<option>`'s label, which HTML only lets be text) |
+| `Table` only from `columns`/`rows` | Also takes composed `<thead>`/`<tbody>` children |
+| `Tooltip` `placement` `left \| right` | `start \| end`; `left` and `right` are still read as those |
+| `Button emphasis="strong"` painted primary's tint | Paints the emphasis; `variant` defaults to `primary` only without one |
+| `Button` with `href` had `role="button"` | Keeps the link role |
+
+`onChange` on SegmentedControl and CodeField still receives the value, not an
+event. Everything else takes React's usual event.
+
+Since the components are no longer client-only, a component that passes them
+handlers must be a client component itself (`"use client"`), as with any
+interactive element.
