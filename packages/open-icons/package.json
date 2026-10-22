@@ -18,6 +18,10 @@
       "types": "./src/index.d.ts",
       "default": "./src/index.js"
     },
+    "./sprite": {
+      "types": "./src/sprite.d.ts",
+      "default": "./src/sprite.js"
+    },
     "./icons.svg": "./icons.svg",
     "./icons.json": "./icons.json",
     "./names.json": "./names.json",
