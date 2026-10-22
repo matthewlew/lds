@@ -18,7 +18,7 @@ export function select({
     return `<option${attrs({
       selected: current !== undefined && opt.value === current,
       value: opt.value,
-    })}>${slot(opt.label)}</option>`;
+    }, 'option')}>${slot(opt.label)}</option>`;
   };
   const body = options.map((o) => (o && o.options)
     ? `<optgroup${attrs({ label: o.label })}>${o.options.map(option).join('')}</optgroup>`
