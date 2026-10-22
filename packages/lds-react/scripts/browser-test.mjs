@@ -97,6 +97,9 @@ window.__hydrated = new Promise((resolve) => {
     // Textarea: the count follows the text.
     await tab.locator('#notes textarea').fill('hello world');
     check(await tab.locator('#notes .lds-field__count').textContent() === '10 / 10', 'Textarea: count did not follow the text');
+    // Uncontrolled, its default text is the starting text, not rewritten per keystroke.
+    check(await tab.locator('#notes textarea').evaluate((el) => el.defaultValue) === 'hi',
+      'Textarea: typing rewrote the default text');
 
     // CodeField: typing walks focus; Backspace on an empty box walks back.
     const boxes = tab.locator('#otp input');
@@ -107,6 +110,18 @@ window.__hydrated = new Promise((resolve) => {
     check((await state()).code === '12', `CodeField: onChange saw ${(await state()).code}`);
     await tab.keyboard.press('Backspace');
     check((await state()).code === '1', 'CodeField: Backspace on an empty box did not clear the one before');
+    // Full boxes can be corrected: a digit typed over one replaces it, and
+    // Backspace in one deletes it.
+    await tab.keyboard.type('234');
+    check((await state()).code === '1234', `CodeField: did not fill, saw ${(await state()).code}`);
+    await boxes.nth(2).focus();
+    await tab.keyboard.press('End');
+    await tab.keyboard.type('9');
+    check((await state()).code === '1294', `CodeField: typing over a full box saw ${(await state()).code}`);
+    await boxes.nth(3).focus();
+    await tab.keyboard.press('End');
+    await tab.keyboard.press('Backspace');
+    check((await state()).code === '129', `CodeField: Backspace in a full box saw ${(await state()).code}`);
 
     // A controlled TextField, with its help tied to the input.
     await tab.locator('#name input').fill('Ada');
@@ -146,6 +161,25 @@ window.__hydrated = new Promise((resolve) => {
       `Tooltip: did not open fixed above the clipping panel — ${JSON.stringify(placed)}`);
     await tab.keyboard.press('Escape');
     check(await tab.locator('#clip .lds-tooltip__bubble').nth(1).getAttribute('data-open') === 'false', 'Tooltip: Escape did not close it');
+
+    // IconButton is a row action: inside a <form> it does not submit it.
+    await tab.click('#row-action');
+    check((await state()).submits === 0, 'IconButton: clicking it submitted the enclosing form');
+
+    // A Tooltip whose trigger is swapped for another element binds the new one.
+    await tab.click('#toggle-editing');
+    const swapped = tab.locator('#swap-save');
+    const swapBubble = tab.locator('#swap .lds-tooltip__bubble');
+    check(await swapped.getAttribute('aria-describedby') === await swapBubble.getAttribute('id'),
+      'Tooltip: the swapped-in trigger is not described by the bubble');
+    await swapped.focus();
+    const swapPlaced = await tab.evaluate(() => {
+      const b = document.querySelector('#swap .lds-tooltip__bubble').getBoundingClientRect();
+      const t = document.getElementById('swap-save').getBoundingClientRect();
+      return { open: document.querySelector('#swap .lds-tooltip__bubble').dataset.open, gap: t.top - b.bottom };
+    });
+    check(swapPlaced.open === 'true' && Math.abs(swapPlaced.gap - 6) < 1,
+      `Tooltip: after the trigger swap the bubble is not above it — ${JSON.stringify(swapPlaced)}`);
 
     for (const e of errors) fails.push(`console: ${e.slice(0, 300)}`);
   } finally {

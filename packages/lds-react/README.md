@@ -102,7 +102,8 @@ components, with no markup of their own. **`IconButton`** is the pattern:
 ```jsx
 // Tooltip around an icon-only Button, named once: `label` is both the
 // button's aria-label and the tooltip, so they cannot disagree, and the
-// tooltip does not describe the button with the same words again.
+// tooltip does not describe the button with the same words again. It is
+// `type="button"`, so a row action inside a <form> doesn't submit it.
 <IconButton label="Edit card" icon="edit" onClick={edit} />
 ```
 
@@ -143,6 +144,13 @@ The other test passes:
   walks the code boxes, toasts queue and dismiss, and a tooltip opens outside its
   clipping panel.
 - `tsc`: the types against real usage, including props that must be rejected.
+
+Publishing runs one more check, `prepublishOnly`. The lowest version each
+`@lew-ds/*` dependency range allows must be at least the version in this
+workspace, the one the tests ran against. So a release of `@lew-ds/lds` that
+moves past the range stops the lds-react publish until the range is raised,
+instead of shipping a range that admits a version without what lds-react
+imports.
 
 ## Migrating from 1.x
 

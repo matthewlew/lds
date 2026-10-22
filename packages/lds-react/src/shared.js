@@ -5,8 +5,8 @@
 // Nothing here holds state, so every component that imports only this renders
 // as a server component.
 
-/** Joins class names, dropping the falsy ones — the templates' `cx`. */
-export const cx = (...parts) => parts.filter(Boolean).join(' ');
+// The templates' own class joiner, so the two cannot join differently.
+export { cx } from '@lew-ds/lds';
 
 /**
  * One decorative `<use>` into the sprite: the templates' `spriteSvg`.
@@ -44,6 +44,3 @@ export function initialState(props) {
   if (checked !== undefined && rest.defaultChecked === undefined) rest.defaultChecked = checked;
   return rest;
 }
-
-/** `left` and `right` are what the vanilla types used to say; the stylesheet draws start and end. */
-export const PLACEMENT = { left: 'start', right: 'end' };

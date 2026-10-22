@@ -13,13 +13,16 @@ export function Textarea({
   const generated = useId();
   const id = given ?? generated;
   const controlled = value !== undefined && onChange !== undefined;
-  const [own, setOwn] = useState(String((value !== undefined ? value : defaultValue) ?? ''));
+  // The starting text, fixed at mount: handing React a new defaultValue on
+  // every keystroke would rewrite the textarea's default text each time.
+  const [initial] = useState(() => String((value !== undefined ? value : defaultValue) ?? ''));
+  const [own, setOwn] = useState(initial);
   const text = controlled ? String(value) : own;
   const { noteId, aria } = fieldNote(id, { help, error, describedBy, invalid });
   const count = text.length;
   const over = maxLength !== undefined && count >= maxLength;
   const counted = showCount || maxLength !== undefined;
-  const state = controlled ? { value } : { defaultValue: own };
+  const state = controlled ? { value } : { defaultValue: initial };
   return (
     <div className={cx('lds-field', error && 'lds-field--error', className)} data-status={error ? 'error' : undefined}>
       {label ? <label htmlFor={id} className={required ? 'lds-field__req' : ''}>{label}</label> : null}

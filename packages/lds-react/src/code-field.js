@@ -1,9 +1,10 @@
 'use client';
 // CodeField: a one-time code, one box per digit. Typing walks focus forward,
 // Backspace on an empty box walks it back, and a paste fills every box. The
-// behaviour is @lew-ds/lds's `mountCodeField`, in React state; `onChange`
-// receives the digits entered so far.
+// rules are @lew-ds/lds's own (`codeAfterInput`, which `mountCodeField` runs
+// on), in React state; `onChange` receives the digits entered so far.
 import { useEffect, useRef, useState } from 'react';
+import { codeAfterInput } from '@lew-ds/lds/controllers';
 import { cx, SpriteIcon } from './shared.js';
 
 export function CodeField({
@@ -21,13 +22,12 @@ export function CodeField({
     if (focusIndex !== undefined) boxes.current[Math.max(0, Math.min(focusIndex, length - 1))]?.focus();
     onChange?.(digits);
   };
+  // @lew-ds/lds's own rules: a deletion removes that digit, a digit typed over
+  // a full box replaces it, a paste or autofill brings the whole code. Null is
+  // a non-digit, which the controlled value simply puts back.
   const onInput = (i) => (e) => {
-    const typed = e.target.value.replace(/\D/g, '');
-    if (!typed) return;
-    if (typed.length > 1) { commit(typed, typed.length); return; } // a paste
-    const chars = code.padEnd(length, ' ').split('');
-    chars[i] = typed;
-    commit(chars.join('').trimEnd(), i + 1);
+    const next = codeAfterInput(code, length, i, e.nativeEvent, e.target.value);
+    if (next) commit(next.code, next.focus);
   };
   const onKeyDown = (i) => (e) => {
     if (e.key !== 'Backspace' || code[i] || i <= 0) return;

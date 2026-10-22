@@ -37,6 +37,7 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "prepack": "node scripts/build.mjs",
+    "prepublishOnly": "node scripts/dependency-floor.mjs",
     "test": "node scripts/build.mjs && node scripts/parity-test.mjs && node scripts/server-test.mjs && tsc -p tsconfig.json && node scripts/browser-test.mjs"
   },
   "keywords": [

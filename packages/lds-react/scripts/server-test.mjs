@@ -12,11 +12,14 @@
 //      not the 180KB glyph table, which only `/icon-sprite` loads.
 //   5. The tarball ships what `exports` points at: the built modules and the
 //      types, every one of them, and not the JSX source.
+//   6. The publish guard (dependency-floor.mjs) refuses a range whose floor is
+//      below the version tested, and accepts one that is not.
 import esbuild from 'esbuild';
 import { spawnSync } from 'node:child_process';
 import { readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { check as checkFloor } from './dependency-floor.mjs';
 
 const PKG = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = join(PKG, 'dist');
@@ -69,9 +72,19 @@ else {
   if (files.some((f) => f.startsWith('src/') || f.startsWith('scripts/'))) fails.push('the tarball ships source or scripts');
 }
 
+// The guard itself, against a release that has moved past the range.
+const stale = checkFloor({ dependencies: { '@lew-ds/lds': '^1.1.1', '@lew-ds/open-icons': '^1.1.0' } },
+  { '@lew-ds/lds': '1.2.0', '@lew-ds/open-icons': '1.1.0' });
+if (stale.length !== 1 || !stale[0].startsWith('@lew-ds/lds')) fails.push(`dependency-floor did not catch a stale range: ${JSON.stringify(stale)}`);
+if (checkFloor({ dependencies: { '@lew-ds/lds': '^1.2.0' } }, { '@lew-ds/lds': '1.2.0' }).length) {
+  fails.push('dependency-floor refused a range that admits only the tested version and up');
+}
+const published = JSON.parse(readFileSync(join(PKG, 'package.json'), 'utf8'));
+if (published.scripts?.prepublishOnly !== 'node scripts/dependency-floor.mjs') fails.push('publishing does not run the dependency-floor guard');
+
 if (fails.length) {
   for (const f of fails) console.error(`FAIL ${f}`);
   process.exit(1);
 }
 console.log(`server-test: ${CLIENT.length} client modules marked, ${server.length} stateless modules load as server code, `
-  + 'no react-dom, no display:contents wrapper, no glyph table in the client bundle, tarball complete');
+  + 'no react-dom, no display:contents wrapper, no glyph table in the client bundle, tarball complete, publish guard holds');

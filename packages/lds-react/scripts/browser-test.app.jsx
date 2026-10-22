@@ -24,10 +24,12 @@ export function App() {
   const [code, setCode] = useState('');
   const [name, setName] = useState('');
   const [chip, setChip] = useState({ clicked: 0, removed: 0 });
+  const [submits, setSubmits] = useState(0);
+  const [editing, setEditing] = useState(false);
   return (
     <ToastProvider>
       <IconSprite icons={['search', 'edit', 'grid', 'list']} />
-      <output id="state">{JSON.stringify({ clicks, view, code, name, chip })}</output>
+      <output id="state">{JSON.stringify({ clicks, view, code, name, chip, submits })}</output>
 
       <Button id="count" onClick={() => setClicks((n) => n + 1)}>Count</Button>
       <Banner status="warning" title="Heads up" dismissible onDismiss={() => setClicks((n) => n + 100)}>Body</Banner>
@@ -46,6 +48,19 @@ export function App() {
       <div id="clip" style={{ overflow: 'hidden', width: 200, height: 48, marginTop: 80, marginLeft: 120 }}>
         <IconButton id="edit-card" label="Edit card" icon="edit" />
         <Tooltip label="Searches every card"><Button id="search-cards" iconOnly iconStart="search" aria-label="Search" /></Tooltip>
+      </div>
+
+      <form id="filters" onSubmit={(e) => { e.preventDefault(); setSubmits((n) => n + 1); }}>
+        <IconButton id="row-action" label="Edit row" icon="edit" />
+      </form>
+
+      <Button id="toggle-editing" onClick={() => setEditing((on) => !on)}>Toggle</Button>
+      <div id="swap">
+        <Tooltip label="Changes are saved as you type">
+          {editing
+            ? <Button key="save" id="swap-save" iconOnly iconStart="check" aria-label="Done" />
+            : <Button key="edit" id="swap-edit" iconOnly iconStart="edit" aria-label="Edit" />}
+        </Tooltip>
       </div>
 
       <Table aria-label="Cards">

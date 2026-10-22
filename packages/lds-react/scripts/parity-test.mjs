@@ -159,11 +159,12 @@ const extra = [
 for (const [component, label, props, opts] of extra) check(component, label, props, opts);
 
 // ---- compositions -------------------------------------------------------------
-// IconButton is Tooltip around an icon-only Button, named once.
+// IconButton is Tooltip around an icon-only Button, named once, and a plain
+// button rather than a form's submit.
 check('IconButton', 'composition', { label: 'Edit card', icon: 'edit', onClick: () => {} }, {
   template: (p) => templates.tooltip({
     id: p.id, label: 'Edit card',
-    children: raw(templates.button({ size: 'sm', iconOnly: true, iconStart: 'edit', 'aria-label': 'Edit card' })),
+    children: raw(templates.button({ size: 'sm', type: 'button', iconOnly: true, iconStart: 'edit', 'aria-label': 'Edit card' })),
   }),
 });
 
