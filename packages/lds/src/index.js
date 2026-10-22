@@ -22,7 +22,7 @@
 // The sprite resolves through @lew-ds/open-icons by default; call setIconSprite if
 // you serve it from somewhere else.
 //
-// Every component's markup is pinned by markup-contract.json — 113 cases,
+// Every component's markup is pinned by markup-contract.json — 114 cases,
 // diffed on every test run — so the HTML is a specification rather than an
 // implementation detail.
 

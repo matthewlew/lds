@@ -69,6 +69,7 @@ export const CASES = [
 
   ['Icon', 'basic', { name: 'search' }],
   ['Icon', 'sized', { name: 'star', size: 32 }],
+  ['Icon', 'named', { name: 'search', 'aria-label': 'Search', role: 'img' }],
 
   ['Inline', 'error', { status: 'error', children: 'Bad' }],
   ['Inline', 'success', { status: 'success', children: 'Good' }],

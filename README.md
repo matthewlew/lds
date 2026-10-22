@@ -131,7 +131,7 @@ baseline is captured from a git worktree at the previous commit instead.
 | `api-test` | every documented export exists; the sprite resolves and `setIconSprite` is honoured at render time; slots escape and `raw()` does not; `h()` composes |
 | `css-test` | every icon name and CSS class the components reference exists; every `var()` without a fallback is defined; Banner, Inline and Toast share one status map |
 | `theme-source` | every derived value in the roadtrip theme still agrees with the upstream token it says it came from |
-| `markup-contract` | all 113 frozen component cases still emit exactly the same HTML |
+| `markup-contract` | all 114 frozen component cases still emit exactly the same HTML |
 | `typecheck` | the published `.d.ts` surface compiles against real usage |
 | `consumer-test` | both packages pack, install into a throwaway app with **no other dependencies**, and work through bare specifiers |
 | `site-test` | all 33 built pages load in headless Chromium with no console errors, no failed requests, no `<use>` pointing at a missing symbol, and no masked glyph referenced through an external sprite (Chromium draws those blank) |

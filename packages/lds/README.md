@@ -68,7 +68,7 @@ a server — `attachTooltip(wrapper)` binds behaviour without re-rendering.
 
 ### The markup is the specification
 
-`markup-contract.json` pins the exact HTML all 28 components emit across 113
+`markup-contract.json` pins the exact HTML all 28 components emit across 114
 prop combinations, and `npm test` diffs against it. It was generated from the
 React implementation this package used to be, and frozen before that
 implementation was removed — so the markup is a guarantee that outlived the
