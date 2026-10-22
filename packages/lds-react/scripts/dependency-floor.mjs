@@ -9,7 +9,12 @@
 // Run by `prepublishOnly`, which npm runs before publishing; release-please
 // bumping @lew-ds/lds without raising this range therefore stops the
 // lds-react publish rather than shipping it.
-import { readFileSync } from 'node:fs';
+//
+// `--fix` raises each such range to `^<version tested>` instead. The release
+// workflow runs it on release-please's PR, so the ranges move with the
+// versions release-please gives the packages and the guard never has to stop
+// anything; the guard stays as the backstop.
+import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -29,18 +34,37 @@ export const floor = (range) => {
   return m[1];
 };
 
-export function check(pkg = JSON.parse(readFileSync(join(PKG, 'package.json'), 'utf8')), versions) {
-  const problems = [];
-  for (const [name, dir] of Object.entries(WORKSPACE)) {
-    const range = pkg.dependencies?.[name];
-    if (!range) continue;
-    const tested = versions?.[name] ?? JSON.parse(readFileSync(join(PKG, dir, 'package.json'), 'utf8')).version;
-    if (below(floor(range), tested)) problems.push(`${name} is "${range}", which admits versions below ${tested}, the one tested here`);
-  }
-  return problems;
+const readPkg = () => JSON.parse(readFileSync(join(PKG, 'package.json'), 'utf8'));
+const testedVersion = (name, versions) =>
+  versions?.[name] ?? JSON.parse(readFileSync(join(PKG, WORKSPACE[name], 'package.json'), 'utf8')).version;
+
+/** Each @lew-ds dependency whose range admits a version below the one tested. */
+function stale(pkg, versions) {
+  return Object.keys(WORKSPACE)
+    .filter((name) => pkg.dependencies?.[name])
+    .map((name) => ({ name, range: pkg.dependencies[name], tested: testedVersion(name, versions) }))
+    .filter(({ range, tested }) => below(floor(range), tested));
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+export function check(pkg = readPkg(), versions) {
+  return stale(pkg, versions).map(({ name, range, tested }) =>
+    `${name} is "${range}", which admits versions below ${tested}, the one tested here`);
+}
+
+/** `pkg` with each stale range raised to `^<tested>`, and what changed. */
+export function fix(pkg = readPkg(), versions) {
+  const changes = stale(pkg, versions).map(({ name, range, tested }) => ({ name, from: range, to: `^${tested}` }));
+  const dependencies = { ...pkg.dependencies };
+  for (const { name, to } of changes) dependencies[name] = to;
+  return { pkg: { ...pkg, dependencies }, changes };
+}
+
+if (import.meta.url === `file://${process.argv[1]}` && process.argv.includes('--fix')) {
+  const { pkg, changes } = fix();
+  if (changes.length) writeFileSync(join(PKG, 'package.json'), `${JSON.stringify(pkg, null, 2)}\n`);
+  for (const c of changes) console.log(`dependency-floor: ${c.name} ${c.from} → ${c.to}`);
+  if (!changes.length) console.log('dependency-floor: nothing to raise');
+} else if (import.meta.url === `file://${process.argv[1]}`) {
   const problems = check();
   if (problems.length) {
     for (const p of problems) console.error(`dependency-floor: ${p}`);
