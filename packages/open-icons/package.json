@@ -1,6 +1,6 @@
 {
   "name": "@lew-ds/open-icons",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Open Icons — 174 symbols on a 24px grid, stroke 2. A standalone SVG sprite with no dependency on any design system.",
   "license": "MIT",
   "type": "module",
@@ -31,7 +31,12 @@
     "build": "node scripts/build-sprite.mjs",
     "test": "node scripts/verify.mjs"
   },
-  "keywords": ["icons", "svg", "sprite", "open-icons"],
+  "keywords": [
+    "icons",
+    "svg",
+    "sprite",
+    "open-icons"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/matthewlew/lds.git",

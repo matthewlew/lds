@@ -1,6 +1,6 @@
 {
   "name": "@lew-ds/lds-react",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "React components for the Lew Design System: the markup of @lew-ds/lds's templates as JSX, server-rendered with every slot in the HTML. Stateless components are server components; only the five stateful ones are client components.",
   "license": "MIT",
   "type": "module",
