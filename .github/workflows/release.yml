@@ -19,9 +19,49 @@ jobs:
       lds-created: ${{ steps.release.outputs['packages/lds--release_created'] }}
       lds-react-created: ${{ steps.release.outputs['packages/lds-react--release_created'] }}
       open-icons-created: ${{ steps.release.outputs['packages/open-icons--release_created'] }}
+      prs-created: ${{ steps.release.outputs.prs_created }}
+      pr: ${{ steps.release.outputs.pr }}
     steps:
       - id: release
         uses: googleapis/release-please-action@5c625bfb5d1ff62eadeeb3772007f7f66fdcf071 # v4
+
+  # release-please bumps each package's own version, but not the range one
+  # package declares on another. lds-react is tested against the lds and
+  # open-icons in this repo, and its prepublishOnly guard refuses to publish
+  # while a range still admits an older release. So whenever release-please
+  # opens or rewrites its PR, raise those ranges on the PR's branch to the
+  # versions it is about to release. A rewrite drops this commit, and the next
+  # run puts it back.
+  #
+  # Pushed with the workflow's token, which by GitHub's design starts no other
+  # workflow: CI does not re-run on this commit. The publish jobs test before
+  # publishing, so nothing untested ships.
+  sync-ranges:
+    needs: release
+    if: needs.release.outputs.prs-created == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ fromJSON(needs.release.outputs.pr).headBranchName }}
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - run: node packages/lds-react/scripts/dependency-floor.mjs --fix
+      - run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+      - name: Commit the raised ranges
+        run: |
+          if git diff --quiet; then
+            echo "Every @lew-ds range already admits only the releasing versions."
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -am "chore(lds-react): depend on the @lew-ds versions releasing alongside"
+          git push
 
   publish-lds:
     needs: release

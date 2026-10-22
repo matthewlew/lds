@@ -152,6 +152,12 @@ moves past the range stops the lds-react publish until the range is raised,
 instead of shipping a range that admits a version without what lds-react
 imports.
 
+Raising the range is automated. Whenever release-please opens or rewrites its
+release PR, the release workflow's `sync-ranges` job runs
+`dependency-floor.mjs --fix` on that PR's branch. It raises each range to the
+version about to be released, updates the lockfile and pushes the result. So
+the check is a backstop that should never have to fire.
+
 ## Migrating from 1.x
 
 1.x rendered each template to an HTML string, inserted it with
