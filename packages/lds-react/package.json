@@ -23,8 +23,8 @@
     "./package.json": "./package.json"
   },
   "dependencies": {
-    "@lew-ds/lds": "^1.1.1",
-    "@lew-ds/open-icons": "^1.0.0"
+    "@lew-ds/lds": "^1.2.0",
+    "@lew-ds/open-icons": "^1.1.0"
   },
   "peerDependencies": {
     "react": "^19.0.0"
