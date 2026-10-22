@@ -1,5 +1,5 @@
 {
-  "packages/lds": "1.1.1",
-  "packages/lds-react": "1.0.1",
-  "packages/open-icons": "1.0.0"
+  "packages/lds": "1.2.0",
+  "packages/lds-react": "2.0.0",
+  "packages/open-icons": "1.1.0"
 }
