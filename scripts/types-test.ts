@@ -6,7 +6,7 @@ import {
   modal, nav, raw, row, segmentedControl, select, table, tabs, tag, textField, textarea,
   toast, toggle, tooltip, mountCodeField, mountSegmentedControl, mountTextarea,
   mountToasts, mountTooltip, dialOptions, setIconSprite, cx, escapeHtml, initialsForName,
-  COMPONENT_ICONS,
+  COMPONENT_ICONS, tooltipPlacement, codeAfterInput,
 } from '@lew-ds/lds';
 import type { RawHtml, Slot, Status, Hue } from '@lew-ds/lds';
 import { ICON_NAMES, hasIcon, useHref, spriteUrl } from '@lew-ds/open-icons';
@@ -102,3 +102,9 @@ export function wire(el: HTMLElement): () => void {
     code.dispose(); seg.dispose(); area.dispose(); tip.dispose(); toasts.dispose();
   };
 }
+
+// The pieces a stateful binding shares with the controllers.
+export const shared = [
+  tooltipPlacement('right'),
+  codeAfterInput('12', 6, 1, { inputType: 'insertText', data: '9' }, '29')?.code,
+];

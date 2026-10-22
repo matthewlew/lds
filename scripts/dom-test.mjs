@@ -71,6 +71,36 @@ check(await page.evaluate(() => window.cf.value) === '48',
 await page.keyboard.type('x');
 check(await page.evaluate(() => window.cf.value) === '48', 'CodeField: a letter was accepted');
 
+// Typing over a FULL box replaces that digit; it is not a paste.
+await page.keyboard.type('2690');
+check(await page.evaluate(() => window.cf.value) === '482690', `CodeField: did not fill, value is ${await page.evaluate(() => window.cf.value)}`);
+await boxes.nth(2).focus();
+await page.keyboard.press('End');
+await page.keyboard.type('7');
+check(await page.evaluate(() => window.cf.value) === '487690',
+  `CodeField: typing over a full box should replace its digit, value is ${await page.evaluate(() => window.cf.value)}`);
+
+// Backspace in a FULL box deletes its digit, and the rest close up.
+await boxes.nth(5).focus();
+await page.keyboard.press('End');
+await page.keyboard.press('Backspace');
+check(await page.evaluate(() => window.cf.value) === '48769',
+  `CodeField: backspace in a full box did not delete it, value is ${await page.evaluate(() => window.cf.value)}`);
+await boxes.nth(1).focus();
+await page.keyboard.press('End');
+await page.keyboard.press('Backspace');
+check(await page.evaluate(() => window.cf.value) === '4769',
+  `CodeField: backspace mid-code should close up the rest, value is ${await page.evaluate(() => window.cf.value)}`);
+
+// A whole code pasted into one box fills every box.
+await boxes.nth(0).focus();
+await page.evaluate(() => {
+  const el = document.querySelector('#t .lds-field__code input');
+  el.value = '135790';
+  el.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertFromPaste' }));
+});
+check(await page.evaluate(() => window.cf.value) === '135790', `CodeField: a paste did not fill, value is ${await page.evaluate(() => window.cf.value)}`);
+
 // dispose() removes its listeners, so typing after it does nothing.
 await page.evaluate(() => { window.cf.dispose(); });
 check(await page.evaluate(() => document.getElementById('t').innerHTML) === '',
@@ -187,6 +217,27 @@ await page.evaluate(() => {
 check(await page.locator('#t .lds-btn').getAttribute('aria-describedby')
   === `hint ${await bubble.getAttribute('id')}`,
   'Tooltip: aria-describedby does not add the bubble to the trigger\'s own');
+// dispose() takes back only what it added, so a rebind whose label now repeats
+// the trigger's name does not leave the old description behind.
+check(await page.evaluate(() => {
+  const host = document.createElement('div');
+  host.innerHTML = LDS.tooltip({
+    label: 'Search all cards', id: 'tt-rebind',
+    children: LDS.raw(LDS.button({ iconOnly: true, iconStart: 'search', 'aria-label': 'Search', 'aria-describedby': 'hint' })),
+  });
+  document.body.append(host);
+  const wrapper = host.firstElementChild;
+  const trigger = wrapper.querySelector('.lds-btn');
+  const first = LDS.attachTooltip(wrapper);
+  const described = trigger.getAttribute('aria-describedby');
+  first.dispose();
+  const restored = trigger.getAttribute('aria-describedby');
+  wrapper.querySelector('.lds-tooltip__bubble').textContent = 'Search';
+  LDS.attachTooltip(wrapper).dispose();
+  const repeated = trigger.getAttribute('aria-describedby');
+  host.remove();
+  return described === 'hint tt-rebind' && restored === 'hint' && repeated === 'hint';
+}), 'Tooltip: dispose() did not take back the description it added');
 
 // Inside a clipping panel the open bubble is fixed at the trigger, so the
 // panel's overflow cannot cut it off, and scrolling closes it.
@@ -213,6 +264,25 @@ const placed = await page.evaluate(() => {
 check(placed.position === 'fixed', `Tooltip: open bubble is ${placed.position}, not fixed`);
 check(placed.above && placed.centred, 'Tooltip: fixed bubble is not centred above its trigger');
 check(placed.outside, 'Tooltip: bubble did not escape its clipping ancestor');
+// A transformed or backdrop-filtered ancestor (a .lds-glass panel, a dragged
+// sheet) is the box `fixed` resolves against; the bubble still lands at the trigger.
+await page.locator('#t .lds-btn').blur();
+await page.evaluate(() => {
+  const clip = document.getElementById('clip');
+  clip.style.transform = 'translate(40px, 30px)';
+  clip.style.backdropFilter = 'blur(4px)';
+});
+await page.locator('#t .lds-btn').focus();
+const contained = await page.evaluate(() => {
+  const b = document.querySelector('#t .lds-tooltip__bubble').getBoundingClientRect();
+  const trigger = document.querySelector('#t .lds-btn').getBoundingClientRect();
+  return {
+    gap: trigger.top - b.bottom,
+    centred: Math.abs((b.left + b.right) / 2 - (trigger.left + trigger.right) / 2) < 1,
+  };
+});
+check(Math.abs(contained.gap - 6) < 1 && contained.centred,
+  `Tooltip: under a transformed ancestor the bubble is not above its trigger — ${JSON.stringify(contained)}`);
 await page.mouse.wheel(0, 200);
 await page.waitForFunction(() => document.querySelector('#t .lds-tooltip__bubble').getAttribute('data-open') === 'false', null, { timeout: 2000 })
   .catch(() => fails.push('Tooltip: scrolling did not close the fixed bubble'));
@@ -221,6 +291,19 @@ await page.evaluate(() => {
   document.body.innerHTML = '<div id="t"></div>';
   window.scrollTo(0, 0);
 });
+
+// ---- Table -------------------------------------------------------------------
+// A hovered row fills every cell, the frozen row header included.
+await page.evaluate(() => {
+  document.body.innerHTML = '<div class="lds-table-scroll"><table class="lds-table"><tbody><tr>'
+    + '<th scope="row" class="lds-table__col--freeze">Visa</th><td class="lds-table__col--freeze">1</td><td>Due</td>'
+    + '</tr></tbody></table></div>';
+});
+await page.locator('.lds-table td:last-child').hover();
+const fills = await page.evaluate(() => [...document.querySelectorAll('.lds-table th, .lds-table td.lds-table__col--freeze')]
+  .map((c) => getComputedStyle(c).backgroundColor));
+check(fills[0] === fills[1], `Table: a hovered row's frozen row header is ${fills[0]}, its frozen cell ${fills[1]}`);
+await page.mouse.move(0, 0);
 
 // ---- Icon sprite -------------------------------------------------------------
 // Masked glyphs draw nothing through an external <use> in Chromium, so the

@@ -202,8 +202,11 @@ users. That case wants a Menu or a Modal.
 `placement` is `top` (the default), `bottom`, `start` or `end`; `left` and
 `right` are read as `start` and `end`. Once bound (`mountTooltip` or
 `attachTooltip`), the open bubble is positioned `fixed` from the trigger, so a
-panel's `overflow: hidden` or a table's scroll container cannot clip it, and it
-closes when a scroll or resize moves the trigger. The bubble describes its trigger
+panel's `overflow: hidden` or a table's scroll container cannot clip it (it
+corrects for an ancestor with a transform or backdrop-filter, such as a
+`.lds-glass` panel, which is what `fixed` then resolves against), and it closes
+when a scroll or resize moves the trigger. `dispose()` takes back the
+description it added. The bubble describes its trigger
 (`aria-describedby`) only when it says something the trigger's `aria-label`
 does not: an icon button named "Search" with a "Search" tooltip is not read out
 twice.

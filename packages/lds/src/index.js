@@ -66,10 +66,10 @@ export { textField } from './templates/text-field.js';
 export { textarea } from './templates/textarea.js';
 export { toast } from './templates/toast.js';
 export { toggle } from './templates/toggle.js';
-export { tooltip } from './templates/tooltip.js';
+export { tooltip, tooltipPlacement } from './templates/tooltip.js';
 
 // Controllers — the behaviour a template cannot carry.
-export { mountCodeField } from './controllers/code-field.js';
+export { mountCodeField, codeAfterInput } from './controllers/code-field.js';
 export { mountSegmentedControl } from './controllers/segmented-control.js';
 export { mountTextarea } from './controllers/textarea.js';
 export { mountToasts } from './controllers/toast.js';

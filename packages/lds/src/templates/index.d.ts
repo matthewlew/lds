@@ -451,3 +451,6 @@ export interface TooltipProps extends HtmlProps {
   children?: Slot;
 }
 export declare function tooltip(props?: TooltipProps): string;
+
+/** The placement the stylesheet draws: `left`/`right` read as `start`/`end`. */
+export declare function tooltipPlacement(placement?: TooltipProps['placement']): 'top' | 'bottom' | 'start' | 'end';

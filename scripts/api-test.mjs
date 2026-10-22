@@ -26,11 +26,12 @@ const COMPONENTS = [
 ];
 const CONTROLLERS = [
   'mountCodeField', 'mountSegmentedControl', 'mountTextarea', 'mountToasts', 'mountTooltip',
+  'attachTooltip', 'codeAfterInput',
 ];
 const HELPERS = [
   'escapeHtml', 'raw', 'slot', 'h', 'mount', 'attrs', 'cx', 'styleAttr', 'spriteSvg',
   'setIconSprite', 'getIconSprite', 'resolveSprite', 'inlineIconSprite', 'loadIconSprite', 'STATUS_ICON', 'COMPONENT_ICONS',
-  'hueForName', 'initialsForName', 'DIAL_CODES', 'dialOptions',
+  'hueForName', 'initialsForName', 'DIAL_CODES', 'dialOptions', 'tooltipPlacement',
 ];
 
 for (const name of [...COMPONENTS, ...CONTROLLERS, ...HELPERS]) {
